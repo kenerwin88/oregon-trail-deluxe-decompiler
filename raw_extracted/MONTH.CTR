@@ -1,0 +1,46 @@
+17, let's load the images
+1,1
+MONTH.PCC
+
+17, clear the screen to gold
+6,32 7,32
+4,415 5,574
+12,0,6
+
+18,2,0,6,1
+6,320 7,50
+10,Starting Date
+
+18,2,0,6,0
+6,90 7,90
+10,You need to decide when to set off on the trail.  If you leave too early, there
+20,24
+10,won't be much grass for your oxen to eat.  You may encounter some very
+20,24
+10,cold weather and late spring snow storms.
+20,40
+10,But if you leave too late, you may not get to Oregon before winter, which can
+20,24
+10,be very dangerous.  If you leave at just the right time, there will be green
+20,24
+10,grass and, for the most part, mild weather.
+20,60
+19,35
+10,When do you want to start?
+
+6,330
+17, icon buttons
+4,20 5,60
+8,0,0,2,0
+20,40
+8,0,1,3,0
+20,40
+8,0,2,4,0
+20,-80 19,100
+8,0,3,5,0
+20,40
+8,0,4,6,0
+20,40
+8,0,5,7,0
+
+

@@ -1,0 +1,32 @@
+17, let's load the images
+1,2
+RATION.PCC
+HLPBTN.PCC
+
+17, Set text parameters
+18,2,0,6,0
+
+17, clear the area to gold
+6,116 7,32
+4,200 5,261
+12,0,6
+
+17, Write text
+6,125 7,39
+10,How much do you want to eat?
+
+
+17, icon buttons
+4,46 5,42
+
+6,125
+7,70 8,0,0,1,0
+7,125 8,0,1,2,0
+7,180 8,0,2,3,0
+
+6,180
+7,80 10,Filling
+7,135 10,Meager
+7,190 10,Bare Bones
+6,310
+7,115 8,1,0,4,59

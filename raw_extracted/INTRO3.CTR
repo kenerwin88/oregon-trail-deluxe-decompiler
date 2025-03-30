@@ -1,0 +1,49 @@
+17, let's load the images
+1,1
+INTROBUT.PCC
+
+17, clear the screen to gold
+6,32 7,32
+4,415 5,574
+12,0,6
+
+18,2,0,6,1
+6,320 7,40
+10,Introduction
+
+18,2,0,6,0
+6,90 7,80
+10,You'll also see a "Conditions" panel that keeps you informed of the date, the
+20,24
+10,weather, and the current situation of your wagon.  Just like the real-life
+20,24
+10,pioneers, you'll have to stay alert and make good decisions if you want to
+20,24
+10,survive.
+20,36
+10,If you make it all the way to the Willamette Valley, you'll receive points
+20,24
+10,based on your current status.  If your score is high enough, you'll be added
+20,24
+10,to the List of Legends.
+20,36
+10,If you have to stop in the middle of your journey, you can Quit and Save
+20,24
+10,(by going to the Options Screen) so that you can resume the journey at a 
+20,24
+10,later time.
+
+
+
+17, icon buttons
+4,28 5,78
+7,400 
+6,117 8,0,2,1,0
+6,280 8,0,1,2,28
+6,443 8,0,5,3,0
+
+
+
+
+
+

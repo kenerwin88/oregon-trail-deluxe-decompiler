@@ -1,0 +1,58 @@
+{
+  "image_file": "RAFTANI.PCC",
+  "frame_count": 2,
+  "frames": [
+    {
+      "coordinates": [
+        {
+          "x": 275,
+          "y": 245
+        },
+        {
+          "x": 54,
+          "y": 24
+        }
+      ],
+      "dimensions": [
+        {
+          "width": 72,
+          "height": 61
+        },
+        {
+          "width": 124,
+          "height": 52
+        }
+      ]
+    },
+    {
+      "coordinates": [
+        {
+          "x": 45,
+          "y": 23
+        },
+        {
+          "x": 276,
+          "y": 52
+        },
+        {
+          "x": 11,
+          "y": 11
+        }
+      ],
+      "dimensions": [
+        {
+          "width": 200,
+          "height": 52
+        },
+        {
+          "width": 62,
+          "height": 28
+        },
+        {
+          "width": 542,
+          "height": 408
+        }
+      ]
+    }
+  ]
+}

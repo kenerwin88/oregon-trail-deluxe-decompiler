@@ -1,0 +1,97 @@
+{
+  "metadata": {
+    "images": [
+      "EXIT.PCC"
+    ],
+    "comments": [
+      "let's load the images",
+      "Set text parameters",
+      "clear the area to gold",
+      "icon buttons"
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "panel",
+      "colors": {
+        "background": {
+          "value": 0,
+          "name": "black"
+        },
+        "foreground": {
+          "value": 6,
+          "name": "gold"
+        }
+      },
+      "dimensions": {
+        "height": 261,
+        "width": 118
+      },
+      "position": {
+        "y": 114,
+        "x": 116
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 0,
+        "action": {
+          "id": 1,
+          "name": "confirm"
+        },
+        "state": {
+          "value": 28,
+          "name": "enabled"
+        }
+      },
+      "position": {
+        "x": 140,
+        "y": 180,
+        "y_section": 55
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 1,
+        "action": {
+          "id": 2,
+          "name": "cancel"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 219,
+        "y": 180,
+        "y_section": 55
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 2,
+        "action": {
+          "id": 3,
+          "name": "back"
+        },
+        "state": {
+          "value": 1,
+          "name": "disabled"
+        }
+      },
+      "position": {
+        "x": 298,
+        "y": 180,
+        "y_section": 55
+      }
+    }
+  ],
+  "filename": "EXIT.CTR"
+}

@@ -1,0 +1,46 @@
+17, let's load the images
+1,1
+OKAY.PCC
+
+17, clear the screen to gold
+6,32 7,32
+4,415 5,574
+12,0,6
+
+18,2,0,6,1
+6,320 7,40
+10,Store Help
+
+18,2,0,6,0
+6,90 7,80
+10,Matt can give you pretty good advice about what to buy:
+20,36
+10," I recommend at least six oxen to pull your wagon.  And you'll need plenty
+20,24
+10,of flour, sugar, bacon, coffee, and other types of food.  I suggest you start
+20,24
+10,out with at least 200 pounds of food for each person in your party."
+20,36
+10," You'll need good, warm clothing, especially for the mountains.  I recommend
+20,24
+10,taking at least 2 sets of clothes per person.  You'll need ammunition, too.
+20,24
+10,Each box of ammunition contains 20 bullets."
+20,36
+10," Finally, you might want to take along some spare wagon parts.  Wagon
+20,24
+10,wheels, axles, and tongues are liable to break along the way.  If you're
+20,24
+10,unable to repair a broken wagon, you'll be in big trouble!"
+
+
+17, icon buttons
+4,28 5,88
+7,400 
+6,275 8,0,0,1,28
+
+
+
+
+
+

@@ -1,0 +1,65 @@
+{
+  "format": "Oregon Trail High Scores",
+  "entries": [
+    {
+      "name": "Stephen Meek",
+      "difficulty": "Trail Guide",
+      "score": 7650,
+      "raw_bytes": "02 bb 36 dc 46 57 3e"
+    },
+    {
+      "name": "David Hastings",
+      "difficulty": "Adventurer",
+      "score": 5694,
+      "raw_bytes": "dc 46 57 3e 00 3e 16"
+    },
+    {
+      "name": "Andrew Sublette",
+      "difficulty": "Adventurer",
+      "score": 4138,
+      "raw_bytes": "bf 41 03 00 2a 10 43"
+    },
+    {
+      "name": "Celinda Hines",
+      "difficulty": "Greenhorn",
+      "score": 2945,
+      "raw_bytes": "5a 3f 01 09 2e 2e 0c"
+    },
+    {
+      "name": "William Vaughn",
+      "difficulty": "Greenhorn",
+      "score": 1401,
+      "raw_bytes": "00 00 0f 00 00 79 05"
+    },
+    {
+      "name": "William Wiggins",
+      "difficulty": "Greenhorn",
+      "score": 615,
+      "raw_bytes": "10 ba 24 00 67 02 43"
+    },
+    {
+      "name": "Charles Hopper",
+      "difficulty": "Greenhorn",
+      "score": 396,
+      "raw_bytes": "00 ca 24 82 7a 8c 01"
+    },
+    {
+      "name": "Ezra Meeker",
+      "difficulty": "Greenhorn",
+      "score": 2052,
+      "raw_bytes": "00 00 00 00 00 00 00"
+    },
+    {
+      "name": "Mary Bartlett",
+      "difficulty": "Greenhorn",
+      "score": 937,
+      "raw_bytes": "00 00 00 00 00 00 00"
+    },
+    {
+      "name": "Elijah White",
+      "difficulty": "Greenhorn",
+      "score": 250,
+      "raw_bytes": "00 00 00 00 00 00 00"
+    }
+  ]
+}

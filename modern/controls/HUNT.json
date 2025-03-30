@@ -1,0 +1,55 @@
+{
+  "metadata": {
+    "images": [
+      "huntbut.pcc"
+    ],
+    "comments": [
+      "let's load the images",
+      "Button #1",
+      "Button #2"
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 0,
+        "action": {
+          "id": 1,
+          "name": "confirm"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 141,
+        "y": 391,
+        "y_section": 138
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 1,
+        "action": {
+          "id": 2,
+          "name": "cancel"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 358,
+        "y": 391,
+        "y_section": 138
+      }
+    }
+  ],
+  "filename": "HUNT.CTR"
+}

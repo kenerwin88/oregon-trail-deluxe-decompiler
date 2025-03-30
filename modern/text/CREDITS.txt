@@ -1,0 +1,92 @@
+17, let's load the images
+1,1
+OKAY.PCC
+
+17, clear the screen to gold
+6,32 7,32
+4,415 5,574
+12,0,6
+
+18,2,0,6,1
+5,280
+6,320 7,110
+10,Version:  3.0
+20,24
+10,Copyright 1992, MECC
+
+
+6,320 7,345
+10,6160 Summit Drive North
+20,24
+10,Minneapolis, Minnesota 55430-4003
+20,24
+10,(612) 569-1500
+
+
+17,Draw some lines
+4,2 5,185
+6,70 7,190
+12,0,0
+6,380
+12,0,0
+6,70 7,285
+5,497
+12,0,0
+
+4,95 5,2
+7,190
+12,0,0
+6,565
+12,0,0
+
+18,2,0,6,0
+
+4,415 5,574
+6,263 7,183
+10,Brought to you by:
+
+18,1,0,6,0
+
+6,80 7,205
+10,Nursen Bilge
+19,125 
+10,Lon Koenig 
+19,120
+10,Rich Rainelli
+19,120
+10,Elizabeth Wendland
+
+6,80 20,20
+10,John Hickman
+19,125
+10,Barry Mansur
+19,120
+10,Wayne Studer
+19,120
+10,Jeff White
+
+6,80 20,20
+10,Greg S. Johnson
+19,125
+10,Larry Phenow
+19,120
+10,Tim Vogt
+19,120
+10,Tom Zemlin
+
+6,80 20,20
+10,Charolyn Kapplinger
+19,125
+10,Brian Anderson
+
+
+17, icon buttons
+4,28 5,88
+7,415 
+6,276 8,0,0,1,28
+
+
+
+
+
+

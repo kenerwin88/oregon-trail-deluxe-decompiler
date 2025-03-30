@@ -1,0 +1,109 @@
+{
+  "metadata": {
+    "images": [
+      "RADIO.PCC",
+      "OPTBTN2.PCC",
+      "OKAY.PCC"
+    ],
+    "comments": [
+      "let's load the images",
+      "clear the screen to gold",
+      "some radio buttons",
+      "icon buttons",
+      "the text things..."
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "panel",
+      "colors": {
+        "background": {
+          "value": 1,
+          "name": "color_1"
+        },
+        "foreground": {
+          "value": 0,
+          "name": "black"
+        }
+      },
+      "dimensions": {
+        "height": 574,
+        "width": 415
+      },
+      "position": {
+        "y": 32,
+        "x": 32
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 1,
+        "index": 6,
+        "action": {
+          "id": 3,
+          "name": "back"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 345,
+        "y": 207,
+        "y_section": 75
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 2,
+        "index": 0,
+        "action": {
+          "id": 2,
+          "name": "cancel"
+        },
+        "state": {
+          "value": 28,
+          "name": "enabled"
+        }
+      },
+      "position": {
+        "x": 215,
+        "y": 270,
+        "y_section": 88
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 2,
+        "index": 1,
+        "action": {
+          "id": 1,
+          "name": "confirm"
+        },
+        "state": {
+          "value": 1,
+          "name": "disabled"
+        }
+      },
+      "position": {
+        "x": 315,
+        "y": 270,
+        "y_section": 88
+      }
+    },
+    {
+      "type": "text_block",
+      "content": "No",
+      "style": {},
+      "position": {
+        "y": 32,
+        "x": 32
+      }
+    }
+  ],
+  "filename": "OTCONF.CTR"
+}

@@ -1,0 +1,261 @@
+{
+  "metadata": {
+    "images": [
+      "TRLBTN.PCC",
+      "PACE.PCC",
+      "RATION.PCC",
+      "CONTBTN.PCC"
+    ],
+    "comments": [
+      "let's load the images",
+      "icon buttons",
+      "left-side column",
+      "right-side column",
+      "Continue icon button",
+      "Options icon button"
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 0,
+        "action": {
+          "id": 10,
+          "name": "action_10"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 51,
+        "y": 40,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 1,
+        "action": {
+          "id": 11,
+          "name": "action_11"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 51,
+        "y": 122,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 2,
+        "action": {
+          "id": 12,
+          "name": "action_12"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 51,
+        "y": 204,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 2,
+        "index": 2,
+        "action": {
+          "id": 13,
+          "name": "action_13"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 51,
+        "y": 286,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 3,
+        "action": {
+          "id": 14,
+          "name": "action_14"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 51,
+        "y": 368,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 4,
+        "action": {
+          "id": 15,
+          "name": "action_15"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 546,
+        "y": 40,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 5,
+        "action": {
+          "id": 16,
+          "name": "action_16"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 546,
+        "y": 122,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 6,
+        "action": {
+          "id": 17,
+          "name": "action_17"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 546,
+        "y": 204,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 1,
+        "index": 2,
+        "action": {
+          "id": 18,
+          "name": "action_18"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 546,
+        "y": 286,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 7,
+        "action": {
+          "id": 19,
+          "name": "action_19"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 546,
+        "y": 368,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 3,
+        "index": 1,
+        "action": {
+          "id": 20,
+          "name": "action_20"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 383,
+        "y": 358,
+        "y_section": 138
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 3,
+        "index": 0,
+        "action": {
+          "id": 21,
+          "name": "action_21"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 383,
+        "y": 407,
+        "y_section": 138
+      }
+    }
+  ],
+  "filename": "TRAIL.CTR"
+}

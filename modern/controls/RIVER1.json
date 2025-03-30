@@ -1,0 +1,118 @@
+{
+  "metadata": {
+    "images": [
+      "CROSSBUT.PCC",
+      "HLPBTN.PCC"
+    ],
+    "comments": [
+      "let's load the images",
+      "Set text parameters",
+      "clear the area to gold",
+      "icon buttons"
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "panel",
+      "colors": {
+        "background": {
+          "value": 0,
+          "name": "black"
+        },
+        "foreground": {
+          "value": 6,
+          "name": "gold"
+        }
+      },
+      "dimensions": {
+        "height": 261,
+        "width": 415
+      },
+      "position": {
+        "y": 32,
+        "x": 116
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 0,
+        "action": {
+          "id": 1,
+          "name": "confirm"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 125,
+        "y": 110,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 1,
+        "action": {
+          "id": 2,
+          "name": "cancel"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 125,
+        "y": 165,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 2,
+        "action": {
+          "id": 3,
+          "name": "back"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 125,
+        "y": 220,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 1,
+        "index": 0,
+        "action": {
+          "id": 4,
+          "name": "action_4"
+        },
+        "state": {
+          "value": 59,
+          "name": "state_59"
+        }
+      },
+      "position": {
+        "x": 275,
+        "y": 300,
+        "y_section": 42
+      }
+    }
+  ],
+  "filename": "RIVER1.CTR"
+}

@@ -1,0 +1,55 @@
+{
+  "image_file": "SUNK.PCC",
+  "frame_count": 3,
+  "frames": [
+    {
+      "coordinates": [
+        {
+          "x": 90,
+          "y": 45
+        }
+      ],
+      "dimensions": [
+        {
+          "width": 53,
+          "height": 24
+        },
+        {
+          "width": 126,
+          "height": 46
+        }
+      ]
+    },
+    {
+      "coordinates": [
+        {
+          "x": 38,
+          "y": 19
+        }
+      ],
+      "dimensions": []
+    },
+    {
+      "coordinates": [
+        {
+          "x": 92,
+          "y": 66
+        },
+        {
+          "x": 18,
+          "y": 13
+        }
+      ],
+      "dimensions": [
+        {
+          "width": 32,
+          "height": 27
+        },
+        {
+          "width": 128,
+          "height": 69
+        }
+      ]
+    }
+  ]
+}

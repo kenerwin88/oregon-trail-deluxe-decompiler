@@ -1,0 +1,87 @@
+17, let's load the images
+1,1
+OKAY.PCC
+
+17, clear the screen to gold
+6,32 7,32
+4,415 5,574
+12,0,6
+
+17, icon buttons
+4,28 5,88
+7,400
+6,470 8,0,0,5001,28
+
+17, the text things...
+18,2,0,6,1
+5,680
+6,280 7,40 
+10,OPTIONS HELP
+
+18,2,0,6,0
+6,60 7,70 
+
+10,List of Legends - Shows the ten highest scores.  As you achieve higher scores you bump 
+20,15
+10,the lower scores off the list.  To delete a name, click it and click the Delete button.  
+20,15
+10,The program comes with a built-in list; to restore it, click the Reset button.
+20,25
+10,Simulation Speed - Determines the "computer speed"--how long it takes for a day to
+20,15
+10,pass.  It does not affect the number of miles per day that your wagon travels.
+20,25
+10,Hunting Time - Determines how long a hunting session lasts.  If you're not good at 
+20,15
+10,hunting, you can give yourself more time.  If you are good, you can make hunting
+20,15
+10,more challenging by giving yourself less time.
+20,25
+10,Save Game - Use this option when you want to stop playing before you reach the end
+20,15
+10,of the trail.  Later, you can use the Load Game feature to resume a saved game.
+20,25
+10,Export Trail Log - As you travel on the trail, the program keeps a log of everything
+20,15
+10,that happens.  Use this option to save a copy of the trail log as a text file.  Later, you
+20,15
+10,can edit or print it with your word processing program.
+20,25
+10,Credits - Shows the version number of the program and a list of the people who
+20,15
+10,created it.
+20,25
+10,Exit Game - Ends the game and returns you to the title screen.  (Shortcut key:  Alt+E).
+20,25
+10,Quit - Ends the game and returns you to DOS. (Shortcut key:  Alt+Q).
+20,25
+10,Sound and Music - Use Alt+S and Alt+M to turn on and off.
+
+
+6,60 7,84 
+4,1 5,86
+12,0,0
+20,55 5,95
+12,0,0
+20,40 5,73
+12,0,0
+20,55 5,62
+12,0,0
+20,40 5,91
+12,0,0
+20,55 5,38
+12,0,0
+20,40 5,20
+12,0,0
+20,25 5,20
+12,0,0
+
+
+
+
+
+
+
+17, all done now...
+
+

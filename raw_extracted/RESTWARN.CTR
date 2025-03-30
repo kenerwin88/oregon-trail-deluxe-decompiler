@@ -1,0 +1,21 @@
+17, let's load the images
+1,1
+OKAY.PCC
+
+17, Set text parameters
+18,2,0,6,1
+
+17, clear the area to gold
+6,116 7,32
+4,200 5,261
+12,0,6
+
+6,247 7,90
+10,You may rest for 1 to 9 days.
+
+17, icon buttons
+4,28 5,88
+
+6,202
+7,200 8,0,0,1,28
+

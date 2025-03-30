@@ -1,0 +1,46 @@
+17, let's load the images
+1,1
+SPLIT2.PCC
+
+17, Set text parameters
+18,2,0,6,0
+
+17, clear the area to gold
+6,116 7,32
+4,200 5,261
+12,0,6
+
+6,120
+7,40 10,The trail divides here. Which way do
+7,55 10,you want to go? 
+
+17, icon buttons
+4,46 5,42
+
+6,125
+7,95 8,0,0,1,0
+7,150 8,0,1,2,0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

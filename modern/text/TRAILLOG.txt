@@ -1,0 +1,8 @@
+17, let's load the images
+1,1
+SCROLL.PCC
+
+18,1,0,6,0
+17, Do Scroll Box stuff
+4,212
+5,247 6,116 7,236 14,0,1,99,2

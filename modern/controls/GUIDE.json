@@ -1,0 +1,78 @@
+{
+  "metadata": {
+    "images": [
+      "INDEX.PCC",
+      "INTROBUT.PCC"
+    ],
+    "comments": [
+      "INDEX_BUTTON 32000",
+      "OK_BUTTON 32001",
+      "CANCEL_BUTTON 32002",
+      "PAGE_FORWARD 32003",
+      "PAGE_BACKWARD 32004"
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "button",
+      "properties": {
+        "group": 1,
+        "index": 2,
+        "action": {
+          "id": 32004,
+          "name": "page_backward"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 141,
+        "y": 200,
+        "y_section": 78
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 1,
+        "index": 6,
+        "action": {
+          "id": 32003,
+          "name": "page_forward"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 245,
+        "y": 200,
+        "y_section": 78
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 0,
+        "action": {
+          "id": 32000,
+          "name": "index"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 356,
+        "y": 159,
+        "y_section": 20
+      }
+    }
+  ],
+  "filename": "GUIDE.CTR"
+}

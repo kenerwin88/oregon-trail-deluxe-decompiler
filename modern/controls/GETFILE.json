@@ -1,0 +1,116 @@
+{
+  "metadata": {
+    "images": [
+      "FILEBTN.PCC",
+      "SCROLL.PCC"
+    ],
+    "comments": [
+      "let's load the images",
+      "icon buttons"
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "panel",
+      "colors": {
+        "background": {
+          "value": 0,
+          "name": "black"
+        },
+        "foreground": {
+          "value": 6,
+          "name": "gold"
+        }
+      },
+      "dimensions": {
+        "height": 350,
+        "width": 200
+      },
+      "position": {
+        "y": 120,
+        "x": 135
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 0,
+        "action": {
+          "id": 1,
+          "name": "confirm"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 370,
+        "y": 190,
+        "y_section": 88
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 1,
+        "action": {
+          "id": 2,
+          "name": "cancel"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 370,
+        "y": 220,
+        "y_section": 88
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 2,
+        "action": {
+          "id": 3,
+          "name": "back"
+        },
+        "state": {
+          "value": 28,
+          "name": "enabled"
+        }
+      },
+      "position": {
+        "x": 370,
+        "y": 250,
+        "y_section": 88
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 3,
+        "action": {
+          "id": 4,
+          "name": "action_4"
+        },
+        "state": {
+          "value": 1,
+          "name": "disabled"
+        }
+      },
+      "position": {
+        "x": 370,
+        "y": 280,
+        "y_section": 88
+      }
+    }
+  ],
+  "filename": "GETFILE.CTR"
+}

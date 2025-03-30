@@ -1,0 +1,236 @@
+{
+  "metadata": {
+    "images": [
+      "STORE1.PCC"
+    ],
+    "comments": [
+      "TINY.GFT",
+      "You have and Total text."
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "text_block",
+      "style": {},
+      "content": "Max."
+    },
+    {
+      "type": "text_block",
+      "style": {},
+      "colors": {
+        "background": {
+          "value": 1,
+          "name": "color_1"
+        },
+        "foreground": {
+          "value": 0,
+          "name": "black"
+        }
+      }
+    },
+    {
+      "type": "input_field",
+      "field": {
+        "width": 2,
+        "type": 1,
+        "id": 20
+      },
+      "position": {
+        "x": 219,
+        "y": 218
+      },
+      "colors": {
+        "background": {
+          "value": 1,
+          "name": "color_1"
+        },
+        "foreground": {
+          "value": 0,
+          "name": "black"
+        }
+      }
+    },
+    {
+      "type": "input_field",
+      "field": {
+        "width": 2,
+        "type": 1,
+        "id": 21
+      },
+      "position": {
+        "x": 219,
+        "y": 218
+      },
+      "colors": {
+        "background": {
+          "value": 1,
+          "name": "color_1"
+        },
+        "foreground": {
+          "value": 0,
+          "name": "black"
+        }
+      }
+    },
+    {
+      "type": "input_field",
+      "field": {
+        "width": 2,
+        "type": 1,
+        "id": 22
+      },
+      "position": {
+        "x": 219,
+        "y": 218
+      },
+      "colors": {
+        "background": {
+          "value": 1,
+          "name": "color_1"
+        },
+        "foreground": {
+          "value": 0,
+          "name": "black"
+        }
+      }
+    },
+    {
+      "type": "input_field",
+      "field": {
+        "width": 1,
+        "type": 1,
+        "id": 23
+      },
+      "position": {
+        "x": 219,
+        "y": 218
+      },
+      "colors": {
+        "background": {
+          "value": 1,
+          "name": "color_1"
+        },
+        "foreground": {
+          "value": 0,
+          "name": "black"
+        }
+      }
+    },
+    {
+      "type": "input_field",
+      "field": {
+        "width": 1,
+        "type": 1,
+        "id": 24
+      },
+      "position": {
+        "x": 219,
+        "y": 218
+      },
+      "colors": {
+        "background": {
+          "value": 1,
+          "name": "color_1"
+        },
+        "foreground": {
+          "value": 0,
+          "name": "black"
+        }
+      }
+    },
+    {
+      "type": "input_field",
+      "field": {
+        "width": 1,
+        "type": 1,
+        "id": 25
+      },
+      "position": {
+        "x": 219,
+        "y": 218
+      },
+      "colors": {
+        "background": {
+          "value": 1,
+          "name": "color_1"
+        },
+        "foreground": {
+          "value": 0,
+          "name": "black"
+        }
+      }
+    },
+    {
+      "type": "input_field",
+      "field": {
+        "width": 4,
+        "type": 1,
+        "id": 26
+      },
+      "position": {
+        "x": 219,
+        "y": 218
+      },
+      "colors": {
+        "background": {
+          "value": 1,
+          "name": "color_1"
+        },
+        "foreground": {
+          "value": 0,
+          "name": "black"
+        }
+      }
+    },
+    {
+      "type": "text_block",
+      "content": "You have:",
+      "style": {},
+      "position": {
+        "y": 218,
+        "x": 219
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 1,
+        "action": {
+          "id": 12,
+          "name": "action_12"
+        },
+        "state": {
+          "value": 59,
+          "name": "state_59"
+        }
+      },
+      "position": {
+        "x": 240,
+        "y": 400,
+        "y_section": 60
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 0,
+        "action": {
+          "id": 10,
+          "name": "action_10"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 240,
+        "y": 400,
+        "y_section": 60
+      }
+    }
+  ],
+  "filename": "STORE1.CTR"
+}

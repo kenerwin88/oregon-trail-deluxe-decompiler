@@ -1,0 +1,28 @@
+{
+  "image_file": "METHOD3.PCC",
+  "frame_count": 3,
+  "frames": [
+    {
+      "coordinates": [
+        {
+          "x": 114,
+          "y": 58
+        }
+      ],
+      "dimensions": [
+        {
+          "width": 109,
+          "height": 69
+        }
+      ]
+    },
+    {
+      "coordinates": [],
+      "dimensions": []
+    },
+    {
+      "coordinates": [],
+      "dimensions": []
+    }
+  ]
+}

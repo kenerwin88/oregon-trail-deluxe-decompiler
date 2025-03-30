@@ -1,0 +1,9 @@
+17, let's load the images
+1,1
+VALOK.PCC
+
+17, icon buttons
+4,28 5,80
+6,473 7,382 8,0,0,1,0
+
+

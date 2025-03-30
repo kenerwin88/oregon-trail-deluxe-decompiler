@@ -1,0 +1,34 @@
+{
+  "image_file": "BANKS.PCC",
+  "frame_count": 2,
+  "frames": [
+    {
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "dimensions": [
+        {
+          "width": 110,
+          "height": 74
+        }
+      ]
+    },
+    {
+      "coordinates": [
+        {
+          "x": 152,
+          "y": 81
+        }
+      ],
+      "dimensions": [
+        {
+          "width": 110,
+          "height": 74
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "metadata": {
+    "images": [],
+    "comments": []
+  },
+  "ui_elements": [
+    {
+      "type": "panel",
+      "colors": {
+        "background": {
+          "value": 0,
+          "name": "black"
+        },
+        "foreground": {
+          "value": 6,
+          "name": "gold"
+        }
+      },
+      "dimensions": {
+        "height": 220,
+        "width": 130
+      },
+      "position": {
+        "y": 170,
+        "x": 185
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 9,
+        "action": {
+          "id": 4,
+          "name": "action_4"
+        },
+        "state": {
+          "value": 28,
+          "name": "enabled"
+        }
+      },
+      "position": {
+        "x": 250,
+        "y": 250,
+        "y_section": 88
+      }
+    }
+  ],
+  "filename": "BADFNAME.CTR"
+}

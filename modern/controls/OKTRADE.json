@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "images": [
+      "YESNO.PCC"
+    ],
+    "comments": [
+      "let's load the images",
+      "icon buttons"
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 0,
+        "action": {
+          "id": 1,
+          "name": "confirm"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 289,
+        "y": 120,
+        "y_section": 47
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 1,
+        "action": {
+          "id": 2,
+          "name": "cancel"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 289,
+        "y": 150,
+        "y_section": 47
+      }
+    }
+  ],
+  "filename": "OKTRADE.CTR"
+}

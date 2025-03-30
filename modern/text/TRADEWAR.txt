@@ -1,0 +1,44 @@
+17, let's load the images
+1,1
+OKAY.PCC
+
+
+17, Set text parameters
+18,2,0,6,1
+
+17, clear the area to gold
+6,116 7,32
+4,200 5,261
+12,0,6
+
+6,247 
+7,85
+10,You must enter a quantity
+7,100
+10,for that item.
+
+17, icon buttons
+4,28 5,88
+
+6,202
+7,200 8,0,0,1,28
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

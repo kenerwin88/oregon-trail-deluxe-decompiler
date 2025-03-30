@@ -1,0 +1,34 @@
+{
+  "metadata": {
+    "images": [
+      "VALOK.PCC"
+    ],
+    "comments": [
+      "let's load the images",
+      "icon buttons"
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 0,
+        "action": {
+          "id": 1,
+          "name": "confirm"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 473,
+        "y": 382,
+        "y_section": 80
+      }
+    }
+  ],
+  "filename": "VALLEY.CTR"
+}

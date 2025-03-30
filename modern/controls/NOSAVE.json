@@ -1,0 +1,55 @@
+{
+  "metadata": {
+    "images": [
+      "OKAY.PCC"
+    ],
+    "comments": [
+      "let's load the images",
+      "icon buttons"
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "panel",
+      "colors": {
+        "background": {
+          "value": 0,
+          "name": "black"
+        },
+        "foreground": {
+          "value": 6,
+          "name": "gold"
+        }
+      },
+      "dimensions": {
+        "height": 350,
+        "width": 200
+      },
+      "position": {
+        "y": 120,
+        "x": 135
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 0,
+        "action": {
+          "id": 1,
+          "name": "confirm"
+        },
+        "state": {
+          "value": 28,
+          "name": "enabled"
+        }
+      },
+      "position": {
+        "x": 270,
+        "y": 280,
+        "y_section": 88
+      }
+    }
+  ],
+  "filename": "NOSAVE.CTR"
+}

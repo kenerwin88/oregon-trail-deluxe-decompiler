@@ -1,0 +1,91 @@
+{
+  "metadata": {
+    "images": [
+      "TITLEBTN.PCC"
+    ],
+    "comments": []
+  },
+  "ui_elements": [
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 0,
+        "action": {
+          "id": 1,
+          "name": "confirm"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 65,
+        "y": 401,
+        "y_section": 113
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 1,
+        "action": {
+          "id": 2,
+          "name": "cancel"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 196,
+        "y": 401,
+        "y_section": 113
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 2,
+        "action": {
+          "id": 3,
+          "name": "back"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 329,
+        "y": 401,
+        "y_section": 113
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 3,
+        "action": {
+          "id": 4,
+          "name": "action_4"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 459,
+        "y": 401,
+        "y_section": 113
+      }
+    }
+  ],
+  "filename": "TITLE.CTR"
+}

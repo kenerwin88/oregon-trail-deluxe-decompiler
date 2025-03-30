@@ -1,0 +1,49 @@
+17, let's load the images
+1,1
+OKAY.PCC
+
+17, clear the screen to gold
+6,32 7,32
+4,415 5,574
+12,0,6
+
+17, icon buttons
+4,28 5,88
+7,400
+6,470 8,0,0,1,28
+
+17, the text things...
+18,2,0,6,0
+6,90 7,40 
+10,The final leg of your journey is a trip down the Columbia River, beginning
+20,24
+10,at The Dalles and ending at the Willamette Valley, where the Willamette
+20,24
+10,River flows into the Columbia.  You've built a raft and loaded your
+20,24
+10,wagon, supplies and oxen aboard.
+20,36
+10,Use your mouse to steer the raft down the river.  You can steer to the left
+20,24
+10,and right by moving the mouse in those directions.  Moving the mouse up and
+20,24
+10,down and clicking has no effect.
+20,36
+10,The Columbia River is very rough in spots, with lots of rocks.  If there's
+20,24
+10,been a lot of rain recently, the river level is higher and rocks won't be as
+20,24
+10,much a problem.  But if there hasn't been much rain--which is common since
+20,24
+10,eastern Oregon is a dry region--you'll see more rocks in the river.  Try to
+20,24
+10,avoid those rocks!  If your raft hits a rock, it may be damaged and you may
+20,24
+10,lose some supplies.  Your raft may even tip over or be destroyed, and lives
+20,24
+10,may be lost!
+20,36
+10,Good luck!
+
+17, all done now...
+

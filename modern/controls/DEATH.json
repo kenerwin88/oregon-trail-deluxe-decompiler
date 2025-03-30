@@ -1,0 +1,34 @@
+{
+  "metadata": {
+    "images": [
+      "OKAY.PCC"
+    ],
+    "comments": [
+      "let's load the images",
+      "icon buttons"
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 2,
+        "action": {
+          "id": 1,
+          "name": "confirm"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 280,
+        "y": 410,
+        "y_section": 88
+      }
+    }
+  ],
+  "filename": "DEATH.CTR"
+}

@@ -1,0 +1,35 @@
+17, let's load the images
+1,1
+OKAY.PCC
+
+17, Set text parameters
+18,2,0,6,0
+
+17, clear the area to gold
+6,116 7,32
+4,200 5,261
+12,0,6
+
+17, Write text
+6,125 7,39
+10,How long do you want to rest?
+
+6,190 7,100 
+4,19 5,25
+
+17, get the number of days
+11,1,1,3
+
+5,100 17,It gets angry if I don't do this.
+6,230 7,102
+10,day(s)
+
+17, icon buttons
+4,28 5,88
+
+6,144
+7,180 8,0,1,1,1
+6,261 8,0,0,2,28
+
+
+

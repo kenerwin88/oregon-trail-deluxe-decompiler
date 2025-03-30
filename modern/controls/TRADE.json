@@ -1,0 +1,112 @@
+{
+  "metadata": {
+    "images": [
+      "RADIO.PCC",
+      "OKAY.PCC"
+    ],
+    "comments": [
+      "let's load the images",
+      "Set text parameters",
+      "clear the area to gold",
+      "Write text",
+      "some radio buttons",
+      "matching text",
+      "icon buttons",
+      "Get the number."
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "panel",
+      "colors": {
+        "background": {
+          "value": 0,
+          "name": "black"
+        },
+        "foreground": {
+          "value": 6,
+          "name": "gold"
+        }
+      },
+      "dimensions": {
+        "height": 261,
+        "width": 200
+      },
+      "position": {
+        "y": 32,
+        "x": 116
+      }
+    },
+    {
+      "type": "text_block",
+      "content": "What do you want to get by trading?",
+      "style": {},
+      "position": {
+        "y": 32,
+        "x": 116
+      }
+    },
+    {
+      "type": "text_block",
+      "content": "set(s)",
+      "style": {},
+      "position": {
+        "y": 32,
+        "x": 116
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 1,
+        "index": 1,
+        "action": {
+          "id": 9,
+          "name": "action_9"
+        },
+        "state": {
+          "value": 1,
+          "name": "disabled"
+        }
+      },
+      "position": {
+        "x": 144,
+        "y": 200,
+        "y_section": 88
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 1,
+        "index": 0,
+        "action": {
+          "id": 10,
+          "name": "action_10"
+        },
+        "state": {
+          "value": 28,
+          "name": "enabled"
+        }
+      },
+      "position": {
+        "x": 261,
+        "y": 200,
+        "y_section": 88
+      }
+    },
+    {
+      "type": "input_field",
+      "field": {
+        "width": 4,
+        "type": 1,
+        "id": 20
+      },
+      "position": {
+        "y": 32,
+        "x": 116
+      }
+    }
+  ],
+  "filename": "TRADE.CTR"
+}

@@ -1,0 +1,72 @@
+{
+  "metadata": {
+    "images": [],
+    "comments": [
+      "end"
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "panel",
+      "colors": {
+        "background": {
+          "value": 0,
+          "name": "black"
+        },
+        "foreground": {
+          "value": 6,
+          "name": "gold"
+        }
+      },
+      "dimensions": {
+        "height": 220,
+        "width": 130
+      },
+      "position": {
+        "y": 170,
+        "x": 185
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 8,
+        "action": {
+          "id": 2,
+          "name": "cancel"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 200,
+        "y": 250,
+        "y_section": 88
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 3,
+        "action": {
+          "id": 1,
+          "name": "confirm"
+        },
+        "state": {
+          "value": 1,
+          "name": "disabled"
+        }
+      },
+      "position": {
+        "x": 296,
+        "y": 250,
+        "y_section": 88
+      }
+    }
+  ],
+  "filename": "OVERWRTE.CTR"
+}

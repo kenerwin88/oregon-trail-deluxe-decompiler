@@ -1,0 +1,46 @@
+{
+  "metadata": {
+    "images": [
+      "OKAY.PCC"
+    ],
+    "comments": [
+      "let's load the images",
+      "icon buttons"
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "input_field",
+      "field": {
+        "width": 20,
+        "type": 0,
+        "id": 2
+      },
+      "position": {
+        "y": 370,
+        "x": 70
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 0,
+        "action": {
+          "id": 1,
+          "name": "confirm"
+        },
+        "state": {
+          "value": 28,
+          "name": "enabled"
+        }
+      },
+      "position": {
+        "x": 500,
+        "y": 410,
+        "y_section": 88
+      }
+    }
+  ],
+  "filename": "SCORE2.CTR"
+}

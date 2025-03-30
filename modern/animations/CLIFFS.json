@@ -1,0 +1,42 @@
+{
+  "image_file": "2",
+  "frame_count": 4,
+  "frames": [
+    {
+      "coordinates": [
+        {
+          "x": 52,
+          "y": 52
+        }
+      ],
+      "dimensions": []
+    },
+    {
+      "coordinates": [
+        {
+          "x": 72,
+          "y": 76
+        }
+      ],
+      "dimensions": []
+    },
+    {
+      "coordinates": [],
+      "dimensions": []
+    },
+    {
+      "coordinates": [
+        {
+          "x": 72,
+          "y": 76
+        }
+      ],
+      "dimensions": [
+        {
+          "width": 413,
+          "height": 52
+        }
+      ]
+    }
+  ]
+}

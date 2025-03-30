@@ -1,0 +1,97 @@
+{
+  "metadata": {
+    "images": [
+      "EXIT.PCC"
+    ],
+    "comments": [
+      "let's load the images",
+      "Set text parameters",
+      "clear the area to gold",
+      "icon buttons"
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "panel",
+      "colors": {
+        "background": {
+          "value": 0,
+          "name": "black"
+        },
+        "foreground": {
+          "value": 6,
+          "name": "gold"
+        }
+      },
+      "dimensions": {
+        "height": 350,
+        "width": 200
+      },
+      "position": {
+        "y": 120,
+        "x": 135
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 0,
+        "action": {
+          "id": 101,
+          "name": "action_101"
+        },
+        "state": {
+          "value": 28,
+          "name": "enabled"
+        }
+      },
+      "position": {
+        "x": 187,
+        "y": 250,
+        "y_section": 55
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 1,
+        "action": {
+          "id": 102,
+          "name": "action_102"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 282,
+        "y": 250,
+        "y_section": 55
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 2,
+        "action": {
+          "id": 103,
+          "name": "action_103"
+        },
+        "state": {
+          "value": 1,
+          "name": "disabled"
+        }
+      },
+      "position": {
+        "x": 377,
+        "y": 250,
+        "y_section": 55
+      }
+    }
+  ],
+  "filename": "OPTEXT.CTR"
+}

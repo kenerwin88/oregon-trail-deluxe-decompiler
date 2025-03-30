@@ -1,0 +1,53 @@
+17, let's load the images
+1,1
+INTROBUT.PCC
+
+17, clear the screen to gold
+6,32 7,32
+4,415 5,574
+12,0,6
+
+18,2,0,6,1
+6,320 7,40
+10,Introduction
+
+18,2,0,6,0
+6,90 7,80
+10,If for some reason you don't survive--your wagon burns, thieves steal your 
+20,24
+10,oxen, you run out of provisions, or you die of cholera--don't give up!  Unlike
+20,24
+10,the real-life pioneers of 1848, you can try again and again until you succeed 
+20,24
+10,and your name is added to "The Oregon Trail List of Legends."
+20,36
+10,The object of "The Oregon Trail" is for you to make it all the way from
+20,24
+10,Independence, Missouri, to Oregon's Willamette Valley.  Along the way, you'll
+20,24
+10,have many decisions to make.
+20,36
+10,On the computer screen you'll see various "buttons" that you can click with
+20,24
+10,the mouse.  Clicking on these buttons allows you to perform different
+20,24
+10,functions vital to the success of your journey.  For example, clicking on the
+20,24
+10,"Rations" button lets you decide how much food you'll eat each day along the
+20,24
+10,trail. 
+
+
+
+17, icon buttons
+4,28 5,78
+7,400 
+6,117 8,0,2,1,0
+6,280 8,0,3,2,0
+6,443 8,0,0,3,28
+
+
+
+
+
+

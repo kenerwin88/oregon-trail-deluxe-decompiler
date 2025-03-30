@@ -1,0 +1,61 @@
+17, let's load the images
+1,1
+OKAY.PCC
+
+17, Set text parameters
+18,2,0,6,0
+
+17, clear the area to gold
+6,116 7,32
+4,200 5,261
+12,0,6
+
+6,120 
+7,35
+10,Steady - You travel 8 hours a day.  You
+7,50
+10,take many rests and rarely get very tired.
+
+7,70
+10,Strenuous - You travel 12 hours a day,
+7,85
+10,starting at sunrise and stopping at sunset.
+7,100
+10,You stop to rest only when you must.  You
+7,115
+10,finish each day very tired.
+
+7,135
+10,Grueling - You travel 16 hours a day,
+7,150
+10,starting before dawn and going until dark.
+7,165
+10,You rarely rest and sleep.  You finish each
+7,180
+10,day exhausted and your health suffers.
+
+17, icon buttons
+4,28 5,88
+
+6,202
+7,200 8,0,0,1,28
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

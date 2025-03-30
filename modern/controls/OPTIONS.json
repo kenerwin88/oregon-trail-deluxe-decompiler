@@ -1,0 +1,257 @@
+{
+  "metadata": {
+    "images": [
+      "RADIO.PCC",
+      "OPTBTN1.PCC",
+      "OPTBTN2.PCC",
+      "SCROLL.PCC",
+      "HLPBTN.PCC",
+      "OKAY.PCC"
+    ],
+    "comments": [
+      "let's load the images",
+      "clear the screen to gold",
+      "some radio buttons",
+      "more radio buttons",
+      "Legends Buttons",
+      "Save, Export",
+      "Credits, Exit, Quit",
+      "Okay",
+      "and last but not least, scroll boxes",
+      "the text things..."
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "panel",
+      "colors": {
+        "background": {
+          "value": 1,
+          "name": "color_1"
+        },
+        "foreground": {
+          "value": 0,
+          "name": "black"
+        }
+      },
+      "dimensions": {
+        "height": 574,
+        "width": 415
+      },
+      "position": {
+        "y": 32,
+        "x": 32
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 2,
+        "index": 4,
+        "action": {
+          "id": 16,
+          "name": "action_16"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 80,
+        "y": 235,
+        "y_section": 75
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 2,
+        "index": 5,
+        "action": {
+          "id": 17,
+          "name": "action_17"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 180,
+        "y": 235,
+        "y_section": 75
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 1,
+        "index": 1,
+        "action": {
+          "id": 11,
+          "name": "action_11"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 370,
+        "y": 40,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 1,
+        "index": 0,
+        "action": {
+          "id": 10,
+          "name": "action_10"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 370,
+        "y": 100,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 1,
+        "index": 4,
+        "action": {
+          "id": 12,
+          "name": "action_12"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 370,
+        "y": 160,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 1,
+        "index": 3,
+        "action": {
+          "id": 13,
+          "name": "action_13"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 370,
+        "y": 220,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 1,
+        "index": 2,
+        "action": {
+          "id": 14,
+          "name": "action_14"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 370,
+        "y": 280,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 4,
+        "index": 0,
+        "action": {
+          "id": 5000,
+          "name": "action_5000"
+        },
+        "state": {
+          "value": 59,
+          "name": "state_59"
+        }
+      },
+      "position": {
+        "x": 370,
+        "y": 340,
+        "y_section": 42
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 5,
+        "index": 0,
+        "action": {
+          "id": 15,
+          "name": "action_15"
+        },
+        "state": {
+          "value": 28,
+          "name": "enabled"
+        }
+      },
+      "position": {
+        "x": 210,
+        "y": 410,
+        "y_section": 88
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 5,
+        "index": 1,
+        "action": {
+          "id": 18,
+          "name": "action_18"
+        },
+        "state": {
+          "value": 1,
+          "name": "disabled"
+        }
+      },
+      "position": {
+        "x": 330,
+        "y": 410,
+        "y_section": 88
+      }
+    },
+    {
+      "type": "text_block",
+      "content": "Simulation",
+      "style": {},
+      "position": {
+        "y": 32,
+        "x": 32
+      }
+    }
+  ],
+  "filename": "OPTIONS.CTR"
+}

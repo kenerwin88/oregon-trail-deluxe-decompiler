@@ -1,0 +1,37 @@
+17, let's load the images
+1,1
+LOADGAME.PCC
+
+17, clear the screen to gold
+6,32 7,32
+4,415 5,574
+12,0,6
+
+18,2,0,6,1
+6,320 7,50
+10,Welcome to The Oregon Trail!
+
+18,2,0,6,0
+6,100 7,90
+10,You're about to begin a great adventure, traveling the Oregon Trail across
+20,24
+10,the rugged landscape of North America.  Your covered wagon, pulled by a
+20,24
+10,team of oxen, will travel from Independence, Missouri, to the fertile
+20,24
+10,Willamette Valley of the Oregon Territory--a journey of approximately 
+20,24
+10,2,000 miles.
+20,40
+10,Before you set off on the trail, register your name, the names of the
+20,24
+10,members of your wagon party, and your occupation. After that, you'll
+20,24
+10,need to buy supplies and make other important decisions.
+20,40
+10,Good Luck!
+
+17, icon buttons
+4,20 5,113
+7,400 6,140 8,0,0,1,0
+7,400 6,377 8,0,1,2,0

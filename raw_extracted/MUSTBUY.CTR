@@ -1,0 +1,21 @@
+17, let's load the images
+1,1
+OKAY.PCC
+
+17, file fonts
+2,1
+SMALL.GFT
+
+17, clear the screen to gold
+6,32 7,32
+4,415 5,574
+12,0,6
+
+18,2,0,6,1
+6,320 7,220
+
+10,Matt says, "You can't set off on the trail without any oxen or food."
+
+17, icon buttons
+4,28 5,88
+7,400 6,274 8,0,0,1,28

@@ -1,0 +1,112 @@
+17, let's load the images
+1,1
+OKAY.PCC
+
+17, clear the screen to gold
+6,32 7,32
+4,415 5,574
+12,0,6
+
+18,2,0,6,1
+6,320 7,40
+10,Occupation Help
+
+18,2,0,6,0
+6,110 7,60
+10,People from all walks of life went west to Oregon.  You can pick your
+20,15
+10,occupation, but each choice has its advantages and disadvantages.
+
+
+7,120
+6,150 10,Starting
+6,520 10,Final
+20,15
+6,50 10,Occupation
+6,160 10,Cash
+6,300 10,Special Advantages
+6,515 10,Bonus
+
+17, draw a line
+6,45 7,151
+4,1 5,507
+12,0,13
+4,25
+
+6,50 7,160
+10,Bankers
+20,25
+10,Doctors
+20,25
+10,Merchants
+20,25
+10,Blacksmiths
+20,25
+10,Carpenters
+20,25
+10,Saddlemakers
+20,25
+10,Farmers
+20,25
+10,Teachers
+
+6,150 7,160
+10,$1,600
+20,25
+10, 1,200
+20,25
+10, 1,200
+20,25
+10,   800
+20,25
+10,   800
+20,25
+10,   800
+20,25
+10,   400
+20,25
+10,   400
+
+6,220 7,160
+10,none
+20,25
+10,sick or injured people are less likely to die
+20,25
+10,none
+20,25
+10,more likely to repair broken wagon parts
+20,25
+10,more likely to repair broken wagon parts
+20,25
+10,none
+20,25
+10,oxen are less likely to get sick and die
+20,25
+10,none
+
+6,520 7,160
+10,none
+20,25
+10,none
+20,25
+10,x 1.5
+20,25
+10,x 2
+20,25
+10,x 2
+20,25
+10,x 2.5
+20,25
+10,x 3
+20,25
+10,x 3.5
+
+
+
+
+
+17, icon buttons
+4,28 5,88
+7,400 6,276 8,0,0,1,28
+
+

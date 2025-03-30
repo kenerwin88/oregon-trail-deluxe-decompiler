@@ -1,0 +1,19 @@
+17, let's load the images
+1,1
+OKAY.PCC
+
+18,2,0,6,0
+6,70 7,370
+10,Congratulations! You've made it onto the Oregon Trail List of Legends!
+7,410
+6,100 10,Please enter your name :
+4,20 5,150
+6,270, 7,410
+
+11,20,0,2
+
+17, icon buttons
+4,28 5,88
+7,410 6,500 8,0,0,1,28
+
+

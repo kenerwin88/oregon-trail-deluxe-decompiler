@@ -1,0 +1,57 @@
+{
+  "metadata": {
+    "images": [
+      "OKAY.PCC"
+    ],
+    "comments": [
+      "let's load the images",
+      "clear the screen to gold",
+      "draw a line",
+      "icon buttons"
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "panel",
+      "colors": {
+        "background": {
+          "value": 0,
+          "name": "black"
+        },
+        "foreground": {
+          "value": 13,
+          "name": "color_13"
+        }
+      },
+      "dimensions": {
+        "height": 574,
+        "width": 415
+      },
+      "position": {
+        "y": 32,
+        "x": 32
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 0,
+        "action": {
+          "id": 1,
+          "name": "confirm"
+        },
+        "state": {
+          "value": 28,
+          "name": "enabled"
+        }
+      },
+      "position": {
+        "x": 276,
+        "y": 400,
+        "y_section": 88
+      }
+    }
+  ],
+  "filename": "WHOHELP.CTR"
+}

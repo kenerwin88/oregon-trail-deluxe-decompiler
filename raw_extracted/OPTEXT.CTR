@@ -1,0 +1,53 @@
+17, let's load the images
+1,1
+EXIT.PCC
+
+17, Set text parameters
+18,2,0,6,1
+
+17, clear the area to gold
+4,200 5,350
+6,135 7,120
+12,0,0
+
+4,196 5,346
+6,137 7,122
+12,0,6
+6,120 
+
+6,300
+7,180 10,Do you want to save this game
+7,200 10,before exiting?
+
+17, icon buttons
+4,28 5,55
+7,250 
+6,187 8,0,0,101,28
+6,282 8,0,1,102,0
+6,377 8,0,2,103,1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

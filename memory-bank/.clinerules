@@ -1,0 +1,121 @@
+# Oregon Trail Decompilation Project Rules
+
+## Project Patterns
+
+1. **Naming Conventions**: 
+   - All converter tools use `convert_X.py` naming pattern
+   - Module-level functions use snake_case
+   - Classes use PascalCase
+   - Constants use UPPER_SNAKE_CASE
+
+2. **Command-line Interface**:
+   - All converter tools accept consistent command-line parameters:
+     - Input directory/file
+     - Output directory
+     - Optional --debug flag
+   - Parameters should remain consistent across all tools
+
+3. **Error Handling**:
+   - Converters should skip files they can't process rather than halt
+   - Debug logs should be comprehensive when enabled
+   - User-facing errors should be clear and actionable
+
+4. **File Organization**:
+   - Original DOS game files stored in `/original_game/`
+   - Original extracted files remain in `/raw_extracted/`
+   - Converted files go to `/modern/` with appropriate subdirectory
+   - Documentation maintained in `/docs/`
+   - Conversion tools stored in `/tools/`
+
+## Development Workflow
+
+1. **Feature Addition Process**:
+   - Document the feature/format first
+   - Implement converter/feature
+   - Add tests
+   - Update documentation
+   - Verify against original game
+
+2. **Format Conversion Standards**:
+   - Maintain as much original fidelity as possible
+   - Document any conversion limitations
+   - Prefer widely supported modern formats
+   - Include descriptive metadata when possible
+
+3. **Game Implementation Guidelines**:
+   - Match original game mechanics exactly
+   - Maintain original asset appearance
+   - Use identical text/dialog
+   - Match original UI flow
+
+## Known Challenges & Solutions
+
+1. **XMI Conversion**:
+   - Miles Sound System uses custom MIDI-like format
+   - Note events include their own duration rather than matching NOTE ON/OFF
+   - Solution: Convert duration to appropriate NOTE OFF events
+   - TIMB chunks contain custom instrument mappings
+
+2. **Image Color Palettes**:
+   - PC8/PC4 files use custom palettes
+   - 16-color palettes are stored in file header
+   - 256-color palettes are at end of file after 0x0C marker
+   - Solution: Extract and apply palette during PNG conversion
+
+3. **Animation Frame Timing**:
+   - Original animations lack clear frame timing
+   - Solution: Estimate based on animation speed in original game
+   - May need manual adjustment for some animations
+
+4. **Game Data Formats**:
+   - GBT/GFT formats are proprietary with no documentation
+   - Structure must be reverse-engineered from binary analysis
+   - Solution: Careful study of patterns and relation to game behavior
+
+## Project Preferences
+
+1. **Code Style**:
+   - Clear, descriptive variable names
+   - Comprehensive docstrings
+   - Type hints where possible
+   - Function-level comments for complex algorithms
+
+2. **Testing Approach**:
+   - Unit tests for format parsers
+   - Integration tests for converters
+   - Visual verification for converted assets
+   - Game state tests for implementation
+
+3. **Documentation Style**:
+   - Technical format specifications with examples
+   - Diagrams for complex structures
+   - Header tables for file formats
+   - Cross-references to related formats/files
+
+## Debug & Troubleshooting
+
+1. **Conversion Debugging**:
+   - Enable --debug flag for verbose logging
+   - xmi_debug.log contains detailed XMI parsing information
+   - Check docs/ directory for format-specific debugging notes
+   - Compare converted files against original format specifications
+
+2. **Game Implementation**:
+   - Run original game in DOSBox-X for comparison
+   - Use different starting conditions to test varied scenarios
+   - Check asset loading errors in game startup
+   - Test menu navigation edge cases
+
+## Critical Implementation Paths
+
+1. **Asset Loading Pipeline**:
+   - Assets must be correctly converted before running the game
+   - Image paths are hardcoded based on expected directory structure
+   - Sound and music depend on pygame mixer initialization
+   - Font loading requires correctly converted font assets
+
+2. **Game State Flow**:
+   - State machine controls all navigation
+   - Each state has specific entry/exit conditions
+   - State handlers manage all drawing and input for their state
+   - Game loop ticks at fixed 60 FPS for consistent timing

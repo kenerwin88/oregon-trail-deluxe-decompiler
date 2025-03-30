@@ -1,0 +1,50 @@
+17, let's load the images
+1,1
+INTROBUT.PCC
+
+17, clear the screen to gold
+6,32 7,32
+4,415 5,574
+12,0,6
+
+18,2,0,6,1
+6,320 7,40
+10,Introduction
+
+18,2,0,6,0
+6,90 7,80
+10,What was it like to cross 2,000 miles of plains, rivers, and mountains in 1848?
+20,24
+10,"The Oregon Trail" allows you relive one of the greatest adventures in
+20,24
+10,American history:  the journey taken by thousands of emigrants on the
+20,24
+10,Oregon Trail.  It was a long, difficult journey--one that often resulted in
+20,24
+10,failure and death.  But for those who succeeded, it led to a new and better
+20,24
+10,life in the rich, fertile Willamette Valley of Oregon.  
+20,36
+10,How will you make life-and-death decisions?  How will you cross the rivers?
+20,24
+10,How much and what kind of supplies should you take along?  If you run low on
+20,24
+10,provisions, will you be able to hunt or trade to get the food you need?  Will
+20,24
+10,you overcome the dangers of disease and severe weather?
+20,24
+10,"The Oregon Trail" poses these and other exciting challenges.
+
+
+17, icon buttons
+4,28 5,78
+7,400 
+6,117 8,0,4,1,0
+6,280 8,0,3,2,0
+6,443 8,0,0,3,28
+
+
+
+
+
+

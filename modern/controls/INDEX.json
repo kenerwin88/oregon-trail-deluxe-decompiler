@@ -1,0 +1,79 @@
+{
+  "metadata": {
+    "images": [
+      "SCROLL.PCC",
+      "OKAY.PCC"
+    ],
+    "comments": [
+      "INDEX_BUTTON 32000",
+      "OK_BUTTON 32001",
+      "CANCEL_BUTTON 32002",
+      "PAGE_FORWARD 32003",
+      "PAGE_BACKWARD 32004"
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "panel",
+      "colors": {
+        "background": {
+          "value": 0,
+          "name": "black"
+        },
+        "foreground": {
+          "value": 6,
+          "name": "gold"
+        }
+      },
+      "dimensions": {
+        "height": 261,
+        "width": 200
+      },
+      "position": {
+        "y": 32,
+        "x": 116
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 1,
+        "index": 2,
+        "action": {
+          "id": 32001,
+          "name": "ok"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 285,
+        "y": 160,
+        "y_section": 88
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 1,
+        "index": 1,
+        "action": {
+          "id": 32002,
+          "name": "cancel"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 285,
+        "y": 190,
+        "y_section": 88
+      }
+    }
+  ],
+  "filename": "INDEX.CTR"
+}

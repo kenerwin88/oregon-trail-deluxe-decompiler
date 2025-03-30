@@ -1,0 +1,136 @@
+{
+  "metadata": {
+    "images": [
+      "OKAY.PCC",
+      "HLPBTN.PCC",
+      "RADIO.PCC"
+    ],
+    "comments": [
+      "SMALL.GFT"
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "panel",
+      "colors": {
+        "background": {
+          "value": 1,
+          "name": "color_1"
+        },
+        "foreground": {
+          "value": 0,
+          "name": "black"
+        }
+      },
+      "dimensions": {
+        "height": 200,
+        "width": 180
+      },
+      "position": {
+        "y": 208,
+        "x": 70
+      }
+    },
+    {
+      "type": "input_field",
+      "field": {
+        "width": 10,
+        "type": 0,
+        "id": 10
+      },
+      "position": {
+        "y": 208,
+        "x": 70
+      }
+    },
+    {
+      "type": "input_field",
+      "field": {
+        "width": 10,
+        "type": 0,
+        "id": 11
+      },
+      "position": {
+        "y": 208,
+        "x": 70
+      }
+    },
+    {
+      "type": "input_field",
+      "field": {
+        "width": 10,
+        "type": 0,
+        "id": 12
+      },
+      "position": {
+        "y": 208,
+        "x": 70
+      }
+    },
+    {
+      "type": "input_field",
+      "field": {
+        "width": 10,
+        "type": 0,
+        "id": 13
+      },
+      "position": {
+        "y": 208,
+        "x": 70
+      }
+    },
+    {
+      "type": "input_field",
+      "field": {
+        "width": 10,
+        "type": 0,
+        "id": 14
+      },
+      "position": {
+        "y": 208,
+        "x": 70
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 2,
+        "action": {
+          "id": 5,
+          "name": "action_5"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 425,
+        "y": 360,
+        "y_section": 88
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 1,
+        "index": 0,
+        "action": {
+          "id": 6,
+          "name": "action_6"
+        },
+        "state": {
+          "value": 59,
+          "name": "state_59"
+        }
+      },
+      "position": {
+        "x": 220,
+        "y": 270,
+        "y_section": 42
+      }
+    }
+  ],
+  "filename": "WHOAMI.CTR"
+}

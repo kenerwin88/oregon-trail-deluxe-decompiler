@@ -1,0 +1,55 @@
+{
+  "metadata": {
+    "images": [
+      "RAFTBTN.PCC"
+    ],
+    "comments": [
+      "let's load the images",
+      "icon buttons",
+      "all done now..."
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 0,
+        "action": {
+          "id": 1,
+          "name": "confirm"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 95,
+        "y": 378,
+        "y_section": 162
+      }
+    },
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 1,
+        "action": {
+          "id": 2,
+          "name": "cancel"
+        },
+        "state": {
+          "value": 0,
+          "name": "normal"
+        }
+      },
+      "position": {
+        "x": 280,
+        "y": 378,
+        "y_section": 162
+      }
+    }
+  ],
+  "filename": "RAFTING.CTR"
+}

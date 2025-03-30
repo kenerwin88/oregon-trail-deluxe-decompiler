@@ -1,0 +1,32 @@
+17, let's load the images
+1,1
+OKAY.PCC
+
+17, Set text parameters
+18,2,0,6,0
+
+17, clear the area to gold
+6,116 7,32
+4,200 5,261
+12,0,6
+
+6,120 
+7,40
+10,Filling - Meals are large and generous.
+
+7,80
+10,Meager - Meals are small, but adequate.
+
+7,120
+10,Bare Bones - Meals are very small.  
+7,135
+10,Everyone stays hungry and your health 
+7,150
+10,may suffer.
+
+17, icon buttons
+4,28 5,88
+
+6,202
+7,200 8,0,0,1,28
+
