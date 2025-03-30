@@ -51,6 +51,10 @@ def clean_output_dir(output_dir: Path, file_type: str = None) -> None:
         "lst": "scores",  # High scores go in scores directory
     }
 
+    # Create base output directory if it doesn't exist
+    if not output_dir.exists():
+        output_dir.mkdir(parents=True)
+
     # Determine which subdirectories to clean
     subdirs = [type_dirs[file_type]] if file_type else type_dirs.values()
 
@@ -64,15 +68,17 @@ def clean_output_dir(output_dir: Path, file_type: str = None) -> None:
                     file.unlink()
         else:
             dir_path.mkdir(parents=True)
+            logger.info(f"Created {subdir} directory")
 
 
-def convert_all(input_dir: str, output_dir: str, file_type: str = None) -> bool:
+def convert_all(input_dir: str, output_dir: str, file_type: str = None, clean: bool = True) -> bool:
     """Convert files in input directory
 
     Args:
         input_dir: Directory containing extracted GXL files
         output_dir: Output directory for converted files
         file_type: Optional specific type to convert ('pc8', 'xmi', 'snd', 'text')
+        clean: Whether to clean output directories before converting (default: True)
 
     Returns:
         bool: True if all conversions successful
@@ -80,8 +86,11 @@ def convert_all(input_dir: str, output_dir: str, file_type: str = None) -> bool:
     input_path = Path(input_dir)
     output_path = Path(output_dir)
 
-    # Clean output directories
-    clean_output_dir(output_path, file_type)
+    # Clean output directories if requested
+    if clean:
+        clean_output_dir(output_path, file_type)
+    elif not output_path.exists():
+        output_path.mkdir(parents=True)
 
     # Map file types to converter functions
     converters = {

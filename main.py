@@ -149,14 +149,61 @@ def convert_files(args):
         sys.exit(1)
 
 
+def clean_directories():
+    """Remove raw_extracted and modern directories"""
+    for dir_path in ["raw_extracted", "modern"]:
+        if os.path.exists(dir_path):
+            logger.info(f"Removing {dir_path} directory")
+            import shutil
+            shutil.rmtree(dir_path)
+
+def process_all():
+    """Extract and convert all files"""
+    # Clean directories first
+    clean_directories()
+    
+    # Extract all files from GXL archives
+    extract_args = argparse.Namespace(
+        files=["original_game/OREGON.GXL"],
+        output="raw_extracted",
+        analyze=False,
+        debug=False,
+        format="text",
+        no_verify=False
+    )
+    extract_gxl(extract_args)
+    
+    # Convert all files (both extracted and original)
+    logger.info("Converting all game files")
+    convert_args = argparse.Namespace(
+        input_dir="raw_extracted",
+        output="modern",
+        type=None,  # Convert all types
+        debug=False
+    )
+    convert_files(convert_args)
+    
+    # Process additional files from original_game
+    logger.info("Processing additional game files")
+    convert_args = argparse.Namespace(
+        input_dir="original_game",
+        output="modern",
+        type=None,
+        debug=False
+    )
+    # Don't clean directories again
+    convert_all(convert_args.input_dir, convert_args.output, convert_args.type, clean=False)
+
 def main():
     """Main entry point"""
-    parser = argparse.ArgumentParser(description="Oregon Trail Decompiler Tools")
+    parser = argparse.ArgumentParser(
+        description="Oregon Trail Decompiler Tools - Extracts and converts game assets to modern formats"
+    )
     subparsers = parser.add_subparsers(dest="command", help="Command to execute")
 
-    # GXL extraction command
+    # Extract command
     extract_parser = subparsers.add_parser(
-        "extract", help="Extract files from GXL archives"
+        "extract", help="Extract files from GXL archives and process other game files"
     )
     extract_parser.add_argument("files", nargs="+", help="GXL files to process")
     extract_parser.add_argument(
@@ -185,12 +232,12 @@ def main():
         "--no-verify", action="store_true", help="Disable file integrity verification"
     )
 
-    # File conversion command
+    # Convert command
     convert_parser = subparsers.add_parser(
-        "convert", help="Convert extracted files to modern formats"
+        "convert", help="Convert game files to modern formats"
     )
     convert_parser.add_argument(
-        "input_dir", help="Directory containing extracted GXL files"
+        "input_dir", help="Directory containing game files to convert"
     )
     convert_parser.add_argument(
         "--output", "-o", default="modern", help="Output directory for converted files"
@@ -199,7 +246,7 @@ def main():
         "--type",
         "-t",
         choices=["pc8", "pc4", "256", "xmi", "snd", "text", "ctr", "ani", "lst"],
-        help="Convert only specific file type (pc8=PC8 images, pc4=PC4 images, 256=.256 images, lst=high score lists)",
+        help="Convert only specific file type (pc8=PC8/PCX images, pc4=PC4 images, 256=.256 images, xmi=music, snd=sounds, text=text files, ctr=controls, ani=animations, lst=high scores)",
     )
     convert_parser.add_argument(
         "--debug", "-d", action="store_true", help="Enable debug logging"
@@ -207,7 +254,10 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == "extract":
+    # If no command given, process everything
+    if not args.command:
+        process_all()
+    elif args.command == "extract":
         extract_gxl(args)
     elif args.command == "convert":
         convert_files(args)
