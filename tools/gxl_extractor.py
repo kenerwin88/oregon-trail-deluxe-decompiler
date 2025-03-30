@@ -148,7 +148,7 @@ class GXLExtractor(ResourceExtractor):
 
         except Exception as e:
             logger.error(f"Error reading GXL header: {str(e)}")
-            return None
+            raise ValueError(f"Invalid GXL file: {str(e)}")
 
     def _read_file_table(self, f: BinaryIO) -> None:
         """Read the GXL file table entries
@@ -694,11 +694,14 @@ class GXLExtractor(ResourceExtractor):
 
         Returns:
             dict containing analysis results
+
+        Raises:
+            ValueError: If the file is not a valid GXL file
+            FileNotFoundError: If the file does not exist
         """
         # Make sure we've read the header
         if not self.header:
-            if not self.read_header():
-                return {"error": "Failed to read GXL header"}
+            self.read_header()  # This will raise ValueError for invalid files
 
         result = super().analyze()
 
