@@ -7,18 +7,24 @@
    - Module-level functions use snake_case
    - Classes use PascalCase
    - Constants use UPPER_SNAKE_CASE
+   - Log messages use lowercase with periods
 
 2. **Command-line Interface**:
-   - All converter tools accept consistent command-line parameters:
-     - Input directory/file
+   - All tools support both individual and pipeline operations
+   - Common parameters across all tools:
+     - Input file/directory
      - Output directory
      - Optional --debug flag
-   - Parameters should remain consistent across all tools
+     - Optional --type flag for specific formats
+   - Analysis commands support JSON/text output formats
+   - Verification can be disabled with --no-verify
 
 3. **Error Handling**:
-   - Converters should skip files they can't process rather than halt
-   - Debug logs should be comprehensive when enabled
-   - User-facing errors should be clear and actionable
+   - Converters skip problematic files rather than halt
+   - Debug logs provide detailed error context
+   - User-facing errors are clear and actionable
+   - Structured logging with levelname.1s format
+   - Integrity verification during critical operations
 
 4. **File Organization**:
    - Original DOS game files stored in `/original_game/`
@@ -26,6 +32,7 @@
    - Converted files go to `/modern/` with appropriate subdirectory
    - Documentation maintained in `/docs/`
    - Conversion tools stored in `/tools/`
+   - Memory bank files in `/memory-bank/`
 
 ## Development Workflow
 
@@ -41,12 +48,37 @@
    - Document any conversion limitations
    - Prefer widely supported modern formats
    - Include descriptive metadata when possible
+   - Verify file integrity during extraction
 
 3. **Game Implementation Guidelines**:
    - Match original game mechanics exactly
    - Maintain original asset appearance
    - Use identical text/dialog
    - Match original UI flow
+   - Preserve all game data relationships
+
+## Code Organization Patterns
+
+1. **Main Script Structure**:
+   - Modular command handling functions
+   - Consistent argument parsing
+   - Pipeline-oriented processing
+   - Clear separation of concerns
+   - Comprehensive help documentation
+
+2. **Logging System**:
+   - Hierarchical logger configuration
+   - Consistent format across modules
+   - Debug mode toggle support
+   - Error context preservation
+   - User-friendly messages
+
+3. **Analysis Features**:
+   - File integrity checking
+   - Gap detection in archives
+   - Format validation
+   - Statistical reporting
+   - Multiple output formats
 
 ## Known Challenges & Solutions
 
@@ -79,18 +111,21 @@
    - Comprehensive docstrings
    - Type hints where possible
    - Function-level comments for complex algorithms
+   - Consistent error message formatting
 
 2. **Testing Approach**:
    - Unit tests for format parsers
    - Integration tests for converters
    - Visual verification for converted assets
    - Game state tests for implementation
+   - Integrity verification for critical operations
 
 3. **Documentation Style**:
    - Technical format specifications with examples
    - Diagrams for complex structures
    - Header tables for file formats
    - Cross-references to related formats/files
+   - Clear command-line usage examples
 
 ## Debug & Troubleshooting
 
@@ -99,12 +134,14 @@
    - xmi_debug.log contains detailed XMI parsing information
    - Check docs/ directory for format-specific debugging notes
    - Compare converted files against original format specifications
+   - Use --analyze flag for detailed file analysis
 
 2. **Game Implementation**:
    - Run original game in DOSBox-X for comparison
    - Use different starting conditions to test varied scenarios
    - Check asset loading errors in game startup
    - Test menu navigation edge cases
+   - Verify file integrity during extraction
 
 ## Critical Implementation Paths
 
@@ -113,9 +150,11 @@
    - Image paths are hardcoded based on expected directory structure
    - Sound and music depend on pygame mixer initialization
    - Font loading requires correctly converted font assets
+   - Integrity verification during extraction
 
 2. **Game State Flow**:
    - State machine controls all navigation
    - Each state has specific entry/exit conditions
    - State handlers manage all drawing and input for their state
    - Game loop ticks at fixed 60 FPS for consistent timing
+   - Asset relationships must be preserved

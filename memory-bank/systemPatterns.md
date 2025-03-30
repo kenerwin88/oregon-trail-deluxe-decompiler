@@ -34,14 +34,70 @@ graph TD
 
 ## Core Design Patterns
 
-### 1. Pipeline Processing
+### 1. Command Line Interface
+
+The system implements a comprehensive CLI architecture:
+
+```mermaid
+graph TD
+    Main[Main Entry Point] --> Parser[Argument Parser]
+    Parser --> Extract[Extract Command]
+    Parser --> Convert[Convert Command]
+    Parser --> Process[Process All]
+    
+    Extract --> Analysis[File Analysis]
+    Extract --> Extraction[File Extraction]
+    
+    Convert --> TypeCheck[Format Detection]
+    Convert --> Conversion[Asset Conversion]
+    
+    Process --> Clean[Clean Directories]
+    Process --> BatchExtract[Batch Extraction]
+    Process --> BatchConvert[Batch Conversion]
+```
+
+Key Features:
+- Subcommand structure (extract, convert)
+- Common parameter patterns
+- Debug mode support
+- Format-specific options
+- Analysis capabilities
+- Integrity verification
+
+### 2. Pipeline Processing
 
 The system implements a clean pipeline pattern for asset conversion:
 1. **Extraction**: Raw assets extracted from GXL archive
+   - File integrity verification
+   - Hidden file detection
+   - Statistical analysis
 2. **Format Conversion**: Format-specific converters transform assets to modern formats
 3. **Consumption**: Modern game engine consumes converted assets
 
-### 2. Modular Converter Architecture
+### 3. Analysis System
+
+Comprehensive file analysis capabilities:
+```mermaid
+graph TD
+    Analysis[File Analysis] --> Stats[Statistics]
+    Analysis --> Integrity[Integrity Check]
+    Analysis --> Structure[Structure Analysis]
+    Analysis --> Hidden[Hidden File Detection]
+    
+    Stats --> FileTypes[File Type Stats]
+    Stats --> ImageStats[Image Stats]
+    Stats --> SizeStats[Size Analysis]
+    
+    Integrity --> Complete[Completeness Check]
+    Integrity --> Gaps[Gap Detection]
+    Integrity --> Verify[Data Verification]
+    
+    Structure --> Header[Header Analysis]
+    Structure --> Table[File Table]
+    Structure --> Data[Data Section]
+```
+
+### 4. Modular Converter Architecture
 
 Each converter follows a consistent pattern:
 - Standalone operation with CLI interface
@@ -58,14 +114,31 @@ def convert_X(input_path, output_path) -> bool:
     """
 ```
 
-### 3. File Type Detection
+### 5. Error Handling Pattern
+
+Structured approach to error management:
+```mermaid
+graph TD
+    Error[Error Detection] --> Log[Logging]
+    Error --> Skip[Skip File]
+    Error --> Continue[Continue Pipeline]
+    
+    Log --> Debug[Debug Info]
+    Log --> User[User Message]
+    
+    Skip --> Report[Report Issue]
+    Skip --> Next[Next File]
+```
+
+### 6. File Type Detection
 
 File format detection uses a combination of:
 - File extension analysis
 - Header signature checking (for binary formats)
 - Extension-based routing to appropriate converters
+- Format validation
 
-### 4. Asset Management
+### 7. Asset Management
 
 Assets are organized in a structured directory hierarchy:
 
@@ -90,7 +163,6 @@ Assets are organized in a structured directory hierarchy:
 │   ├── animations/    # Converted animations
 │   └── fonts/         # Converted font assets
 ```
-
 
 ## File Format Specifications
 
