@@ -155,13 +155,15 @@ def clean_directories():
         if os.path.exists(dir_path):
             logger.info(f"Removing {dir_path} directory")
             import shutil
+
             shutil.rmtree(dir_path)
+
 
 def process_all():
     """Extract and convert all files"""
     # Clean directories first
     clean_directories()
-    
+
     # Extract all files from GXL archives
     extract_args = argparse.Namespace(
         files=["original_game/OREGON.GXL"],
@@ -169,30 +171,30 @@ def process_all():
         analyze=False,
         debug=False,
         format="text",
-        no_verify=False
+        no_verify=False,
     )
     extract_gxl(extract_args)
-    
+
     # Convert all files (both extracted and original)
     logger.info("Converting all game files")
     convert_args = argparse.Namespace(
         input_dir="raw_extracted",
         output="modern",
         type=None,  # Convert all types
-        debug=False
+        debug=False,
     )
     convert_files(convert_args)
-    
+
     # Process additional files from original_game
     logger.info("Processing additional game files")
     convert_args = argparse.Namespace(
-        input_dir="original_game",
-        output="modern",
-        type=None,
-        debug=False
+        input_dir="original_game", output="modern", type=None, debug=False
     )
     # Don't clean directories again
-    convert_all(convert_args.input_dir, convert_args.output, convert_args.type, clean=False)
+    convert_all(
+        convert_args.input_dir, convert_args.output, convert_args.type, clean=False
+    )
+
 
 def main():
     """Main entry point"""

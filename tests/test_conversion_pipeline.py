@@ -16,13 +16,16 @@ import shutil
 import logging
 import subprocess
 from pathlib import Path
+import tools.convert_ani as ani_converter
+import tools.convert_ctr as ctr_converter
+from tools.convert import convert_all
+
 
 # Add parent directory to path for imports
 parent_dir = str(Path(__file__).parent.parent)
 if parent_dir not in sys.path:
     sys.path.append(parent_dir)
 
-from tools.convert import convert_all
 
 # Define a helper function since it's not exposed in convert.py
 def get_converter_for_file(file_path: Path):
@@ -35,24 +38,18 @@ def get_converter_for_file(file_path: Path):
     from tools.convert_snd import convert_snd
     from tools.convert_text import convert_text
     from tools.convert_xmi import convert_xmi
-    
+
     converters = {
         ".ANI": convert_ani,
         ".CTR": convert_ctr,
         ".PC8": convert_pc8,
-        ".PC4": convert_pc4, 
+        ".PC4": convert_pc4,
         ".SND": convert_snd,
         ".TXT": convert_text,
         ".XMI": convert_xmi,
     }
-    
+
     return converters.get(file_path.suffix.upper())
-import tools.convert_ani as ani_converter
-import tools.convert_ctr as ctr_converter
-import tools.convert_snd as snd_converter
-import tools.convert_text as text_converter
-import tools.convert_xmi as xmi_converter
-import tools.convert_pc8 as pc8_converter
 
 
 class ConversionPipelineTest(unittest.TestCase):
@@ -69,7 +66,7 @@ class ConversionPipelineTest(unittest.TestCase):
 
         # Original files directory
         cls.raw_dir = Path(parent_dir) / "raw_extracted"
-        
+
         # Set up test logger
         logging.basicConfig(level=logging.INFO)
         cls.logger = logging.getLogger("test_pipeline")
@@ -132,36 +129,36 @@ class ConversionPipelineTest(unittest.TestCase):
         ani_path = Path("test.ANI")
         converter_func = get_converter_for_file(ani_path)
         self.assertIs(converter_func, ani_converter.convert_ani)
-        
+
         # Test CTR converter
         ctr_path = Path("test.CTR")
         converter_func = get_converter_for_file(ctr_path)
         self.assertIs(converter_func, ctr_converter.convert_ctr)
-        
+
         # Test SND converter
         snd_path = Path("test.SND")
         converter_func = get_converter_for_file(snd_path)
         # Just check function name as import might be different
         self.assertEqual(converter_func.__name__, "convert_snd")
-        
+
         # Test TXT converter
         txt_path = Path("test.TXT")
         converter_func = get_converter_for_file(txt_path)
         # Just check function name as import might be different
         self.assertEqual(converter_func.__name__, "convert_text")
-        
+
         # Test XMI converter
         xmi_path = Path("test.XMI")
         converter_func = get_converter_for_file(xmi_path)
         # Just check function name as import might be different
         self.assertEqual(converter_func.__name__, "convert_xmi")
-        
+
         # Test PC8 converter - imports the function as convert_image
         pc8_path = Path("test.PC8")
         converter_func = get_converter_for_file(pc8_path)
         # Function name should be convert_image
         self.assertEqual(converter_func.__name__, "convert_image")
-        
+
         # Test unsupported file type
         unknown_path = Path("test.UNKNOWN")
         converter_func = get_converter_for_file(unknown_path)
@@ -174,37 +171,37 @@ class ConversionPipelineTest(unittest.TestCase):
             input_dir=str(self.input_dir),
             output_dir=str(self.output_dir),
             file_type="ani",
-            clean=False
+            clean=False,
         )
         self.assertTrue(ani_result)
         self.assertTrue((self.output_dir / "animations" / "TEST.json").exists())
-        
+
         # Test CTR conversion
         ctr_result = convert_all(
             input_dir=str(self.input_dir),
             output_dir=str(self.output_dir),
             file_type="ctr",
-            clean=False
+            clean=False,
         )
         self.assertTrue(ctr_result)
         self.assertTrue((self.output_dir / "controls" / "TEST.json").exists())
-        
+
         # Test SND conversion
         snd_result = convert_all(
             input_dir=str(self.input_dir),
             output_dir=str(self.output_dir),
             file_type="snd",
-            clean=False
+            clean=False,
         )
         self.assertTrue(snd_result)
         self.assertTrue((self.output_dir / "sounds" / "TEST.wav").exists())
-        
+
         # Test TXT conversion
         txt_result = convert_all(
             input_dir=str(self.input_dir),
             output_dir=str(self.output_dir),
             file_type="text",
-            clean=False
+            clean=False,
         )
         self.assertTrue(txt_result)
         self.assertTrue((self.output_dir / "text" / "TEST.txt").exists())
@@ -215,23 +212,23 @@ class ConversionPipelineTest(unittest.TestCase):
         if self.output_dir.exists():
             shutil.rmtree(self.output_dir)
         self.output_dir.mkdir(exist_ok=True)
-        
+
         # Convert all files
         result = convert_all(
             input_dir=str(self.input_dir),
             output_dir=str(self.output_dir),
             file_type=None,
-            clean=True
+            clean=True,
         )
-        
+
         self.assertTrue(result)
-        
+
         # Verify all expected output files exist
         self.assertTrue((self.output_dir / "animations" / "TEST.json").exists())
         self.assertTrue((self.output_dir / "controls" / "TEST.json").exists())
         self.assertTrue((self.output_dir / "sounds" / "TEST.wav").exists())
         self.assertTrue((self.output_dir / "text" / "TEST.txt").exists())
-        
+
         # Check XMI and PC8 if they were copied
         if (self.input_dir / "TEST.XMI").exists():
             self.assertTrue((self.output_dir / "music").exists())
@@ -242,40 +239,44 @@ class ConversionPipelineTest(unittest.TestCase):
         """Test the command-line interface for conversion"""
         # Skip this test for now since it requires changes to main.py
         # The 'all' option isn't supported in the CLI, would need to be added
-        self.skipTest("CLI interface test requires updates to main.py to support 'all' type")
-        
+        self.skipTest(
+            "CLI interface test requires updates to main.py to support 'all' type"
+        )
+
         # Clear output directory first
         if self.output_dir.exists():
             shutil.rmtree(self.output_dir)
         self.output_dir.mkdir(exist_ok=True)
-        
+
         # Run the CLI with subprocess - no type defaults to processing all files
         cmd = [
             sys.executable,
             str(Path(parent_dir) / "main.py"),
             "convert",
-            "--input", str(self.input_dir),
-            "--output", str(self.output_dir)
+            "--input",
+            str(self.input_dir),
+            "--output",
+            str(self.output_dir),
         ]
-        
+
         try:
             result = subprocess.run(
-                cmd, 
+                cmd,
                 check=True,
-                stdout=subprocess.PIPE, 
+                stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True
+                text=True,
             )
-            
+
             # Check if conversion was successful
             self.assertEqual(result.returncode, 0)
-            
+
             # Verify output files were created
             self.assertTrue((self.output_dir / "animations" / "TEST.json").exists())
             self.assertTrue((self.output_dir / "controls" / "TEST.json").exists())
             self.assertTrue((self.output_dir / "sounds" / "TEST.wav").exists())
             self.assertTrue((self.output_dir / "text" / "TEST.txt").exists())
-            
+
         except subprocess.CalledProcessError as e:
             self.fail(f"CLI conversion failed: {e.stderr}")
         except FileNotFoundError:

@@ -71,7 +71,9 @@ def clean_output_dir(output_dir: Path, file_type: str = None) -> None:
             logger.info(f"Created {subdir} directory")
 
 
-def convert_all(input_dir: str, output_dir: str, file_type: str = None, clean: bool = True) -> bool:
+def convert_all(
+    input_dir: str, output_dir: str, file_type: str = None, clean: bool = True
+) -> bool:
     """Convert files in input directory
 
     Args:

@@ -87,30 +87,25 @@ class GXLExtractorTest(unittest.TestCase):
     def test_file_extraction(self):
         """Test extracting files from GXL archive"""
         extractor = GXLExtractor(self.gxl_file)
-        
+
         # Extract all files
         result = extractor.extract_all_files(self.output_dir)
         self.assertTrue(result)
 
         # Verify some known files exist
-        expected_files = [
-            "BANKS.PC8",
-            "DEATH.XMI",
-            "BEEP.SND",
-            "GUIDE.CTR"
-        ]
+        expected_files = ["BANKS.PC8", "DEATH.XMI", "BEEP.SND", "GUIDE.CTR"]
 
         for filename in expected_files:
             file_path = self.output_dir / filename
             self.assertTrue(
                 file_path.exists(),
-                f"Expected file {filename} not found in extracted files"
+                f"Expected file {filename} not found in extracted files",
             )
 
     def test_integrity_verification(self):
         """Test file integrity verification during extraction"""
         extractor = GXLExtractor(self.gxl_file)
-        
+
         # Extract with integrity verification
         result = extractor.extract_all_files(self.output_dir, verify_integrity=True)
         self.assertTrue(result)
@@ -122,12 +117,11 @@ class GXLExtractorTest(unittest.TestCase):
         extracted_count = sum(1 for _ in self.output_dir.glob("*"))
         self.assertEqual(extracted_count, info["num_entries"])
 
-
     def test_extraction_to_nonexistent_directory(self):
         """Test extraction to a directory that doesn't exist"""
         extractor = GXLExtractor(self.gxl_file)
         output_dir = self.temp_dir / "nonexistent"
-        
+
         # Should create directory and extract successfully
         result = extractor.extract_all_files(output_dir)
         self.assertTrue(result)
