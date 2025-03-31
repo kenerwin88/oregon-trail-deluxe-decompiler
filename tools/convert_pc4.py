@@ -93,7 +93,7 @@ def read_pcx_palette(pcx_path: Path, num_colors: int = 16) -> Optional[list[tupl
     Handles different PCX versions and potential errors.
     Returns the first `num_colors` entries.
     """
-    from typing import Optional # Add missing import
+    # Optional is now imported globally
 
     try:
         with open(pcx_path, "rb") as f:
