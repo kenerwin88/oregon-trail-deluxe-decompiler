@@ -10,6 +10,7 @@ the final 4-bit color value (16 colors total).
 
 import logging
 from pathlib import Path
+from typing import Optional # Import Optional here
 from PIL import Image
 import struct
 
