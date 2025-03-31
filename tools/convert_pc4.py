@@ -24,17 +24,66 @@ except ImportError:
 logger = logging.getLogger("pcx_converter.pc4")
 
 
-def decode_rle_scanline(f, expected_length):
+def decode_rle_scanline(f, expected_length, debug_info=None):
     """Decode a single RLE-compressed scanline"""
     decoded = bytearray()
-    while len(decoded) < expected_length:
-        byte = f.read(1)[0]
-        if (byte & 0xC0) == 0xC0:  # RLE marker (top 2 bits set)
-            run_count = byte & 0x3F  # Get run length from bottom 6 bits
-            run_value = f.read(1)[0]  # Get the value to repeat
-            decoded.extend([run_value] * run_count)
-        else:
-            decoded.append(byte)
+    start_pos = f.tell()
+    
+    if debug_info:
+        logger.debug(f"\nDecoding scanline at offset {start_pos}")
+        logger.debug(f"Expected length: {expected_length}")
+    
+    try:
+        while len(decoded) < expected_length:
+            byte = f.read(1)
+            if not byte:  # EOF check
+                raise EOFError("Unexpected end of file during RLE decoding")
+            byte = byte[0]
+            
+            if (byte & 0xC0) == 0xC0:  # RLE marker (top 2 bits set)
+                run_count = byte & 0x3F  # Get run length from bottom 6 bits
+                run_value_bytes = f.read(1)
+                if not run_value_bytes:
+                    raise EOFError("Unexpected end of file reading RLE value")
+                run_value = run_value_bytes[0]
+                
+                # Calculate how many bytes we actually need
+                remaining = expected_length - len(decoded)
+                actual_count = min(run_count, remaining)
+                
+                if debug_info:
+                    logger.debug(f"RLE sequence at {f.tell()-2}: count={run_count} (using {actual_count}), value=0x{run_value:02x}")
+                
+                decoded.extend([run_value] * actual_count)
+                
+                # If this RLE sequence would exceed our expected length, we need to
+                # rewind the file position if we didn't use all the run
+                if run_count > remaining:
+                    if debug_info:
+                        logger.debug(f"Rewinding file position by {-1} bytes")
+                    f.seek(-1, 1)  # Rewind by 1 byte to allow next scanline to read this byte
+                    break
+                    
+            else:
+                if debug_info:
+                    logger.debug(f"Literal byte at {f.tell()-1}: 0x{byte:02x}")
+                decoded.append(byte)
+                
+                # Check if we've reached our target length
+                if len(decoded) == expected_length:
+                    break
+                
+    except Exception as e:
+        if debug_info:
+            logger.error(f"Error during RLE decode: {str(e)}")
+            logger.error(f"Decoded {len(decoded)} of {expected_length} bytes")
+        raise
+        
+    if debug_info:
+        logger.debug(f"Final decoded length: {len(decoded)}")
+        if len(decoded) != expected_length:
+            logger.warning(f"Length mismatch: got {len(decoded)}, expected {expected_length}")
+            
     return decoded
 
 
@@ -52,7 +101,7 @@ def get_palette_from_color16(color16_path):
     return None
 
 
-def convert_pc4(input_path: Path, output_path: Path, color16_path: Path) -> bool:
+def convert_pc4(input_path: Path, output_path: Path, color16_path: Path, debug_mode: bool = False) -> bool:
     """Convert PC4 image to PNG using COLOR16.PCX palette.
 
     Args:
@@ -93,9 +142,20 @@ def convert_pc4(input_path: Path, output_path: Path, color16_path: Path) -> bool
 
             # Read and decode RLE data for each scanline of each plane
             for y in range(height):
+                if debug_mode and y == 0:
+                    logger.debug(f"\nDecoding first scanline for each plane:")
+                
                 for plane in range(planes):
-                    scanline = decode_rle_scanline(f, bytes_per_line)
-                    plane_data[plane].append(scanline)
+                    try:
+                        debug_info = debug_mode and y == 0
+                        scanline = decode_rle_scanline(f, bytes_per_line, debug_info)
+                        if len(scanline) != bytes_per_line:
+                            raise ValueError(f"Scanline length mismatch: got {len(scanline)}, expected {bytes_per_line}")
+                        plane_data[plane].append(scanline)
+                    except Exception as e:
+                        logger.error(f"Error decoding plane {plane}, scanline {y}: {str(e)}")
+                        logger.error(f"File position: {f.tell()}")
+                        return False
 
             # Create output image
             img = Image.new("RGB", (width, height))
@@ -104,15 +164,22 @@ def convert_pc4(input_path: Path, output_path: Path, color16_path: Path) -> bool
             # Combine planes to create final image
             for y in range(height):
                 for x in range(width):
-                    bit_pos = 7 - (x % 8)
+                    bit_pos = 7 - (x % 8)  # Bits are stored from MSB to LSB
                     byte_pos = x // 8
 
                     # Get bits from each plane
+                    # In EGA, planes are ordered:
+                    # Plane 0 -> Blue (Bit 0)
+                    # Plane 1 -> Green (Bit 1)
+                    # Plane 2 -> Red (Bit 2)
+                    # Plane 3 -> Intensity (Bit 3)
                     color_index = 0
                     for p in range(planes):
                         if byte_pos < len(plane_data[p][y]):
+                            # Extract bit from MSB to LSB order
                             bit = (plane_data[p][y][byte_pos] >> bit_pos) & 1
-                            color_index |= bit << p
+                            # Map plane bits to color index
+                            color_index |= (bit << p)
 
                     # Map to color from palette
                     pixels[x, y] = palette[color_index]
@@ -158,4 +225,20 @@ def convert_image(filepath: Path, output_dir: Path, debug_mode: bool = False) ->
         logger.error(f"COLOR16.PCX not found in {filepath.parent}")
         return False
 
-    return convert_pc4(filepath, output_path, color16_path)
+    return convert_pc4(filepath, output_path, color16_path, debug_mode)
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) != 3:
+        print("Usage: python3 convert_pc4.py <input_pc4_file> <output_dir>")
+        sys.exit(1)
+        
+    input_path = Path(sys.argv[1])
+    output_dir = Path(sys.argv[2])
+    
+    # Enable debug logging
+    setup_logging(True)
+    logger.setLevel(logging.DEBUG)
+    
+    success = convert_image(input_path, output_dir, debug_mode=True)
+    sys.exit(0 if success else 1)
