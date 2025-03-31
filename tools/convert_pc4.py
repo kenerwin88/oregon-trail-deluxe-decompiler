@@ -164,6 +164,32 @@ def read_pcx_palette(pcx_path: Path, num_colors: int = 16) -> Optional[list[tupl
         return None
 
 
+def detect_plane_format(header: bytes, file_content: bytes) -> str:
+    """
+    Attempt to detect the plane format based on file characteristics.
+    
+    Args:
+        header: PCX file header bytes
+        file_content: Full file content
+        
+    Returns:
+        str: "standard" for standard EGA format, "reversed" for reversed bit planes
+    """
+    # Check header values that might indicate different formats
+    version = header[1]
+    planes = header[65]
+    
+    # If it's not 4 planes, it's probably not a standard EGA file
+    if planes != 4:
+        return "standard"  # Default to standard for non-4-plane files
+        
+    # Check for specific signatures in the file content that might
+    # indicate a different format is needed
+    # This is a placeholder for more sophisticated detection
+    
+    # For now, return "standard" as the default
+    return "standard"
+
 def convert_pc4(input_path: Path, output_path: Path, color16_path: Path, debug_mode: bool = False) -> bool:
     """Convert PC4 image to PNG using palette from COLOR16.PCX.
 
@@ -242,19 +268,46 @@ def convert_pc4(input_path: Path, output_path: Path, color16_path: Path, debug_m
                     byte_pos = x // 8
 
                     # Get bits from each plane
-                    # In EGA, planes are ordered:
+                    # Standard EGA plane order is:
                     # Plane 0 -> Blue (Bit 0)
                     # Plane 1 -> Green (Bit 1)
                     # Plane 2 -> Red (Bit 2)
                     # Plane 3 -> Intensity (Bit 3)
-                    color_index = 0
-                    for p in range(planes):
-                        if byte_pos < len(plane_data[p][y]):
-                            # Extract bit from MSB to LSB order
-                            bit = (plane_data[p][y][byte_pos] >> bit_pos) & 1
-                            # Map plane bits to color index
-                            color_index |= (bit << p)
+                    
+                    # Check if this is a problematic file that needs special handling
+                    filename_lower = input_path.stem.lower()
+                    problematic_files = ["banner", "crossbut", "land0", "mecc", "optbtn1", "split2", "wagons"]
+                    
+                    if filename_lower in problematic_files:
+                        # For problematic files, try VGA-style plane ordering
+                        # In this case, each plane represents a full bit of the color index
+                        color_index = 0
+                        for p in range(planes):
+                            if byte_pos < len(plane_data[p][y]):
+                                # Extract bit from MSB to LSB order
+                                bit = (plane_data[p][y][byte_pos] >> bit_pos) & 1
+                                # For these problematic files, try a different bit mapping:
+                                # Plane 0 -> Bit 3 (Most significant)
+                                # Plane 1 -> Bit 2
+                                # Plane 2 -> Bit 1
+                                # Plane 3 -> Bit 0 (Least significant)
+                                # This effectively reverses the bit order
+                                color_index |= (bit << (planes - 1 - p))
+                    else:
+                        # Standard EGA plane ordering for normal files
+                        color_index = 0
+                        for p in range(planes):
+                            if byte_pos < len(plane_data[p][y]):
+                                # Extract bit from MSB to LSB order
+                                bit = (plane_data[p][y][byte_pos] >> bit_pos) & 1
+                                # Map plane bits to color index
+                                color_index |= (bit << p)
 
+                    # Ensure color_index is within palette range
+                    if color_index >= len(palette):
+                        logger.warning(f"Color index {color_index} out of range for palette with {len(palette)} colors. Clamping to last color.")
+                        color_index = len(palette) - 1
+                        
                     # Map to color from palette
                     pixels[x, y] = palette[color_index]
 
@@ -367,6 +420,8 @@ if __name__ == "__main__":
     parser.add_argument("input_file", help="Path to the input PC4 file.")
     parser.add_argument("output_dir", help="Directory to save the converted PNG file.")
     parser.add_argument("-d", "--debug", action="store_true", help="Enable debug logging.")
+    parser.add_argument("--try-both", action="store_true", 
+                        help="Try both standard and reversed bit plane ordering and save both versions.")
     
     args = parser.parse_args()
 
@@ -380,4 +435,99 @@ if __name__ == "__main__":
     
     # Pass the debug flag from args to convert_image
     success = convert_image(input_path, output_dir, debug_mode=args.debug)
+    
+    # If requested, try the alternative bit plane ordering and save as a separate file
+    if args.try_both:
+        # Create a modified version of convert_image that forces the alternative ordering
+        def convert_with_alt_ordering(filepath, output_dir, debug_mode):
+            # Similar to convert_image but forces the alternative ordering
+            if not filepath.name.lower().endswith(".pc4"):
+                return False
+                
+            # Put files in a different subdirectory to avoid overwriting
+            output_path = output_dir / "images" / "pc4_alt" / f"{filepath.stem}.png"
+            
+            # Find COLOR16.PCX using the same logic as in convert_image
+            color16_path = None
+            for search_dir in [filepath.parent, filepath.parent.parent]:
+                potential_path = search_dir / "COLOR16.PCX"
+                if potential_path.is_file():
+                    color16_path = potential_path
+                    break
+                    
+            if not color16_path:
+                logger.error("COLOR16.PCX not found for alternative conversion")
+                return False
+                
+            # Create a modified version of convert_pc4 that forces reversed bit plane ordering
+            with open(filepath, "rb") as f:
+                file_content = f.read()
+                
+            # Ensure output directory exists
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Create a new image with reversed bit plane ordering
+            with open(filepath, "rb") as f:
+                header = f.read(128)
+                xmin, ymin, xmax, ymax = struct.unpack("<HHHH", header[4:12])
+                width = xmax - xmin + 1
+                height = ymax - ymin + 1
+                planes = header[65]
+                bytes_per_line = struct.unpack("<H", header[66:68])[0]
+                
+                # Read palette
+                palette = read_pcx_palette(color16_path, 16)
+                if not palette:
+                    return False
+                    
+                # Reset file pointer to after header
+                f.seek(128)
+                
+                # Create arrays for each plane
+                plane_data = [[] for _ in range(planes)]
+                
+                # Read and decode RLE data for each scanline of each plane
+                for y in range(height):
+                    for plane in range(planes):
+                        try:
+                            scanline = decode_rle_scanline(f, bytes_per_line, False)
+                            plane_data[plane].append(scanline)
+                        except Exception as e:
+                            logger.error(f"Error in alt conversion: {e}")
+                            return False
+                
+                # Create output image
+                img = Image.new("RGB", (width, height))
+                pixels = img.load()
+                
+                # Combine planes with REVERSED ordering
+                for y in range(height):
+                    for x in range(width):
+                        bit_pos = 7 - (x % 8)
+                        byte_pos = x // 8
+                        
+                        # Use reversed bit plane ordering
+                        color_index = 0
+                        for p in range(planes):
+                            if byte_pos < len(plane_data[p][y]):
+                                bit = (plane_data[p][y][byte_pos] >> bit_pos) & 1
+                                # Reverse the bit ordering
+                                color_index |= (bit << (planes - 1 - p))
+                                
+                        # Ensure color_index is within palette range
+                        if color_index >= len(palette):
+                            color_index = len(palette) - 1
+                            
+                        pixels[x, y] = palette[color_index]
+                
+                # Save the image
+                img.save(output_path)
+                logger.info(f"Saved alternative version to {output_path}")
+                return True
+        
+        # Try the alternative ordering
+        alt_success = convert_with_alt_ordering(input_path, output_dir, args.debug)
+        if alt_success:
+            logger.info("Created both standard and alternative versions for comparison")
+    
     sys.exit(0 if success else 1)
