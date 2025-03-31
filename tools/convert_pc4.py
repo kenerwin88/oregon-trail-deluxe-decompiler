@@ -135,7 +135,16 @@ def convert_pc4(input_path: Path, output_path: Path, color16_path: Path, debug_m
             logger.debug(f"\nDecoding {input_path.name}:")
             logger.debug(f"Image size: {width}x{height}")
             logger.debug(f"Color planes: {planes}")
-            logger.debug(f"Bytes per line: {bytes_per_line}")
+            logger.debug(f"Bytes per line (from header): {bytes_per_line}")
+
+            # Calculate expected bytes per line for one plane
+            expected_bpl = (width + 7) // 8
+            logger.debug(f"Expected bytes per line (calculated): {expected_bpl}")
+            if bytes_per_line < expected_bpl:
+                 logger.warning(f"Header 'bytes_per_line' ({bytes_per_line}) is less than calculated minimum ({expected_bpl}) for width {width}. This might indicate corruption or an unusual format.")
+            elif bytes_per_line > expected_bpl:
+                 logger.info(f"Header 'bytes_per_line' ({bytes_per_line}) includes padding beyond calculated minimum ({expected_bpl}). Using header value.")
+
 
             # Create arrays for each plane
             plane_data = [[] for _ in range(planes)]
