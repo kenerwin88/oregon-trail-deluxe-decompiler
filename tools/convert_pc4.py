@@ -358,16 +358,26 @@ def convert_image(filepath: Path, output_dir: Path, debug_mode: bool = False) ->
 
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) != 3:
-        print("Usage: python3 convert_pc4.py <input_pc4_file> <output_dir>")
-        sys.exit(1)
-        
-    input_path = Path(sys.argv[1])
-    output_dir = Path(sys.argv[2])
+    import argparse # Import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Convert PC4 image file to PNG using palette from COLOR16.PCX.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument("input_file", help="Path to the input PC4 file.")
+    parser.add_argument("output_dir", help="Directory to save the converted PNG file.")
+    parser.add_argument("-d", "--debug", action="store_true", help="Enable debug logging.")
     
-    # Enable debug logging
-    setup_logging(True)
-    logger.setLevel(logging.DEBUG)
+    args = parser.parse_args()
+
+    input_path = Path(args.input_file)
+    output_dir = Path(args.output_dir)
     
-    success = convert_image(input_path, output_dir, debug_mode=True)
+    # Enable debug logging if requested
+    setup_logging(args.debug)
+    if args.debug:
+        logger.setLevel(logging.DEBUG)
+    
+    # Pass the debug flag from args to convert_image
+    success = convert_image(input_path, output_dir, debug_mode=args.debug)
     sys.exit(0 if success else 1)
