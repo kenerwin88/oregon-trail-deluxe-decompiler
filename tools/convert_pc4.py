@@ -25,64 +25,64 @@ logger = logging.getLogger("pcx_converter.pc4")
 
 
 def decode_rle_scanline(f, expected_length, debug_info=None):
-    """Decode a single RLE-compressed scanline"""
+    """Decode a single RLE-compressed scanline without seeking back."""
     decoded = bytearray()
     start_pos = f.tell()
     
     if debug_info:
-        logger.debug(f"\nDecoding scanline at offset {start_pos}")
-        logger.debug(f"Expected length: {expected_length}")
-    
+        logger.debug(f"\nDecoding scanline at offset {start_pos}, expected length: {expected_length}")
+
     try:
         while len(decoded) < expected_length:
             byte = f.read(1)
             if not byte:  # EOF check
-                raise EOFError("Unexpected end of file during RLE decoding")
+                raise EOFError(f"Unexpected EOF during RLE decoding at offset {f.tell()}. Expected {expected_length} bytes, got {len(decoded)}.")
             byte = byte[0]
             
             if (byte & 0xC0) == 0xC0:  # RLE marker (top 2 bits set)
                 run_count = byte & 0x3F  # Get run length from bottom 6 bits
-                run_value_bytes = f.read(1)
-                if not run_value_bytes:
-                    raise EOFError("Unexpected end of file reading RLE value")
-                run_value = run_value_bytes[0]
+                run_value_byte = f.read(1)
+                if not run_value_byte:
+                    raise EOFError(f"Unexpected EOF reading RLE value at offset {f.tell()}.")
+                run_value = run_value_byte[0]
                 
-                # Calculate how many bytes we actually need
+                # Calculate how many bytes we actually need for this scanline
                 remaining = expected_length - len(decoded)
-                actual_count = min(run_count, remaining)
+                bytes_to_add = min(run_count, remaining)
                 
                 if debug_info:
-                    logger.debug(f"RLE sequence at {f.tell()-2}: count={run_count} (using {actual_count}), value=0x{run_value:02x}")
+                    logger.debug(f"RLE at {f.tell()-2}: count={run_count}, value=0x{run_value:02x}. Adding {bytes_to_add} bytes.")
                 
-                decoded.extend([run_value] * actual_count)
+                decoded.extend([run_value] * bytes_to_add)
                 
-                # If this RLE sequence would exceed our expected length, we need to
-                # rewind the file position if we didn't use all the run
-                if run_count > remaining:
-                    if debug_info:
-                        logger.debug(f"Rewinding file position by {-1} bytes")
-                    f.seek(-1, 1)  # Rewind by 1 byte to allow next scanline to read this byte
-                    break
-                    
-            else:
+                # If the run was longer than needed (run_count > bytes_to_add),
+                # the file pointer is already correctly positioned after run_value_byte.
+                # The next read for the subsequent scanline/plane will continue from here.
+                
+            else:  # Literal byte
                 if debug_info:
-                    logger.debug(f"Literal byte at {f.tell()-1}: 0x{byte:02x}")
+                    logger.debug(f"Literal at {f.tell()-1}: 0x{byte:02x}")
                 decoded.append(byte)
-                
-                # Check if we've reached our target length
-                if len(decoded) == expected_length:
-                    break
-                
+
+        # After the loop, check if we decoded exactly the expected length
+        if len(decoded) != expected_length:
+             # This case should ideally not be reached if EOF checks are robust
+             # and expected_length is correct. But if it happens, log a warning.
+             logger.warning(f"Decoded length mismatch: got {len(decoded)}, expected {expected_length}. Possible data corruption or incorrect header info.")
+             # Truncate or pad if necessary? For now, just return what we have.
+
+    except EOFError as e:
+        logger.error(f"EOFError during RLE decode: {str(e)}")
+        logger.error(f"Decoded {len(decoded)} of {expected_length} bytes before error.")
+        # Return partially decoded data or raise? Raising is probably better.
+        raise
     except Exception as e:
-        if debug_info:
-            logger.error(f"Error during RLE decode: {str(e)}")
-            logger.error(f"Decoded {len(decoded)} of {expected_length} bytes")
+        logger.error(f"Unexpected error during RLE decode: {str(e)}")
+        logger.error(f"File position: {f.tell()}, Decoded {len(decoded)} of {expected_length} bytes.")
         raise
         
     if debug_info:
-        logger.debug(f"Final decoded length: {len(decoded)}")
-        if len(decoded) != expected_length:
-            logger.warning(f"Length mismatch: got {len(decoded)}, expected {expected_length}")
+        logger.debug(f"Finished decoding scanline. Final length: {len(decoded)}")
             
     return decoded
 
