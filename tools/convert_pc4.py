@@ -87,41 +87,105 @@ def decode_rle_scanline(f, expected_length, debug_info=None):
     return decoded
 
 
-def get_palette_from_color16(color16_path):
-    """Extract 16-color palette from COLOR16.PCX"""
-    with open(color16_path, "rb") as f:
-        # Go to end of file minus 769 bytes (256 color palette + marker byte)
-        f.seek(-769, 2)
-        if f.read(1)[0] == 0x0C:  # Palette marker
-            palette = []
-            for _ in range(16):  # Only need first 16 colors
-                r, g, b = f.read(3)
-                palette.append((r, g, b))
-            return palette
-    return None
+def read_pcx_palette(pcx_path: Path, num_colors: int = 16) -> Optional[list[tuple[int, int, int]]]:
+    """
+    Reads the color palette from a PCX file.
+    Handles different PCX versions and potential errors.
+    Returns the first `num_colors` entries.
+    """
+    from typing import Optional # Add missing import
+
+    try:
+        with open(pcx_path, "rb") as f:
+            # Read header to check version
+            header = f.read(128)
+            if len(header) < 128:
+                logger.error(f"Palette file {pcx_path.name} is too small to be a valid PCX.")
+                return None
+                
+            signature, version = struct.unpack("<BB", header[0:2])
+            if signature != 0x0A:
+                logger.error(f"Palette file {pcx_path.name} does not have PCX signature.")
+                return None
+
+            marker = None # Initialize marker
+            # For version 5 (256 colors), palette is usually at the end
+            if version == 5:
+                try:
+                    f.seek(-769, 2)  # Go to EOF - (256*3 + 1 marker byte)
+                    marker = f.read(1)
+                except OSError: # Handle files too small for seek
+                     logger.warning(f"Could not seek to palette marker position in {pcx_path.name}. File might be too small or corrupted.")
+
+                if marker and marker[0] == 0x0C:
+                    palette_data = f.read(768) # Read 256 * 3 bytes
+                    if len(palette_data) != 768:
+                         logger.error(f"Could not read full 256-color palette from {pcx_path.name}.")
+                         return None
+                    palette = []
+                    for i in range(num_colors): # Extract only the first num_colors
+                        r, g, b = palette_data[i*3 : i*3 + 3]
+                        palette.append((r, g, b))
+                    return palette
+                else:
+                    # Palette marker not found where expected, try header
+                    logger.warning(f"Palette marker 0x0C not found at expected position in {pcx_path.name} (Version 5). Will attempt header palette.")
+                    # Fall through to attempt reading from header below
+
+            # Attempt to read palette from header (Versions 0, 2, 3 or fallback for V5)
+            if version in [0, 2, 3] or (version == 5 and (not marker or marker[0] != 0x0C)):
+                 logger.info(f"Attempting to read palette from header of {pcx_path.name} (Version {version}).")
+                 header_palette_data = header[16:16 + 48] # 16 colors * 3 bytes
+                 if len(header_palette_data) == 48:
+                     palette = []
+                     for i in range(num_colors):
+                          r, g, b = header_palette_data[i*3 : i*3 + 3]
+                          palette.append((r, g, b))
+                     if version == 5:
+                         logger.warning(f"Used header palette from {pcx_path.name} as fallback.")
+                     return palette
+                 else:
+                     logger.error(f"Could not read expected 48 bytes for header palette in {pcx_path.name}.")
+                     return None
+            elif version == 4: # Version 4 (PC Paintbrush III) has no palette
+                 logger.warning(f"PCX version {version} detected in {pcx_path.name}. This version does not contain a palette.")
+                 return None # Or potentially return a default EGA palette here? For now, None.
+            else:
+                # Includes other unsupported versions
+                logger.error(f"Unsupported or unexpected PCX version {version} for palette reading in {pcx_path.name}.")
+                return None
+
+    except FileNotFoundError:
+        logger.error(f"Palette file not found: {pcx_path}")
+        return None
+    except Exception as e:
+        logger.error(f"Error reading palette from {pcx_path.name}: {str(e)}")
+        return None
 
 
 def convert_pc4(input_path: Path, output_path: Path, color16_path: Path, debug_mode: bool = False) -> bool:
-    """Convert PC4 image to PNG using COLOR16.PCX palette.
+    """Convert PC4 image to PNG using palette from COLOR16.PCX.
 
     Args:
         input_path: Path to PC4 image file
         output_path: Path to save PNG output
         color16_path: Path to COLOR16.PCX for palette
+        debug_mode: Enable debug output
 
     Returns:
         True if conversion successful
     """
     try:
-        # First get the palette
-        palette = get_palette_from_color16(color16_path)
+        # Read the first 16 colors from COLOR16.PCX palette
+        palette = read_pcx_palette(color16_path, 16)
         if not palette:
-            logger.error("Could not extract palette from COLOR16.PCX")
+            logger.error(f"Failed to read palette from {color16_path.name}. Cannot convert {input_path.name}.")
             return False
 
-        logger.debug("Palette from COLOR16.PCX:")
-        for i, color in enumerate(palette):
-            logger.debug(f"Color {i}: RGB{color}")
+        logger.debug(f"Using palette from {color16_path.name}:")
+        if debug_mode:
+            for i, color in enumerate(palette):
+                logger.debug(f"Color {i}: RGB{color}")
 
         with open(input_path, "rb") as f:
             # Read PCX header
@@ -228,11 +292,66 @@ def convert_image(filepath: Path, output_dir: Path, debug_mode: bool = False) ->
     # Put files in their respective subdirectories
     output_path = output_dir / "images" / "pc4" / f"{filepath.stem}.png"
 
-    # Get path to COLOR16.PCX
-    color16_path = filepath.parent / "COLOR16.PCX"
-    if not color16_path.exists():
-        logger.error(f"COLOR16.PCX not found in {filepath.parent}")
+    # Find COLOR16.PCX relative to the input file
+    color16_path = None
+    search_paths = [
+        filepath.parent,
+        filepath.parent.parent, # Check one level up
+    ]
+    # Try to find a 'raw_extracted' directory by traversing up
+    current = filepath.parent
+    while current != current.parent: # Traverse up until root
+        # Check if current directory itself is named 'raw_extracted'
+        if current.name == 'raw_extracted':
+            search_paths.append(current)
+            break
+        # Check if 'raw_extracted' exists as a subdirectory
+        elif (current / 'raw_extracted').is_dir():
+            search_paths.append(current / 'raw_extracted')
+            # If found, no need to search further up for it
+            break
+        current = current.parent
+        
+    # Add project root as a last resort search path if needed
+    # This assumes pcx_utils might be located relative to project root
+    try:
+        # Attempt relative import first for module usage
+        from .pcx_utils import PROJECT_ROOT 
+    except ImportError:
+        try:
+             # Fallback for script usage
+             from pcx_utils import PROJECT_ROOT
+        except (ImportError, AttributeError):
+             PROJECT_ROOT = None # Indicate PROJECT_ROOT couldn't be imported
+
+    if PROJECT_ROOT:
+        project_root_path = Path(PROJECT_ROOT)
+        if project_root_path not in search_paths:
+             search_paths.append(project_root_path)
+        # Also check for raw_extracted within the project root
+        raw_extracted_in_root = project_root_path / 'raw_extracted'
+        if raw_extracted_in_root.is_dir() and raw_extracted_in_root not in search_paths:
+             search_paths.append(raw_extracted_in_root)
+    else:
+         logger.debug("Could not determine PROJECT_ROOT for palette search.")
+
+
+    # Deduplicate search paths while preserving order (Python 3.7+)
+    unique_search_paths = list(dict.fromkeys(search_paths))
+
+    logger.debug(f"Searching for COLOR16.PCX in: {unique_search_paths}")
+
+    for search_dir in unique_search_paths:
+        potential_path = search_dir / "COLOR16.PCX"
+        if potential_path.is_file(): # Check if it's actually a file
+            color16_path = potential_path
+            logger.info(f"Found COLOR16.PCX at: {color16_path}")
+            break
+            
+    if not color16_path:
+        logger.error(f"COLOR16.PCX not found near {filepath} or in standard locations. Searched: {unique_search_paths}. Cannot determine palette.")
         return False
+
 
     return convert_pc4(filepath, output_path, color16_path, debug_mode)
 
