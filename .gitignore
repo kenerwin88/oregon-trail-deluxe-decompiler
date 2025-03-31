@@ -76,3 +76,4 @@ tools/extracted/
 *.AD
 *.ADV
 *.CNF
+.aider*

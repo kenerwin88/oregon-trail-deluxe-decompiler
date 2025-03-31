@@ -10,7 +10,6 @@ the final 4-bit color value (16 colors total).
 
 import logging
 from pathlib import Path
-from typing import Optional # Import Optional here
 from PIL import Image
 import struct
 
@@ -26,193 +25,111 @@ logger = logging.getLogger("pcx_converter.pc4")
 
 
 def decode_rle_scanline(f, expected_length, debug_info=None):
-    """Decode a single RLE-compressed scanline without seeking back."""
+    """Decode a single RLE-compressed scanline"""
     decoded = bytearray()
     start_pos = f.tell()
-    
+
     if debug_info:
-        logger.debug(f"\nDecoding scanline at offset {start_pos}, expected length: {expected_length}")
+        logger.debug(f"\nDecoding scanline at offset {start_pos}")
+        logger.debug(f"Expected length: {expected_length}")
 
     try:
         while len(decoded) < expected_length:
             byte = f.read(1)
             if not byte:  # EOF check
-                raise EOFError(f"Unexpected EOF during RLE decoding at offset {f.tell()}. Expected {expected_length} bytes, got {len(decoded)}.")
+                raise EOFError("Unexpected end of file during RLE decoding")
             byte = byte[0]
-            
+
             if (byte & 0xC0) == 0xC0:  # RLE marker (top 2 bits set)
                 run_count = byte & 0x3F  # Get run length from bottom 6 bits
-                run_value_byte = f.read(1)
-                if not run_value_byte:
-                    raise EOFError(f"Unexpected EOF reading RLE value at offset {f.tell()}.")
-                run_value = run_value_byte[0]
-                
-                # Calculate how many bytes we actually need for this scanline
+                run_value_bytes = f.read(1)
+                if not run_value_bytes:
+                    raise EOFError("Unexpected end of file reading RLE value")
+                run_value = run_value_bytes[0]
+
+                # Calculate how many bytes we actually need
                 remaining = expected_length - len(decoded)
-                bytes_to_add = min(run_count, remaining)
-                
+                actual_count = min(run_count, remaining)
+
                 if debug_info:
-                    logger.debug(f"RLE at {f.tell()-2}: count={run_count}, value=0x{run_value:02x}. Adding {bytes_to_add} bytes.")
-                
-                decoded.extend([run_value] * bytes_to_add)
-                
-                # If the run was longer than needed (run_count > bytes_to_add),
-                # the file pointer is already correctly positioned after run_value_byte.
-                # The next read for the subsequent scanline/plane will continue from here.
-                
-            else:  # Literal byte
+                    logger.debug(
+                        f"RLE sequence at {f.tell() - 2}: count={run_count} (using {actual_count}), value=0x{run_value:02x}"
+                    )
+
+                decoded.extend([run_value] * actual_count)
+
+                # If this RLE sequence would exceed our expected length, we need to
+                # rewind the file position if we didn't use all the run
+                if run_count > remaining:
+                    if debug_info:
+                        logger.debug(f"Rewinding file position by {-1} bytes")
+                    f.seek(
+                        -1, 1
+                    )  # Rewind by 1 byte to allow next scanline to read this byte
+                    break
+
+            else:
                 if debug_info:
-                    logger.debug(f"Literal at {f.tell()-1}: 0x{byte:02x}")
+                    logger.debug(f"Literal byte at {f.tell() - 1}: 0x{byte:02x}")
                 decoded.append(byte)
 
-        # After the loop, check if we decoded exactly the expected length
-        if len(decoded) != expected_length:
-             # This case should ideally not be reached if EOF checks are robust
-             # and expected_length is correct. But if it happens, log a warning.
-             logger.warning(f"Decoded length mismatch: got {len(decoded)}, expected {expected_length}. Possible data corruption or incorrect header info.")
-             # Truncate or pad if necessary? For now, just return what we have.
+                # Check if we've reached our target length
+                if len(decoded) == expected_length:
+                    break
 
-    except EOFError as e:
-        logger.error(f"EOFError during RLE decode: {str(e)}")
-        logger.error(f"Decoded {len(decoded)} of {expected_length} bytes before error.")
-        # Return partially decoded data or raise? Raising is probably better.
-        raise
     except Exception as e:
-        logger.error(f"Unexpected error during RLE decode: {str(e)}")
-        logger.error(f"File position: {f.tell()}, Decoded {len(decoded)} of {expected_length} bytes.")
+        if debug_info:
+            logger.error(f"Error during RLE decode: {str(e)}")
+            logger.error(f"Decoded {len(decoded)} of {expected_length} bytes")
         raise
-        
+
     if debug_info:
-        logger.debug(f"Finished decoding scanline. Final length: {len(decoded)}")
-            
+        logger.debug(f"Final decoded length: {len(decoded)}")
+        if len(decoded) != expected_length:
+            logger.warning(
+                f"Length mismatch: got {len(decoded)}, expected {expected_length}"
+            )
+
     return decoded
 
 
-def read_pcx_palette(pcx_path: Path, num_colors: int = 16) -> Optional[list[tuple[int, int, int]]]:
-    """
-    Reads the color palette from a PCX file.
-    Handles different PCX versions and potential errors.
-    Returns the first `num_colors` entries.
-    """
-    # Optional is now imported globally
-
-    try:
-        with open(pcx_path, "rb") as f:
-            # Read header to check version
-            header = f.read(128)
-            if len(header) < 128:
-                logger.error(f"Palette file {pcx_path.name} is too small to be a valid PCX.")
-                return None
-                
-            signature, version = struct.unpack("<BB", header[0:2])
-            if signature != 0x0A:
-                logger.error(f"Palette file {pcx_path.name} does not have PCX signature.")
-                return None
-
-            marker = None # Initialize marker
-            # For version 5 (256 colors), palette is usually at the end
-            if version == 5:
-                try:
-                    f.seek(-769, 2)  # Go to EOF - (256*3 + 1 marker byte)
-                    marker = f.read(1)
-                except OSError: # Handle files too small for seek
-                     logger.warning(f"Could not seek to palette marker position in {pcx_path.name}. File might be too small or corrupted.")
-
-                if marker and marker[0] == 0x0C:
-                    palette_data = f.read(768) # Read 256 * 3 bytes
-                    if len(palette_data) != 768:
-                         logger.error(f"Could not read full 256-color palette from {pcx_path.name}.")
-                         return None
-                    palette = []
-                    for i in range(num_colors): # Extract only the first num_colors
-                        r, g, b = palette_data[i*3 : i*3 + 3]
-                        palette.append((r, g, b))
-                    return palette
-                else:
-                    # Palette marker not found where expected, try header
-                    logger.warning(f"Palette marker 0x0C not found at expected position in {pcx_path.name} (Version 5). Will attempt header palette.")
-                    # Fall through to attempt reading from header below
-
-            # Attempt to read palette from header (Versions 0, 2, 3 or fallback for V5)
-            if version in [0, 2, 3] or (version == 5 and (not marker or marker[0] != 0x0C)):
-                 logger.info(f"Attempting to read palette from header of {pcx_path.name} (Version {version}).")
-                 header_palette_data = header[16:16 + 48] # 16 colors * 3 bytes
-                 if len(header_palette_data) == 48:
-                     palette = []
-                     for i in range(num_colors):
-                          r, g, b = header_palette_data[i*3 : i*3 + 3]
-                          palette.append((r, g, b))
-                     if version == 5:
-                         logger.warning(f"Used header palette from {pcx_path.name} as fallback.")
-                     return palette
-                 else:
-                     logger.error(f"Could not read expected 48 bytes for header palette in {pcx_path.name}.")
-                     return None
-            elif version == 4: # Version 4 (PC Paintbrush III) has no palette
-                 logger.warning(f"PCX version {version} detected in {pcx_path.name}. This version does not contain a palette.")
-                 return None # Or potentially return a default EGA palette here? For now, None.
-            else:
-                # Includes other unsupported versions
-                logger.error(f"Unsupported or unexpected PCX version {version} for palette reading in {pcx_path.name}.")
-                return None
-
-    except FileNotFoundError:
-        logger.error(f"Palette file not found: {pcx_path}")
-        return None
-    except Exception as e:
-        logger.error(f"Error reading palette from {pcx_path.name}: {str(e)}")
-        return None
+def get_palette_from_color16(color16_path):
+    """Extract 16-color palette from COLOR16.PCX"""
+    with open(color16_path, "rb") as f:
+        # Go to end of file minus 769 bytes (256 color palette + marker byte)
+        f.seek(-769, 2)
+        if f.read(1)[0] == 0x0C:  # Palette marker
+            palette = []
+            for _ in range(16):  # Only need first 16 colors
+                r, g, b = f.read(3)
+                palette.append((r, g, b))
+            return palette
+    return None
 
 
-def detect_plane_format(header: bytes, file_content: bytes) -> str:
-    """
-    Attempt to detect the plane format based on file characteristics.
-    
-    Args:
-        header: PCX file header bytes
-        file_content: Full file content
-        
-    Returns:
-        str: "standard" for standard EGA format, "reversed" for reversed bit planes
-    """
-    # Check header values that might indicate different formats
-    version = header[1]
-    planes = header[65]
-    
-    # If it's not 4 planes, it's probably not a standard EGA file
-    if planes != 4:
-        return "standard"  # Default to standard for non-4-plane files
-        
-    # Check for specific signatures in the file content that might
-    # indicate a different format is needed
-    # This is a placeholder for more sophisticated detection
-    
-    # For now, return "standard" as the default
-    return "standard"
-
-def convert_pc4(input_path: Path, output_path: Path, color16_path: Path, debug_mode: bool = False) -> bool:
-    """Convert PC4 image to PNG using palette from COLOR16.PCX.
+def convert_pc4(
+    input_path: Path, output_path: Path, color16_path: Path, debug_mode: bool = False
+) -> bool:
+    """Convert PC4 image to PNG using COLOR16.PCX palette.
 
     Args:
         input_path: Path to PC4 image file
         output_path: Path to save PNG output
         color16_path: Path to COLOR16.PCX for palette
-        debug_mode: Enable debug output
 
     Returns:
         True if conversion successful
     """
     try:
-        # Read the first 16 colors from COLOR16.PCX palette
-        palette = read_pcx_palette(color16_path, 16)
+        # First get the palette
+        palette = get_palette_from_color16(color16_path)
         if not palette:
-            logger.error(f"Failed to read palette from {color16_path.name}. Cannot convert {input_path.name}.")
+            logger.error("Could not extract palette from COLOR16.PCX")
             return False
 
-        logger.debug(f"Using palette from {color16_path.name}:")
-        if debug_mode:
-            for i, color in enumerate(palette):
-                logger.debug(f"Color {i}: RGB{color}")
+        logger.debug("Palette from COLOR16.PCX:")
+        for i, color in enumerate(palette):
+            logger.debug(f"Color {i}: RGB{color}")
 
         with open(input_path, "rb") as f:
             # Read PCX header
@@ -226,16 +143,7 @@ def convert_pc4(input_path: Path, output_path: Path, color16_path: Path, debug_m
             logger.debug(f"\nDecoding {input_path.name}:")
             logger.debug(f"Image size: {width}x{height}")
             logger.debug(f"Color planes: {planes}")
-            logger.debug(f"Bytes per line (from header): {bytes_per_line}")
-
-            # Calculate expected bytes per line for one plane
-            expected_bpl = (width + 7) // 8
-            logger.debug(f"Expected bytes per line (calculated): {expected_bpl}")
-            if bytes_per_line < expected_bpl:
-                 logger.warning(f"Header 'bytes_per_line' ({bytes_per_line}) is less than calculated minimum ({expected_bpl}) for width {width}. This might indicate corruption or an unusual format.")
-            elif bytes_per_line > expected_bpl:
-                 logger.info(f"Header 'bytes_per_line' ({bytes_per_line}) includes padding beyond calculated minimum ({expected_bpl}). Using header value.")
-
+            logger.debug(f"Bytes per line: {bytes_per_line}")
 
             # Create arrays for each plane
             plane_data = [[] for _ in range(planes)]
@@ -243,17 +151,21 @@ def convert_pc4(input_path: Path, output_path: Path, color16_path: Path, debug_m
             # Read and decode RLE data for each scanline of each plane
             for y in range(height):
                 if debug_mode and y == 0:
-                    logger.debug(f"\nDecoding first scanline for each plane:")
-                
+                    logger.debug("\nDecoding first scanline for each plane:")
+
                 for plane in range(planes):
                     try:
                         debug_info = debug_mode and y == 0
                         scanline = decode_rle_scanline(f, bytes_per_line, debug_info)
                         if len(scanline) != bytes_per_line:
-                            raise ValueError(f"Scanline length mismatch: got {len(scanline)}, expected {bytes_per_line}")
+                            raise ValueError(
+                                f"Scanline length mismatch: got {len(scanline)}, expected {bytes_per_line}"
+                            )
                         plane_data[plane].append(scanline)
                     except Exception as e:
-                        logger.error(f"Error decoding plane {plane}, scanline {y}: {str(e)}")
+                        logger.error(
+                            f"Error decoding plane {plane}, scanline {y}: {str(e)}"
+                        )
                         logger.error(f"File position: {f.tell()}")
                         return False
 
@@ -268,46 +180,19 @@ def convert_pc4(input_path: Path, output_path: Path, color16_path: Path, debug_m
                     byte_pos = x // 8
 
                     # Get bits from each plane
-                    # Standard EGA plane order is:
+                    # In EGA, planes are ordered:
                     # Plane 0 -> Blue (Bit 0)
                     # Plane 1 -> Green (Bit 1)
                     # Plane 2 -> Red (Bit 2)
                     # Plane 3 -> Intensity (Bit 3)
-                    
-                    # Check if this is a problematic file that needs special handling
-                    filename_lower = input_path.stem.lower()
-                    problematic_files = ["banner", "crossbut", "land0", "mecc", "optbtn1", "split2", "wagons"]
-                    
-                    if filename_lower in problematic_files:
-                        # For problematic files, try VGA-style plane ordering
-                        # In this case, each plane represents a full bit of the color index
-                        color_index = 0
-                        for p in range(planes):
-                            if byte_pos < len(plane_data[p][y]):
-                                # Extract bit from MSB to LSB order
-                                bit = (plane_data[p][y][byte_pos] >> bit_pos) & 1
-                                # For these problematic files, try a different bit mapping:
-                                # Plane 0 -> Bit 3 (Most significant)
-                                # Plane 1 -> Bit 2
-                                # Plane 2 -> Bit 1
-                                # Plane 3 -> Bit 0 (Least significant)
-                                # This effectively reverses the bit order
-                                color_index |= (bit << (planes - 1 - p))
-                    else:
-                        # Standard EGA plane ordering for normal files
-                        color_index = 0
-                        for p in range(planes):
-                            if byte_pos < len(plane_data[p][y]):
-                                # Extract bit from MSB to LSB order
-                                bit = (plane_data[p][y][byte_pos] >> bit_pos) & 1
-                                # Map plane bits to color index
-                                color_index |= (bit << p)
+                    color_index = 0
+                    for p in range(planes):
+                        if byte_pos < len(plane_data[p][y]):
+                            # Extract bit from MSB to LSB order
+                            bit = (plane_data[p][y][byte_pos] >> bit_pos) & 1
+                            # Map plane bits to color index
+                            color_index |= bit << p
 
-                    # Ensure color_index is within palette range
-                    if color_index >= len(palette):
-                        logger.warning(f"Color index {color_index} out of range for palette with {len(palette)} colors. Clamping to last color.")
-                        color_index = len(palette) - 1
-                        
                     # Map to color from palette
                     pixels[x, y] = palette[color_index]
 
@@ -346,188 +231,28 @@ def convert_image(filepath: Path, output_dir: Path, debug_mode: bool = False) ->
     # Put files in their respective subdirectories
     output_path = output_dir / "images" / "pc4" / f"{filepath.stem}.png"
 
-    # Find COLOR16.PCX relative to the input file
-    color16_path = None
-    search_paths = [
-        filepath.parent,
-        filepath.parent.parent, # Check one level up
-    ]
-    # Try to find a 'raw_extracted' directory by traversing up
-    current = filepath.parent
-    while current != current.parent: # Traverse up until root
-        # Check if current directory itself is named 'raw_extracted'
-        if current.name == 'raw_extracted':
-            search_paths.append(current)
-            break
-        # Check if 'raw_extracted' exists as a subdirectory
-        elif (current / 'raw_extracted').is_dir():
-            search_paths.append(current / 'raw_extracted')
-            # If found, no need to search further up for it
-            break
-        current = current.parent
-        
-    # Add project root as a last resort search path if needed
-    # This assumes pcx_utils might be located relative to project root
-    try:
-        # Attempt relative import first for module usage
-        from .pcx_utils import PROJECT_ROOT 
-    except ImportError:
-        try:
-             # Fallback for script usage
-             from pcx_utils import PROJECT_ROOT
-        except (ImportError, AttributeError):
-             PROJECT_ROOT = None # Indicate PROJECT_ROOT couldn't be imported
-
-    if PROJECT_ROOT:
-        project_root_path = Path(PROJECT_ROOT)
-        if project_root_path not in search_paths:
-             search_paths.append(project_root_path)
-        # Also check for raw_extracted within the project root
-        raw_extracted_in_root = project_root_path / 'raw_extracted'
-        if raw_extracted_in_root.is_dir() and raw_extracted_in_root not in search_paths:
-             search_paths.append(raw_extracted_in_root)
-    else:
-         logger.debug("Could not determine PROJECT_ROOT for palette search.")
-
-
-    # Deduplicate search paths while preserving order (Python 3.7+)
-    unique_search_paths = list(dict.fromkeys(search_paths))
-
-    logger.debug(f"Searching for COLOR16.PCX in: {unique_search_paths}")
-
-    for search_dir in unique_search_paths:
-        potential_path = search_dir / "COLOR16.PCX"
-        if potential_path.is_file(): # Check if it's actually a file
-            color16_path = potential_path
-            logger.info(f"Found COLOR16.PCX at: {color16_path}")
-            break
-            
-    if not color16_path:
-        logger.error(f"COLOR16.PCX not found near {filepath} or in standard locations. Searched: {unique_search_paths}. Cannot determine palette.")
+    # Get path to COLOR16.PCX
+    color16_path = filepath.parent / "COLOR16.PCX"
+    if not color16_path.exists():
+        logger.error(f"COLOR16.PCX not found in {filepath.parent}")
         return False
-
 
     return convert_pc4(filepath, output_path, color16_path, debug_mode)
 
+
 if __name__ == "__main__":
     import sys
-    import argparse # Import argparse
 
-    parser = argparse.ArgumentParser(
-        description="Convert PC4 image file to PNG using palette from COLOR16.PCX.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
-    parser.add_argument("input_file", help="Path to the input PC4 file.")
-    parser.add_argument("output_dir", help="Directory to save the converted PNG file.")
-    parser.add_argument("-d", "--debug", action="store_true", help="Enable debug logging.")
-    parser.add_argument("--try-both", action="store_true", 
-                        help="Try both standard and reversed bit plane ordering and save both versions.")
-    
-    args = parser.parse_args()
+    if len(sys.argv) != 3:
+        print("Usage: python3 convert_pc4.py <input_pc4_file> <output_dir>")
+        sys.exit(1)
 
-    input_path = Path(args.input_file)
-    output_dir = Path(args.output_dir)
-    
-    # Enable debug logging if requested
-    setup_logging(args.debug)
-    if args.debug:
-        logger.setLevel(logging.DEBUG)
-    
-    # Pass the debug flag from args to convert_image
-    success = convert_image(input_path, output_dir, debug_mode=args.debug)
-    
-    # If requested, try the alternative bit plane ordering and save as a separate file
-    if args.try_both:
-        # Create a modified version of convert_image that forces the alternative ordering
-        def convert_with_alt_ordering(filepath, output_dir, debug_mode):
-            # Similar to convert_image but forces the alternative ordering
-            if not filepath.name.lower().endswith(".pc4"):
-                return False
-                
-            # Put files in a different subdirectory to avoid overwriting
-            output_path = output_dir / "images" / "pc4_alt" / f"{filepath.stem}.png"
-            
-            # Find COLOR16.PCX using the same logic as in convert_image
-            color16_path = None
-            for search_dir in [filepath.parent, filepath.parent.parent]:
-                potential_path = search_dir / "COLOR16.PCX"
-                if potential_path.is_file():
-                    color16_path = potential_path
-                    break
-                    
-            if not color16_path:
-                logger.error("COLOR16.PCX not found for alternative conversion")
-                return False
-                
-            # Create a modified version of convert_pc4 that forces reversed bit plane ordering
-            with open(filepath, "rb") as f:
-                file_content = f.read()
-                
-            # Ensure output directory exists
-            output_path.parent.mkdir(parents=True, exist_ok=True)
-            
-            # Create a new image with reversed bit plane ordering
-            with open(filepath, "rb") as f:
-                header = f.read(128)
-                xmin, ymin, xmax, ymax = struct.unpack("<HHHH", header[4:12])
-                width = xmax - xmin + 1
-                height = ymax - ymin + 1
-                planes = header[65]
-                bytes_per_line = struct.unpack("<H", header[66:68])[0]
-                
-                # Read palette
-                palette = read_pcx_palette(color16_path, 16)
-                if not palette:
-                    return False
-                    
-                # Reset file pointer to after header
-                f.seek(128)
-                
-                # Create arrays for each plane
-                plane_data = [[] for _ in range(planes)]
-                
-                # Read and decode RLE data for each scanline of each plane
-                for y in range(height):
-                    for plane in range(planes):
-                        try:
-                            scanline = decode_rle_scanline(f, bytes_per_line, False)
-                            plane_data[plane].append(scanline)
-                        except Exception as e:
-                            logger.error(f"Error in alt conversion: {e}")
-                            return False
-                
-                # Create output image
-                img = Image.new("RGB", (width, height))
-                pixels = img.load()
-                
-                # Combine planes with REVERSED ordering
-                for y in range(height):
-                    for x in range(width):
-                        bit_pos = 7 - (x % 8)
-                        byte_pos = x // 8
-                        
-                        # Use reversed bit plane ordering
-                        color_index = 0
-                        for p in range(planes):
-                            if byte_pos < len(plane_data[p][y]):
-                                bit = (plane_data[p][y][byte_pos] >> bit_pos) & 1
-                                # Reverse the bit ordering
-                                color_index |= (bit << (planes - 1 - p))
-                                
-                        # Ensure color_index is within palette range
-                        if color_index >= len(palette):
-                            color_index = len(palette) - 1
-                            
-                        pixels[x, y] = palette[color_index]
-                
-                # Save the image
-                img.save(output_path)
-                logger.info(f"Saved alternative version to {output_path}")
-                return True
-        
-        # Try the alternative ordering
-        alt_success = convert_with_alt_ordering(input_path, output_dir, args.debug)
-        if alt_success:
-            logger.info("Created both standard and alternative versions for comparison")
-    
+    input_path = Path(sys.argv[1])
+    output_dir = Path(sys.argv[2])
+
+    # Enable debug logging
+    setup_logging(True)
+    logger.setLevel(logging.DEBUG)
+
+    success = convert_image(input_path, output_dir, debug_mode=True)
     sys.exit(0 if success else 1)
