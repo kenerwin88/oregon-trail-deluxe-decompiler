@@ -24,3 +24,11 @@ from .data_structures import (
     ArrayDefinition,
 )
 from .comment_generator import add_comments_to_function, generate_instruction_comment
+from .oregon_trail_specific import (
+    identify_game_constant,
+    identify_memory_address,
+    identify_game_pattern,
+    enhance_with_game_knowledge,
+    identify_game_function
+)
+from .c_code_generator import generate_c_code
