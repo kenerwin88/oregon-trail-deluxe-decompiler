@@ -1,15 +1,38 @@
 # Oregon Trail Decompiler
 
+[![View Documentation Website](https://img.shields.io/badge/View-Documentation_Website-brightgreen?style=for-the-badge)](https://kenerwin88.github.io/oregon-trail-deluxe-decompiler/)
+
 A comprehensive toolset for extracting and converting assets from the 1990 DOS version of The Oregon Trail to modern formats. This project aims to make the game's assets accessible for preservation, study, and potential modern reimplementations.
+
+<div align="center">
+  <img src="docs/modern/images/pc8/TITLE.png" alt="Oregon Trail Title Screen" width="400"/>
+</div>
 
 ## Documentation Website
 
-Visit our [GitHub Pages website](https://yourusername.github.io/oregon-trail-decompiler/) to explore the extracted assets and learn about the file formats used in the original game. The website provides:
+**[🌐 EXPLORE THE OREGON TRAIL ASSETS ONLINE](https://kenerwin88.github.io/oregon-trail-deluxe-decompiler/)**
+
+Visit our documentation website to explore the extracted assets and learn about the file formats used in the original game. The website provides:
 
 - Visual galleries of all extracted images
 - Playable sound and music files
 - Detailed explanations of the proprietary file formats
 - Technical insights into the game's architecture
+
+## Extracted Assets Preview
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><img src="docs/modern/images/pc8/LAND0.png" alt="Starting Location" width="200"/><br><em>Starting Location</em></td>
+      <td align="center"><img src="docs/modern/images/256/BUFFALO.png" alt="Buffalo" width="200"/><br><em>Buffalo for Hunting</em></td>
+    </tr>
+    <tr>
+      <td align="center"><img src="docs/modern/images/pc8/MAP.png" alt="Trail Map" width="200"/><br><em>Trail Map</em></td>
+      <td align="center"><img src="docs/modern/images/pc8/WAGONS.png" alt="Wagon Train" width="200"/><br><em>Wagon Train</em></td>
+    </tr>
+  </table>
+</div>
 
 ## Quick Start
 ```bash
@@ -39,6 +62,11 @@ This will:
 
 ## Project Structure
 
+<div align="center">
+  <img src="docs/modern/images/pc8/RAFTING.png" alt="River Rafting" width="400"/>
+  <p><em>The project provides tools to extract and convert all game assets</em></p>
+</div>
+
 ```
 original_game/      # Original DOS game files
   OREGON.EXE        # Main game executable
@@ -47,7 +75,7 @@ original_game/      # Original DOS game files
 
 raw_extracted/      # Extracted original assets (from GXL)
 
-modern/             # Converted modern assets
+docs/modern/        # Converted modern assets
   images/           # Converted PNG images
   music/            # Converted MIDI files
   sounds/           # Converted WAV files
@@ -132,19 +160,54 @@ The assets are placed directly in the `docs/modern/` directory to make them read
 
 ## File Format Documentation
 
+<div align="center">
+  <img src="docs/modern/images/pc8/STORE.png" alt="General Store" width="400"/>
+  <p><em>The game uses multiple proprietary file formats for graphics, sound, and game data</em></p>
+</div>
+
 See [docs/](docs/) for detailed technical analysis of the original game's file formats:
 
 - [executable_analysis.md](docs/executable_analysis.md): Analysis of OREGON.EXE
 - [ctr_format_analysis.md](docs/ctr_format_analysis.md): Control file format
 - [XMI_format.md](XMI_format.md): Music file format
 
-## Contributing
+<div align="center">
+  <table>
+    <tr>
+      <td><strong>Format</strong></td>
+      <td><strong>Description</strong></td>
+      <td><strong>Modern Equivalent</strong></td>
+    </tr>
+    <tr>
+      <td>PC8/PC4</td>
+      <td>256/16-color images with RLE compression</td>
+      <td>PNG</td>
+    </tr>
+    <tr>
+      <td>XMI</td>
+      <td>MIDI music with custom headers</td>
+      <td>MIDI</td>
+    </tr>
+    <tr>
+      <td>SND</td>
+      <td>Raw PCM audio data</td>
+      <td>WAV</td>
+    </tr>
+    <tr>
+      <td>CTR</td>
+      <td>Control files for UI and game logic</td>
+      <td>JSON</td>
+    </tr>
+    <tr>
+      <td>ANI</td>
+      <td>Animation sequences</td>
+      <td>PNG sequences</td>
+    </tr>
+  </table>
+</div>
 
-Contributions are welcome! Areas that need work:
-- Additional file format documentation
-- Support for more asset types
-- Improved conversion quality
-- Bug fixes and edge cases
+## Contributing
+If you worked on the original game, please reach out to me so that I can get your autograph (serious). :D
 
 ## License
 

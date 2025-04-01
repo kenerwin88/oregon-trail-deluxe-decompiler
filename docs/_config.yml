@@ -1,7 +1,7 @@
 title: Oregon Trail Deluxe Decompilation
 description: Documentation of the Oregon Trail Deluxe file formats and assets
 theme: jekyll-theme-minimal
-baseurl: "/oregon-trail-decompiler"
+baseurl: "/oregon-trail-deluxe-decompiler"
 url: "https://kenerwin88.github.io"
 show_downloads: true
 github:
