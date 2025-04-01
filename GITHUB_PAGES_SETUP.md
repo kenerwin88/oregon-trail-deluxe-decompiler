@@ -76,3 +76,14 @@ If the site doesn't deploy correctly:
 2. Ensure all file paths are correct (they should be relative to the repository root)
 3. Verify that the `.github/workflows/pages.yml` file is properly configured
 4. Make sure the `docs/` directory contains all necessary files
+
+## GitHub Actions Workflow
+
+The GitHub Actions workflow uses the following actions:
+
+- `actions/checkout@v4` - Checks out your repository
+- `actions/configure-pages@v4` - Configures GitHub Pages
+- `actions/upload-pages-artifact@v3` - Uploads the docs directory as an artifact
+- `actions/deploy-pages@v4` - Deploys the artifact to GitHub Pages
+
+These are the latest versions as of April 2025 and should be compatible with GitHub's requirements.
