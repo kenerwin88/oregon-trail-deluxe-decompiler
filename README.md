@@ -2,6 +2,15 @@
 
 A comprehensive toolset for extracting and converting assets from the 1990 DOS version of The Oregon Trail to modern formats. This project aims to make the game's assets accessible for preservation, study, and potential modern reimplementations.
 
+## Documentation Website
+
+Visit our [GitHub Pages website](https://yourusername.github.io/oregon-trail-decompiler/) to explore the extracted assets and learn about the file formats used in the original game. The website provides:
+
+- Visual galleries of all extracted images
+- Playable sound and music files
+- Detailed explanations of the proprietary file formats
+- Technical insights into the game's architecture
+
 ## Quick Start
 ```bash
 # Extract and convert everything with a single command
@@ -109,7 +118,7 @@ dosbox-x -conf dosbox-x.conf
 ### Output Structure
 After running the converter, you'll find:
 - `raw_extracted/`: Files extracted from OREGON.GXL
-- `modern/`: All game assets converted to modern formats:
+- `docs/modern/`: All game assets converted to modern formats:
   - `images/`: PNG images from PC8/PC4/PCX files
   - `music/`: MIDI files from XMI
   - `sounds/`: WAV files from raw PCM
@@ -118,6 +127,8 @@ After running the converter, you'll find:
   - `controls/`: Control settings and layouts
   - `scores/`: High score data
   - `fonts/`: Converted fonts
+
+The assets are placed directly in the `docs/modern/` directory to make them ready for GitHub Pages deployment.
 
 ## File Format Documentation
 

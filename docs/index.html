@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oregon Trail Deluxe - Decompilation Project</title>
+    <style>
+        :root {
+            --primary-color: #2c5e1a;
+            --secondary-color: #8b4513;
+            --background-color: #f5f5dc;
+            --text-color: #333;
+            --header-color: #1a3c0e;
+            --accent-color: #d2b48c;
+            --border-color: #8b4513;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: var(--header-color);
+            margin: 25px 0 15px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        h3 {
+            color: var(--secondary-color);
+            margin: 20px 0 10px 0;
+        }
+        
+        p {
+            margin-bottom: 15px;
+        }
+        
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            flex: 1 1 300px;
+        }
+        
+        .card h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+        
+        .file-format {
+            background-color: var(--accent-color);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .file-format h3 {
+            margin-top: 0;
+            color: var(--header-color);
+        }
+        
+        .asset-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .asset-item {
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 10px;
+            background-color: white;
+            text-align: center;
+        }
+        
+        .asset-item img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .asset-item a {
+            text-decoration: none;
+            color: var(--text-color);
+            display: block;
+        }
+        
+        .asset-item a:hover img {
+            transform: scale(1.05);
+        }
+        
+        .asset-item a p {
+            color: var(--primary-color);
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .asset-item audio {
+            width: 100%;
+        }
+        
+        pre {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        
+        code {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        table, th, td {
+            border: 1px solid var(--border-color);
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .nav-tabs li {
+            margin-right: 10px;
+        }
+        
+        .nav-tabs a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: var(--text-color);
+            background-color: #e9e9e9;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .nav-tabs a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Oregon Trail Deluxe</h1>
+        <p>Decompilation Project Documentation</p>
+    </header>
+
+    <main>
+        <section id="overview">
+            <h2>Project Overview</h2>
+            <p>
+                This website documents the findings from the decompilation of <strong>The Oregon Trail Deluxe</strong>, 
+                the 1990 DOS version of the classic educational game. Through reverse engineering and analysis, 
+                we've extracted and converted the game's assets to modern formats, providing insights into its 
+                technical architecture and design.
+            </p>
+            <p>
+                The Oregon Trail was developed by MECC (Minnesota Educational Computing Consortium) and is one of the 
+                most iconic educational games ever created. The DOS version uses a variety of proprietary file formats 
+                and compression techniques that have been decoded through this project.
+            </p>
+            
+            <div class="container">
+                <div class="card">
+                    <h3>Technical Specifications</h3>
+                    <ul>
+                        <li><strong>Original Release:</strong> 1990</li>
+                        <li><strong>Platform:</strong> MS-DOS</li>
+                        <li><strong>Developer:</strong> MECC</li>
+                        <li><strong>Executable:</strong> OREGON.EXE (273,648 bytes)</li>
+                        <li><strong>Compiler:</strong> Borland C++ (1991)</li>
+                        <li><strong>Memory Requirements:</strong> 475K (515K with sound)</li>
+                        <li><strong>Graphics:</strong> VGA (16/256 colors)</li>
+                        <li><strong>Sound:</strong> PC Speaker, AdLib, Sound Blaster</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Decompilation Project</h3>
+                    <ul>
+                        <li><strong>Goal:</strong> Extract and convert assets to modern formats</li>
+                        <li><strong>Asset Types:</strong> Images, music, sound, text, animations</li>
+                        <li><strong>File Formats:</strong> GXL, PC8, PC4, XMI, SND, CTR, ANI, etc.</li>
+                        <li><strong>Modern Formats:</strong> PNG, MIDI, WAV, JSON, UTF-8</li>
+                        <li><strong>Tools:</strong> Python-based extraction and conversion utilities</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="file-formats">
+            <h2>File Formats</h2>
+            <p>
+                The Oregon Trail Deluxe uses a variety of proprietary file formats to store its assets. 
+                Understanding these formats was crucial to extracting and converting the game's content.
+            </p>
+            
+            <div class="file-format">
+                <h3>GXL (Graphics Library)</h3>
+                <p>
+                    The main archive format used to store most game assets. OREGON.GXL contains images, 
+                    sounds, music, and text files used throughout the game.
+                </p>
+                <p><strong>Structure:</strong></p>
+                <ul>
+                    <li>Header section (0x00-0x88): Contains metadata about the file</li>
+                    <li>File table (0x89-?): List of files contained in the archive</li>
+                    <li>File data: Raw file content at the offsets specified in the file table</li>
+                </ul>
+            </div>
+            
+            <div class="file-format">
+                <h3>PC8/PC4 (Image Files)</h3>
+                <p>
+                    Proprietary image formats used for game graphics. PC8 files are 8-bit (256 colors) 
+                    while PC4 files are 4-bit (16 colors).
+                </p>
+                <p><strong>Features:</strong></p>
+                <ul>
+                    <li>RLE (Run-Length Encoding) compression</li>
+                    <li>Embedded color palette</li>
+                    <li>Header with dimensions and metadata</li>
+                    <li>Similar to PCX format but with proprietary modifications</li>
+                </ul>
+                <pre><code>// PC8Image class excerpt from convert_pc8.py
+class PC8Image:
+    """Class representing a PC8 image file.
+
+    Encapsulates the parsing, processing, and conversion of PC8-format
+    image files to PNG format.
+
+    Attributes:
+        width: Image width in pixels
+        height: Image height in pixels
+        bytes_per_line: Bytes per scan line (may include padding)
+        palette: Color palette for the image (256 RGB triplets)
+        image_data: Uncompressed pixel data for the image
+    """</code></pre>
+            </div>
+            
+            <div class="file-format">
+                <h3>XMI (eXtended MIDI)</h3>
+                <p>
+                    Music format used by the Miles Sound System. XMI files contain MIDI music data with 
+                    extensions for game-specific features.
+                </p>
+                <p><strong>Structure:</strong></p>
+                <ul>
+                    <li>FORM:XDIR chunk: Contains metadata about the file</li>
+                    <li>CAT:XMID chunk: Contains one or more songs</li>
+                    <li>TIMB chunk: Instrument definitions</li>
+                    <li>EVNT chunk: Note and timing data</li>
+                </ul>
+                <p>
+                    XMI files use a different timing mechanism than standard MIDI, with delays stored as 
+                    summed 7-bit values rather than concatenated bits.
+                </p>
+                <pre><code>// XMI format excerpt from XMI_format.md
+The eXtended MIDI file format is used by the Miles Sound System (MSS) for storing game music.
+
+File format:
+- FORM (type XDIR)
+  - INFO
+- CAT (type XMID)
+  - FORM (type XMID) - first song
+    - TIMB
+    - EVNT
+  - FORM (type XMID) - second song (optional)
+    - TIMB
+    - EVNT</code></pre>
+            </div>
+            
+            <div class="file-format">
+                <h3>SND (Sound Files)</h3>
+                <p>
+                    Simple sound format used for sound effects.
+                </p>
+                <p><strong>Specifications:</strong></p>
+                <ul>
+                    <li>Raw 8-bit unsigned PCM audio</li>
+                    <li>Mono channel</li>
+                    <li>11025 Hz sample rate (standard PC speaker rate)</li>
+                    <li>No header, just raw sample data</li>
+                </ul>
+                <pre><code>// SND conversion excerpt from convert_snd.py
+def convert_snd(filepath: Path, output_dir: Path) -> bool:
+    """Convert SND to WAV
+
+    Args:
+        filepath: Path to SND file
+        output_dir: Output directory for converted files
+
+    Returns:
+        bool: True if conversion successful
+    """
+    # Create WAV file
+    with wave.open(str(output_path), "wb") as wav:
+        wav.setnchannels(1)  # Mono
+        wav.setsampwidth(1)  # 8-bit
+        wav.setframerate(11025)  # Standard PC speaker rate
+        wav.writeframes(data)</code></pre>
+            </div>
+            
+            <div class="file-format">
+                <h3>CTR (Control Files)</h3>
+                <p>
+                    Script/control files that define UI layouts, actions, text, and interactive elements.
+                </p>
+                <p><strong>Structure:</strong></p>
+                <ul>
+                    <li>Text-based format with numeric commands and parameters</li>
+                    <li>Commands for positioning, text styling, buttons, and input fields</li>
+                    <li>References to image files for UI elements</li>
+                    <li>Defines screen layouts and interactive behaviors</li>
+                </ul>
+                <pre><code>// CTR format excerpt from INTRO1.txt
+17, let's load the images
+1,1
+INTROBUT.PCC
+
+17, clear the screen to gold
+6,32 7,32
+4,415 5,574
+12,0,6
+
+18,2,0,6,1
+6,320 7,40
+10,Introduction</code></pre>
+            </div>
+            
+            <div class="file-format">
+                <h3>ANI (Animation Files)</h3>
+                <p>
+                    Simple animation format that references frames from image files.
+                </p>
+                <p><strong>Structure:</strong></p>
+                <ul>
+                    <li>Text-based format with frame coordinates</li>
+                    <li>References PC8/PC4 files for frame images</li>
+                    <li>Defines animation sequences and timing</li>
+                </ul>
+                <pre><code>// ANI format excerpt from BANKS.json
+{
+  "image_file": "BANKS.PCC",
+  "frame_count": 2,
+  "frames": [
+    {
+      "coordinates": [
+        {
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "dimensions": [
+        {
+          "width": 110,
+          "height": 74
+        }
+      ]
+    },
+    // Additional frames...
+  ]
+}</code></pre>
+            </div>
+        </section>
+
+        <section id="assets">
+            <h2>Extracted Assets</h2>
+            <p>
+                The decompilation project has successfully extracted a wide variety of assets from the 
+                original game. Below are examples of the different types of content recovered.
+            </p>
+            
+            <h3>Images</h3>
+            <p>
+                The game contains hundreds of images for backgrounds, UI elements, and game objects. 
+                These were stored in PC8 (256-color) and PC4 (16-color) formats.
+            </p>
+            
+            <div class="asset-gallery">
+                <div class="asset-item">
+                    <h4>Landscapes (LAND*.PC8)</h4>
+                    <p>Background scenes for different trail locations</p>
+                    <a href="gallery.html?type=landscapes">
+                        <img src="modern/images/pc8/LAND0.png" alt="Landscape scene" width="200">
+                        <p><strong>Click to view all landscapes</strong></p>
+                    </a>
+                </div>
+                <div class="asset-item">
+                    <h4>UI Elements</h4>
+                    <p>Buttons, menus, and interface components</p>
+                    <a href="gallery.html?type=ui">
+                        <img src="modern/images/pc8/CONTBTN.png" alt="UI Button" width="200">
+                        <p><strong>Click to view all UI elements</strong></p>
+                    </a>
+                </div>
+                <div class="asset-item">
+                    <h4>Animals</h4>
+                    <p>Buffalo, deer, bears for hunting scenes</p>
+                    <a href="gallery.html?type=animals">
+                        <img src="modern/images/256/BUFFALO.png" alt="Buffalo" width="200">
+                        <p><strong>Click to view all animals</strong></p>
+                    </a>
+                </div>
+                <div class="asset-item">
+                    <h4>Map Elements</h4>
+                    <p>Trail map components and landmarks</p>
+                    <a href="gallery.html?type=map">
+                        <img src="modern/images/pc8/MAP.png" alt="Map" width="200">
+                        <p><strong>Click to view all map elements</strong></p>
+                    </a>
+                </div>
+            </div>
+            
+            <h3>Music</h3>
+            <p>
+                The game features several music tracks stored in XMI format, which were played using 
+                the Miles Sound System's MIDPAK driver.
+            </p>
+            
+            <div class="asset-gallery">
+                <div class="asset-item">
+                    <h4>LAND0.MID</h4>
+                    <p>Location-specific background music</p>
+                    <audio controls>
+                        <source src="modern/music/LAND0.mid" type="audio/midi">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+                <div class="asset-item">
+                    <h4>DEATH.MID</h4>
+                    <p>Music played when a party member dies</p>
+                    <audio controls>
+                        <source src="modern/music/DEATH.mid" type="audio/midi">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+                <div class="asset-item">
+                    <h4>TITLE_1.MID</h4>
+                    <p>Title screen music</p>
+                    <audio controls>
+                        <source src="modern/music/TITLE_1.mid" type="audio/midi">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            </div>
+            
+            <h3>Sound Effects</h3>
+            <p>
+                Simple sound effects stored as raw PCM audio in SND files.
+            </p>
+            
+            <div class="asset-gallery">
+                <div class="asset-item">
+                    <h4>GUNSHOT.WAV</h4>
+                    <p>Sound of firing a gun during hunting</p>
+                    <audio controls>
+                        <source src="modern/sounds/GUNSHOT.wav" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+                <div class="asset-item">
+                    <h4>HITCRITT.WAV</h4>
+                    <p>Sound when successfully hitting an animal</p>
+                    <audio controls>
+                        <source src="modern/sounds/HITCRITT.wav" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+                <div class="asset-item">
+                    <h4>CRASH.WAV</h4>
+                    <p>Wagon crash sound effect</p>
+                    <audio controls>
+                        <source src="modern/sounds/CRASH.wav" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            </div>
+            
+            <h3>Animations</h3>
+            <p>
+                The game uses simple animations defined in ANI files, which reference frames from image files.
+            </p>
+            
+            <div class="asset-gallery">
+                <div class="asset-item">
+                    <h4>BANKS.JSON</h4>
+                    <p>River crossing animations</p>
+                    <pre style="font-size: 0.8em; max-height: 150px; overflow-y: auto;">{
+  "image_file": "BANKS.PCC",
+  "frame_count": 2,
+  "frames": [
+    {
+      "coordinates": [
+        {"x": 0, "y": 0}
+      ],
+      "dimensions": [
+        {"width": 110, "height": 74}
+      ]
+    },
+    {
+      "coordinates": [
+        {"x": 152, "y": 81}
+      ],
+      "dimensions": [
+        {"width": 110, "height": 74}
+      ]
+    }
+  ]
+}</pre>
+                </div>
+                <div class="asset-item">
+                    <h4>RAFTING.JSON</h4>
+                    <p>River rafting animations</p>
+                    <img src="modern/images/pc8/RAFTANI.png" alt="Rafting Animation" width="200">
+                </div>
+                <div class="asset-item">
+                    <h4>WAGONS.JSON</h4>
+                    <p>Wagon movement animations</p>
+                    <img src="modern/images/pc8/WAGONS.png" alt="Wagons" width="200">
+                </div>
+            </div>
+            
+            <h3>Text and UI Controls</h3>
+            <p>
+                The game's UI layouts and text content are defined in CTR files.
+            </p>
+            
+            <div class="asset-gallery">
+                <div class="asset-item">
+                    <h4>INTRO1.TXT</h4>
+                    <p>Introduction screen text</p>
+                    <pre style="font-size: 0.8em; max-height: 150px; overflow-y: auto;">What was it like to cross 2,000 miles of plains, rivers, and mountains in 1848?
+
+"The Oregon Trail" allows you relive one of the greatest adventures in American history: the journey taken by thousands of emigrants on the Oregon Trail.</pre>
+                </div>
+                <div class="asset-item">
+                    <h4>HUNT.JSON</h4>
+                    <p>Hunting mini-game interface</p>
+                    <pre style="font-size: 0.8em; max-height: 150px; overflow-y: auto;">{
+  "metadata": {
+    "images": [
+      "huntbut.pcc"
+    ],
+    "comments": [
+      "let's load the images",
+      "Button #1",
+      "Button #2"
+    ]
+  },
+  "ui_elements": [
+    {
+      "type": "button",
+      "properties": {
+        "group": 0,
+        "index": 0,
+        "action": {
+          "id": 1,
+          "name": "confirm"
+        }
+      }
+    }
+  ]
+}</pre>
+                </div>
+                <div class="asset-item">
+                    <h4>DEATH.TXT</h4>
+                    <p>Death notification screen</p>
+                    <img src="modern/images/pc8/DEATH.png" alt="Death Screen" width="200">
+                </div>
+            </div>
+        </section>
+
+        <section id="technical-insights">
+            <h2>Technical Insights</h2>
+            
+            <h3>Executable Analysis</h3>
+            <p>
+                The main game executable (OREGON.EXE) is a 273,648-byte MS-DOS MZ executable compiled with 
+                Borland C++ (1991). It requires at least 475K of free memory (515K with sound enabled).
+            </p>
+            <p>
+                The executable references several external resource files:
+            </p>
+            <ul>
+                <li><strong>OREGON.GXL</strong> - Main graphics library</li>
+                <li><strong>Sound Drivers:</strong> ADLIB.COM, IBMSND.COM, MIDPAK.COM, SBLASTER.COM</li>
+                <li><strong>Configuration:</strong> OT.CNF, PRODUCT.PF, LEGENDS.LST</li>
+            </ul>
+            
+            <h3>Sound System</h3>
+            <p>
+                The game uses the Miles Sound System for music playback, which was a popular audio middleware 
+                solution for DOS games. It supports multiple sound cards through different drivers:
+            </p>
+            <ul>
+                <li><strong>ADLIB.COM</strong> - AdLib sound card driver</li>
+                <li><strong>IBMSND.COM</strong> - IBM PC speaker driver</li>
+                <li><strong>MIDPAK.COM</strong> - MIDI music driver</li>
+                <li><strong>SBLASTER.COM</strong> - Sound Blaster driver</li>
+            </ul>
+            <p>
+                Music is stored in XMI format, which is a proprietary extension of the MIDI format developed 
+                for the Miles Sound System. It includes features like instrument banks and branch points.
+            </p>
+            
+            <h3>Graphics System</h3>
+            <p>
+                The game supports both 16-color and 256-color VGA modes. Graphics are stored in several formats:
+            </p>
+            <ul>
+                <li><strong>PC8</strong> - 256-color images with RLE compression</li>
+                <li><strong>PC4</strong> - 16-color images with RLE compression</li>
+                <li><strong>.16</strong> - 16-color images for animals and objects</li>
+                <li><strong>.256</strong> - 256-color images for animals and objects</li>
+            </ul>
+            <p>
+                The game can be forced into 16-color mode with the "-16" command line option, which was useful 
+                for systems with limited video memory.
+            </p>
+            
+            <h3>UI System</h3>
+            <p>
+                The game's user interface is defined using CTR (control) files, which contain a sequence of 
+                numeric commands with parameters. These files define:
+            </p>
+            <ul>
+                <li>Screen layouts and dialog boxes</li>
+                <li>Text content and styling</li>
+                <li>Button properties and actions</li>
+                <li>Input fields for user interaction</li>
+            </ul>
+            <p>
+                The CTR format uses a command-based approach where each command has a numeric ID followed by 
+                parameters. For example, command 10 defines text content, while command 18 sets text style.
+            </p>
+            <pre><code>// CTR command types from convert_ctr.py
+COMMAND_TYPES = {
+    1: "image_count",
+    4: "set_x",
+    5: "set_y",
+    6: "position_x",
+    7: "position_y",
+    8: "button_properties",
+    10: "text_content",
+    11: "input_field",
+    12: "set_color",
+    17: "comment",
+    18: "text_style",
+    19: "vertical_spacing",
+    20: "horizontal_spacing",
+}</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p>Oregon Trail Deluxe Decompilation Project Documentation</p>
+        <p>This project is for educational and preservation purposes only.</p>
+        <p>The Oregon Trail is a registered trademark of The Learning Company.</p>
+    </footer>
+
+    <script>
+        // Base URL for GitHub Pages (empty for local development)
+        const baseUrl = window.location.hostname.includes('github.io') ? '/oregon-trail-decompiler' : '';
+        
+        // Update gallery links with baseUrl
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('a[href^="gallery.html"]');
+            links.forEach(link => {
+                link.href = baseUrl + '/' + link.getAttribute('href');
+            });
+            
+            // Update image sources with baseUrl
+            const images = document.querySelectorAll('img[src^="modern/"]');
+            images.forEach(img => {
+                img.src = baseUrl + '/' + img.getAttribute('src');
+            });
+            
+            // Update audio sources with baseUrl
+            const audioSources = document.querySelectorAll('audio source[src^="modern/"]');
+            audioSources.forEach(source => {
+                source.src = baseUrl + '/' + source.getAttribute('src');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -150,8 +150,8 @@ def convert_files(args):
 
 
 def clean_directories():
-    """Remove raw_extracted and modern directories"""
-    for dir_path in ["raw_extracted", "modern"]:
+    """Remove raw_extracted and docs/modern directories"""
+    for dir_path in ["raw_extracted", "docs/modern"]:
         if os.path.exists(dir_path):
             logger.info(f"Removing {dir_path} directory")
             import shutil
@@ -179,7 +179,7 @@ def process_all():
     logger.info("Converting all game files")
     convert_args = argparse.Namespace(
         input_dir="raw_extracted",
-        output="modern",
+        output="docs/modern",
         type=None,  # Convert all types
         debug=False,
     )
@@ -188,7 +188,7 @@ def process_all():
     # Process additional files from original_game
     logger.info("Processing additional game files")
     convert_args = argparse.Namespace(
-        input_dir="original_game", output="modern", type=None, debug=False
+        input_dir="original_game", output="docs/modern", type=None, debug=False
     )
     # Don't clean directories again
     convert_all(
