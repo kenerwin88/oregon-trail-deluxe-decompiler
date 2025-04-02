@@ -32,3 +32,5 @@ from .oregon_trail_specific import (
     identify_game_function,
 )
 from .c_code_generator import generate_c_code
+
+__all__ = ['EnhancedDOSDecompiler', 'DOSDecompiler']
