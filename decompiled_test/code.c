@@ -514,7 +514,7 @@ block_3E:
     dx = 0x1ab5;
     word ptr cs:[0x291] = dx;
     ah = 0x30;
-    // DOS API call
+    // INT_21_AH30 (ah=0x30) - Interrupt 21h Function 30h
     bp = *(uint16_t*)(2);
     bx = *(uint16_t*)(0x2c);
     /* ds */ = dx;
@@ -530,7 +530,7 @@ block_1C28:
     bx = ax;
     di = ax;
     cx = 0x7fff;
-    // TODO: Translate: cld 
+    // 0x1C36: TODO: Translate: cld 
 
 }
 
@@ -556,14 +556,14 @@ void sub_1D57(void) {
 
 block_1D57:
     /* es */ = word ptr cs:[0x291];
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     si = 0x76d0;
     di = 0x76d6;
     sub_1E31();
 block_1D67:
-    di = pop(); // Simulate stack pop
-    si = pop(); // Simulate stack pop
+    di = *(uint16_t*)sp; sp += 2; // pop di
+    si = *(uint16_t*)sp; sp += 2; // pop si
     return;
 
 }
@@ -613,10 +613,10 @@ void sub_1D6B(int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_1D6B:
-    bp = sp;
+    // Standard function prologue: set up stack frame pointer
     ah = 0x4c;
     al = *(uint8_t*)(bp_reg + 4);
-    // DOS API call
+    // INT_21 - Interrupt 21h
     cx = 0xe;
     dx = 0x2f;
     goto block_1E80;
@@ -643,29 +643,29 @@ void sub_1D7D(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_1D7D:
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x3500;
-    // DOS API call
+    // INT_21 - Interrupt 21h
     *(uint16_t*)(0x5b) = bx;
     *(uint16_t*)(0x5d) = /* es */;
     ax = 0x3504;
-    // DOS API call
+    // INT_21 - Interrupt 21h
     *(uint16_t*)(0x5f) = bx;
     *(uint16_t*)(0x61) = /* es */;
     ax = 0x3505;
-    // DOS API call
+    // INT_21 - Interrupt 21h
     *(uint16_t*)(0x63) = bx;
     *(uint16_t*)(0x65) = /* es */;
     ax = 0x3506;
-    // DOS API call
+    // INT_21 - Interrupt 21h
     *(uint16_t*)(0x67) = bx;
     *(uint16_t*)(0x69) = /* es */;
     ax = 0x2500;
     dx = /* cs */;
     /* ds */ = dx;
     dx = 0x174;
-    // DOS API call
-    /* ds */ = pop(); // Simulate stack pop
+    // INT_21 - Interrupt 21h
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
     return;
 }
 
@@ -690,26 +690,26 @@ void sub_1DC0(int result_ax) {
     int dos_env_segment;
 
 block_1DC0:
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x2500;
-    // TODO: Translate: lds dx, ptr [0x5b]
-    // DOS API call
-    /* ds */ = pop(); // Simulate stack pop
-    push(/* ds */); // Simulate stack push
+    // 0x1DC4: TODO: Translate: lds dx, ptr [0x5b]
+    // INT_21 - Interrupt 21h
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x2504;
-    // TODO: Translate: lds dx, ptr [0x5f]
-    // DOS API call
-    /* ds */ = pop(); // Simulate stack pop
-    push(/* ds */); // Simulate stack push
+    // 0x1DCF: TODO: Translate: lds dx, ptr [0x5f]
+    // INT_21 - Interrupt 21h
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x2505;
-    // TODO: Translate: lds dx, ptr [0x63]
-    // DOS API call
-    /* ds */ = pop(); // Simulate stack pop
-    push(/* ds */); // Simulate stack push
+    // 0x1DDA: TODO: Translate: lds dx, ptr [0x63]
+    // INT_21 - Interrupt 21h
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x2506;
-    // TODO: Translate: lds dx, ptr [0x67]
-    // DOS API call
-    /* ds */ = pop(); // Simulate stack pop
+    // 0x1DE5: TODO: Translate: lds dx, ptr [0x67]
+    // INT_21 - Interrupt 21h
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
     return;
 }
 
@@ -788,7 +788,7 @@ void sub_1E72(int result_ax, int base_bx, int count_cx, int data_dx) {
 block_1E72:
     ah = 0x40;
     bx = 2;
-    // DOS API call
+    // INT_21 - Interrupt 21h
     return;
 }
 
@@ -813,12 +813,12 @@ void sub_1F91(int result_ax) {
     int dos_env_segment;
 
 block_1F91:
-    push(/* ds */); // Simulate stack push
-    push(si); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = si; // push si
     si = 0x198;
     ax = 0;
     /* ds */ = ax;
-    // TODO: Translate: lds si, ptr [si]
+    // 0x1F9A: TODO: Translate: lds si, ptr [si]
     si |= si;
 }
 
@@ -843,12 +843,12 @@ void sub_2128(int result_ax) {
     int dos_env_segment;
 
 block_2128:
-    push(/* ds */); // Simulate stack push
-    push(si); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = si; // push si
     si = 0x198;
     ax = 0;
     /* ds */ = ax;
-    // TODO: Translate: lds si, ptr [si]
+    // 0x2131: TODO: Translate: lds si, ptr [si]
     si |= si;
 }
 
@@ -873,16 +873,16 @@ void sub_2495(void) {
     int dos_env_segment;
 
 block_2495:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(di); // Simulate stack push
-    push(si); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = di; // push di
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     si = /* ds */;
-    // TODO: Translate: lds dx, ptr [bp + 6]
+    // 0x249D: TODO: Translate: lds dx, ptr [bp + 6]
     al = 0;
     ah = 0x3d;
-    // DOS API call
+    // DOS_OpenFile (ah=0x3D) - Open file
 }
 
 
@@ -906,42 +906,42 @@ void sub_2827(void) {
     int dos_env_segment;
 
 block_2827:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(/* es */); // Simulate stack push
-    push(/* ds */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
-    // TODO: Translate: cld 
-    // TODO: Translate: les di, ptr [bp + 6]
-    push(di); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    /* ds */ = pop(); // Simulate stack pop
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
+    // 0x282E: TODO: Translate: cld 
+    // 0x282F: TODO: Translate: les di, ptr [bp + 6]
+    sp -= 2; *(uint16_t*)sp = di; // push di
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
     ah = 0x19;
-    // DOS API call
+    // INT_21_AH19 (ah=0x19) - Interrupt 21h Function 19h
     al += 0x41;
-    // TODO: Translate: stosb byte ptr es:[di], al
+    // 0x283B: TODO: Translate: stosb byte ptr es:[di], al
     al = 0x3a;
-    // TODO: Translate: stosb byte ptr es:[di], al
+    // 0x283E: TODO: Translate: stosb byte ptr es:[di], al
     al = 0x5c;
-    // TODO: Translate: stosb byte ptr es:[di], al
+    // 0x2841: TODO: Translate: stosb byte ptr es:[di], al
     dl = 0;
     si = di;
     ah = 0x47;
-    // DOS API call
-    di = pop(); // Simulate stack pop
+    // DOS_GetCurrentDirectory (ah=0x47) - Get current directory
+    di = *(uint16_t*)sp; sp += 2; // pop di
     cx = 0xffff;
     ax = 0;
-    // TODO: Translate: repne scasb al, byte ptr es:[di]
-    // TODO: Translate: not cx
+    // 0x2850: TODO: Translate: repne scasb al, byte ptr es:[di]
+    // 0x2852: TODO: Translate: not cx
     cx--;
     ax = cx;
-    di = pop(); // Simulate stack pop
-    si = pop(); // Simulate stack pop
-    /* ds */ = pop(); // Simulate stack pop
-    /* es */ = pop(); // Simulate stack pop
+    di = *(uint16_t*)sp; sp += 2; // pop di
+    si = *(uint16_t*)sp; sp += 2; // pop si
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
+    /* es */ = *(uint16_t*)sp; sp += 2; // pop /* es */
     sp = bp;
-    bp = pop(); // Simulate stack pop
+    // Standard function epilogue: restore old base pointer
     return;
 }
 
@@ -966,14 +966,14 @@ void sub_2A03(void) {
     int dos_env_segment;
 
 block_2A03:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(/* ds */); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ah = 0x43;
     al = 0;
-    // TODO: Translate: lds dx, ptr [bp + 6]
-    // DOS API call
-    /* ds */ = pop(); // Simulate stack pop
+    // 0x2A0B: TODO: Translate: lds dx, ptr [bp + 6]
+    // INT_21 - Interrupt 21h
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
 }
 
 
@@ -997,15 +997,15 @@ void sub_2A40(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_2A40:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     ah = 0x19;
-    // DOS API call
+    // INT_21_AH19 (ah=0x19) - Interrupt 21h Function 19h
     ah = 0;
     ax++;
-    // TODO: Translate: les bx, ptr [bp + 6]
+    // 0x2A4A: TODO: Translate: les bx, ptr [bp + 6]
     word ptr es:[bx] = ax;
-    bp = pop(); // Simulate stack pop
+    // Standard function epilogue: restore old base pointer
     return;
 }
 
@@ -1030,16 +1030,16 @@ void sub_2A52(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_2A52:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     dl = *(uint8_t*)(bp_reg + 6);
     dl--;
     ah = 0xe;
-    // DOS API call
+    // INT_21_AH0E (ah=0xE) - Interrupt 21h Function 0Eh
     ah = 0;
-    // TODO: Translate: les bx, ptr [bp + 8]
+    // 0x2A60: TODO: Translate: les bx, ptr [bp + 8]
     word ptr es:[bx] = ax;
-    bp = pop(); // Simulate stack pop
+    // Standard function epilogue: restore old base pointer
     return;
 }
 
@@ -1064,9 +1064,9 @@ void sub_2A69(int base_bx) {
     int dos_env_segment;
 
 block_2A69:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
     si = *(uint16_t*)(bp_reg + 8);
     si |= si;
 }
@@ -1092,15 +1092,15 @@ void sub_2AC0(int result_ax) {
     int dos_env_segment;
 
 block_2AC0:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     ax = 0;
-    push(ax); // Simulate stack push
-    push(ax); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 6); // push *(uint16_t*)(bp_reg + 6)
     sub_2A69();
 block_2ACD:
-    bp = pop(); // Simulate stack pop
+    // Standard function epilogue: restore old base pointer
     return;
 
 }
@@ -1126,16 +1126,16 @@ void sub_2ACF(int result_ax) {
     int dos_env_segment;
 
 block_2ACF:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     ax = 1;
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = 0;
-    push(ax); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 6); // push *(uint16_t*)(bp_reg + 6)
     sub_2A69();
 block_2ADF:
-    bp = pop(); // Simulate stack pop
+    // Standard function epilogue: restore old base pointer
     return;
 
 }
@@ -1161,15 +1161,15 @@ void sub_2B2E(void) {
     int dos_env_segment;
 
 block_2B2E:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ah = 0x47;
     dl = *(uint8_t*)(bp_reg + 6);
-    // TODO: Translate: lds si, ptr [bp + 8]
-    // DOS API call
-    /* ds */ = pop(); // Simulate stack pop
+    // 0x2B38: TODO: Translate: lds si, ptr [bp + 8]
+    // INT_21 - Interrupt 21h
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
 }
 
 
@@ -1193,22 +1193,22 @@ void sub_2B71(int result_ax, int count_cx) {
     int dos_env_segment;
 
 block_2B71:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ss */); // Simulate stack push
-    ax = &(uint16_t*)(bp_reg - 2); // Calculate address
-    push(ax); // Simulate stack push
-    // TODO: Translate: nop 
-    push(/* cs */); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ss */; // push /* ss */
+    ax = (uint16_t*)(bp_reg - 2); // Calculate address
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // No operation
+    sp -= 2; *(uint16_t*)sp = /* cs */; // push /* cs */
     sub_2A40();
 block_2B81:
-    cx = pop(); // Simulate stack pop
-    cx = pop(); // Simulate stack pop
+    cx = *(uint16_t*)sp; sp += 2; // pop cx
+    cx = *(uint16_t*)sp; sp += 2; // pop cx
     ax = *(uint16_t*)(bp_reg - 2);
     ax--;
     sp = bp;
-    bp = pop(); // Simulate stack pop
+    // Standard function epilogue: restore old base pointer
     return;
 
 }
@@ -1234,10 +1234,10 @@ void sub_2C9B(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_2C9B:
-    bx = pop(); // Simulate stack pop
-    push(/* cs */); // Simulate stack push
-    push(bx); // Simulate stack push
-    // Compare cl and 0x10 (sets flags)
+    bx = *(uint16_t*)sp; sp += 2; // pop bx
+    sp -= 2; *(uint16_t*)sp = /* cs */; // push /* cs */
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    compare(cl, 0x10); // Sets flags
 }
 
 
@@ -1261,9 +1261,9 @@ void sub_2CBC(void) {
     int dos_env_segment;
 
 block_2CBC:
-    /* es */ = pop(); // Simulate stack pop
-    push(/* cs */); // Simulate stack push
-    push(/* es */); // Simulate stack push
+    /* es */ = *(uint16_t*)sp; sp += 2; // pop /* es */
+    sp -= 2; *(uint16_t*)sp = /* cs */; // push /* cs */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
     cx |= cx;
 }
 
@@ -1288,28 +1288,28 @@ void sub_2D1C(int count_cx) {
     int dos_env_segment;
 
 block_2D1C:
-    /* es */ = pop(); // Simulate stack pop
-    push(/* cs */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(di); // Simulate stack push
+    /* es */ = *(uint16_t*)sp; sp += 2; // pop /* es */
+    sp -= 2; *(uint16_t*)sp = /* cs */; // push /* cs */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = di; // push di
     di = cx;
     ch = dh;
     cl = 4;
     dx <<= cl;
-    ch >>= cl; // Unsigned shift right
+    ch = (uint16_t)ch >> cl; // Logical shift right
     dx += ax;
-    // TODO: Translate: adc ch, 0
+    // 0x2D2C: TODO: Translate: adc ch, 0
     ax = di;
     di <<= cl;
-    ah >>= cl; // Unsigned shift right
+    ah = (uint16_t)ah >> cl; // Logical shift right
     bx += di;
-    // TODO: Translate: adc ah, 0
+    // 0x2D37: TODO: Translate: adc ah, 0
     dx -= bx;
-    // TODO: Translate: sbb ch, ah
+    // 0x2D3C: TODO: Translate: sbb ch, ah
     al = ch;
-    // TODO: Translate: cwde 
-    // TODO: Translate: xchg dx, ax
-    di = pop(); // Simulate stack pop
+    // 0x2D40: TODO: Translate: cwde 
+    swap(dx, ax); // Exchange values
+    di = *(uint16_t*)sp; sp += 2; // pop di
     return;
 }
 
@@ -1334,9 +1334,9 @@ void sub_2D44(void) {
     int dos_env_segment;
 
 block_2D44:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
     si = *(uint16_t*)(bp_reg + 4);
     si |= si;
 }
@@ -1362,16 +1362,16 @@ void sub_2D7D(int result_ax) {
     int dos_env_segment;
 
 block_2D7D:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
     si = *(uint16_t*)(bp_reg + 4);
-    push(si); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = si; // push si
     sub_2D44();
 block_2D88:
     ax = si;
-    si = pop(); // Simulate stack pop
-    bp = pop(); // Simulate stack pop
+    si = *(uint16_t*)sp; sp += 2; // pop si
+    // Standard function epilogue: restore old base pointer
     return;
 
 }
@@ -1397,14 +1397,14 @@ void sub_2F4E(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_2F4E:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     ax = 0x4400;
     bx = *(uint16_t*)(bp_reg + 6);
-    // DOS API call
-    // TODO: Translate: xchg dx, ax
+    // INT_21 - Interrupt 21h
+    swap(dx, ax); // Exchange values
     ax &= 0x80;
-    bp = pop(); // Simulate stack pop
+    // Standard function epilogue: restore old base pointer
     return;
 }
 
@@ -1429,15 +1429,15 @@ void sub_2F5F(int base_bx) {
     int dos_env_segment;
 
 block_2F5F:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0x22;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    // TODO: Translate: les di, ptr [bp + 0xa]
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    // 0x2F68: TODO: Translate: les di, ptr [bp + 0xa]
     bx = *(uint16_t*)(bp_reg + 8);
-    // Compare bx and 0x24 (sets flags)
+    compare(bx, 0x24); // Sets flags
 }
 
 
@@ -1461,22 +1461,22 @@ void sub_2FE1(int result_ax) {
     int dos_env_segment;
 
 block_2FE1:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     ax = 0;
-    push(ax); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 8)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 4)); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 8); // push *(uint16_t*)(bp_reg + 8)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 6); // push *(uint16_t*)(bp_reg + 6)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 4); // push *(uint16_t*)(bp_reg + 4)
     ax = 0xa;
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     al = 0;
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     al = 0x61;
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     sub_2F5F();
 block_2FFD:
-    bp = pop(); // Simulate stack pop
+    // Standard function epilogue: restore old base pointer
     return;
 
 }
@@ -1502,8 +1502,8 @@ void sub_3001(int base_bx, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_3001:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     bx = *(uint16_t*)(bp_reg + 6);
     bx <<= 1;
     *(uint16_t*)(bx_reg + 0x74d2) &= 0xfdff;
@@ -1512,7 +1512,7 @@ block_3001:
     bx = *(uint16_t*)(bp_reg + 6);
     cx = *(uint16_t*)(bp_reg + 0xa);
     dx = *(uint16_t*)(bp_reg + 8);
-    // DOS API call
+    // INT_21 - Interrupt 21h
 }
 
 
@@ -1536,8 +1536,8 @@ void sub_302A(int result_ax) {
     int dos_env_segment;
 
 block_302A:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     ax = *(uint16_t*)(bp_reg + 0xa);
     ax |= *(uint16_t*)(bp_reg + 0xc);
 }
@@ -1563,10 +1563,10 @@ void sub_30E0(int result_ax) {
     int dos_env_segment;
 
 block_30E0:
-    push(si); // Simulate stack push
-    // TODO: Translate: xchg si, ax
-    // TODO: Translate: xchg dx, ax
-    // Test ax & ax (sets flags)
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    swap(si, ax); // Exchange values
+    swap(dx, ax); // Exchange values
+    test_bits(ax, ax); // Sets flags
 }
 
 
@@ -1590,20 +1590,20 @@ void sub_30F7(int count_cx) {
     int dos_env_segment;
 
 block_30F7:
-    push(cx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = cx; // push cx
     ch = al;
     cl = 4;
-    ax >>= cl; // Unsigned shift right
+    ax = (uint16_t)ax >> cl; // Logical shift right
     dx += ax;
     al = ch;
     ah = bl;
-    bx >>= cl; // Unsigned shift right
-    cx = pop(); // Simulate stack pop
+    bx = (uint16_t)bx >> cl; // Logical shift right
+    cx = *(uint16_t*)sp; sp += 2; // pop cx
     cx += bx;
     bl = ah;
     ax &= 0xf;
     bx &= 0xf;
-    // Compare dx and cx (sets flags)
+    compare(dx, cx); // Sets flags
 }
 
 
@@ -1627,11 +1627,11 @@ void sub_3118(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_3118:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     bx = *(uint16_t*)(bp_reg + 6);
     bx <<= 1;
-    // Test *(uint16_t*)(bx_reg + 0x74d2) & 2 (sets flags)
+    test_bits(*(uint16_t*)(bx_reg + 0x74d2), 2); // Sets flags
 }
 
 
@@ -1655,11 +1655,11 @@ void sub_3147(void) {
     int dos_env_segment;
 
 block_3147:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0x2a;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     *(uint16_t*)(bp_reg - 4) = 0;
     *(uint16_t*)(bp_reg - 6) = 0;
     goto block_3176;
@@ -1686,8 +1686,8 @@ void sub_315B(void) {
     int dos_env_segment;
 
 block_315B:
-    // TODO: Translate: les di, ptr [bp + 0x10]
-    // Test *(uint8_t*)(bp_reg - 1) & 0x20 (sets flags)
+    // 0x315B: TODO: Translate: les di, ptr [bp + 0x10]
+    test_bits(*(uint8_t*)(bp_reg - 1), 0x20); // Sets flags
 }
 
 
@@ -1711,9 +1711,9 @@ void sub_32DA(int result_ax) {
     int dos_env_segment;
 
 block_32DA:
-    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 8)); // Simulate stack push
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xa); // push *(uint16_t*)(bp_reg + 0xa)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 8); // push *(uint16_t*)(bp_reg + 8)
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     *(uint16_t*)(bp_reg + 6)();
 }
 
@@ -1738,8 +1738,8 @@ void sub_32F5(int result_ax, int data_dx) {
     int dos_env_segment;
 
 block_32F5:
-    push(dx); // Simulate stack push
-    // Compare al and 0x3a (sets flags)
+    sp -= 2; *(uint16_t*)sp = dx; // push dx
+    compare(al, 0x3a); // Sets flags
 }
 
 
@@ -1763,7 +1763,7 @@ void sub_3319(int result_ax, int base_bx, int data_dx) {
     int dos_env_segment;
 
 block_3319:
-    bx = pop(); // Simulate stack pop
+    bx = *(uint16_t*)sp; sp += 2; // pop bx
     ax |= ax;
 }
 
@@ -1788,7 +1788,7 @@ void sub_33BE(void) {
     int dos_env_segment;
 
 block_33BE:
-    // Test *(uint8_t*)(bp_reg - 1) & 1 (sets flags)
+    test_bits(*(uint8_t*)(bp_reg - 1), 1); // Sets flags
 }
 
 
@@ -1812,7 +1812,7 @@ void sub_363B(int base_bx) {
     int dos_env_segment;
 
 block_363B:
-    push(bx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
     bl -= 0x30;
 }
 
@@ -1837,11 +1837,11 @@ void sub_3666(void) {
     int dos_env_segment;
 
 block_3666:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 6;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 6 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     *(uint8_t*)(bp_reg - 1) = 0;
     *(uint16_t*)(bp_reg - 4) = 0;
     *(uint16_t*)(bp_reg - 6) = 1;
@@ -1868,19 +1868,19 @@ void sub_3808(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_3808:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
     bx = /* es */;
-    // TODO: Translate: les si, ptr [bp + 6]
+    // 0x380E: TODO: Translate: les si, ptr [bp + 6]
     word ptr es:[si] = bx;
     ax = *(uint16_t*)(bp_reg + 4);
     word ptr es:[si + 2] = ax;
     word ptr es:[si + 4] = /* ss */;
     word ptr es:[si + 6] = /* ds */;
     /* es */ = bx;
-    si = pop(); // Simulate stack pop
-    bp = pop(); // Simulate stack pop
+    si = *(uint16_t*)sp; sp += 2; // pop si
+    // Standard function epilogue: restore old base pointer
     return;
 }
 
@@ -1905,13 +1905,13 @@ void sub_3905(void) {
     int dos_env_segment;
 
 block_3905:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(/* ds */); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ah = 0x41;
-    // TODO: Translate: lds dx, ptr [bp + 6]
-    // DOS API call
-    /* ds */ = pop(); // Simulate stack pop
+    // 0x390B: TODO: Translate: lds dx, ptr [bp + 6]
+    // INT_21 - Interrupt 21h
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
 }
 
 
@@ -1963,11 +1963,11 @@ void sub_3924(void) {
     int dos_env_segment;
 
 block_3924:
-    // TODO: Translate: aam 0x10
-    // TODO: Translate: xchg al, ah
+    // 0x3924: TODO: Translate: aam 0x10
+    swap(al, ah); // Exchange values
     sub_392D();
 block_392B:
-    // TODO: Translate: xchg al, ah
+    swap(al, ah); // Exchange values
 
 }
 
@@ -1993,10 +1993,10 @@ void sub_392D(void) {
 
 block_392D:
     al += 0x90;
-    // TODO: Translate: daa 
-    // TODO: Translate: adc al, 0x40
-    // TODO: Translate: daa 
-    // TODO: Translate: stosb byte ptr es:[di], al
+    // 0x392F: TODO: Translate: daa 
+    // 0x3930: TODO: Translate: adc al, 0x40
+    // 0x3932: TODO: Translate: daa 
+    // 0x3933: TODO: Translate: stosb byte ptr es:[di], al
     return;
 }
 
@@ -2021,11 +2021,11 @@ void sub_3935(void) {
     int dos_env_segment;
 
 block_3935:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0x96;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     *(uint16_t*)(bp_reg - 0x12) = 0;
     *(uint16_t*)(bp_reg - 0x14) = 0x50;
     *(uint16_t*)(bp_reg - 0x16) = 0;
@@ -2053,13 +2053,13 @@ void sub_394F(int count_cx) {
     int dos_env_segment;
 
 block_394F:
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = di; // push di
     cx = 0xffff;
     al = 0;
-    // TODO: Translate: repne scasb al, byte ptr es:[di]
-    // TODO: Translate: not cx
+    // 0x3955: TODO: Translate: repne scasb al, byte ptr es:[di]
+    // 0x3957: TODO: Translate: not cx
     cx--;
-    di = pop(); // Simulate stack pop
+    di = *(uint16_t*)sp; sp += 2; // pop di
     return;
 }
 
@@ -2110,18 +2110,18 @@ void sub_3965(int result_ax, int base_bx, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_3965:
-    push(bx); // Simulate stack push
-    push(cx); // Simulate stack push
-    push(dx); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    ax = &(uint16_t*)(bp_reg - 0x96); // Calculate address
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = cx; // push cx
+    sp -= 2; *(uint16_t*)sp = dx; // push dx
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    ax = (uint16_t*)(bp_reg - 0x96); // Calculate address
     di -= ax;
-    push(/* ss */); // Simulate stack push
-    ax = &(uint16_t*)(bp_reg - 0x96); // Calculate address
-    push(ax); // Simulate stack push
-    push(di); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 0xc)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ss */; // push /* ss */
+    ax = (uint16_t*)(bp_reg - 0x96); // Calculate address
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = di; // push di
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xc); // push *(uint16_t*)(bp_reg + 0xc)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xa); // push *(uint16_t*)(bp_reg + 0xa)
     *(uint16_t*)(bp_reg + 0xe)();
 block_397F:
     ax |= ax;
@@ -2149,22 +2149,22 @@ void sub_3DF8(int result_ax, int data_dx) {
     int dos_env_segment;
 
 block_3DF8:
-    // TODO: Translate: in al, dx
+    // 0x3DFA: TODO: Translate: in al, dx
     al = *(uint8_t*)(0x7654);
     ah = 0;
     dx = *(uint16_t*)(bp_reg + 4);
     dx--;
     ax = al * dx; // Signed multiply
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(0x7657);
-    dx = pop(); // Simulate stack pop
+    dx = *(uint16_t*)sp; sp += 2; // pop dx
     ax += dx;
     dx = *(uint16_t*)(bp_reg + 6);
     dx--;
     ax += dx;
     ax <<= 1;
     dx = *(uint16_t*)(0x7659);
-    bp = pop(); // Simulate stack pop
+    // Standard function epilogue: restore old base pointer
     return;
 }
 
@@ -2189,15 +2189,15 @@ void sub_3E1D(int result_ax, int count_cx) {
     int dos_env_segment;
 
 block_3E1D:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     al = *(uint8_t*)(0x7656);
     ah = 0;
     *(uint16_t*)(bp_reg - 2) = ax;
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     cx = *(uint16_t*)(bp_reg + 4);
 }
 
@@ -2222,34 +2222,34 @@ void sub_3E97(int count_cx) {
     int dos_env_segment;
 
 block_3E97:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 0xc)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
-    // TODO: Translate: nop 
-    push(/* cs */); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xc); // push *(uint16_t*)(bp_reg + 0xc)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xa); // push *(uint16_t*)(bp_reg + 0xa)
+    // No operation
+    sp -= 2; *(uint16_t*)sp = /* cs */; // push /* cs */
     sub_6661();
 block_3EA6:
-    cx = pop(); // Simulate stack pop
-    cx = pop(); // Simulate stack pop
+    cx = *(uint16_t*)sp; sp += 2; // pop cx
+    cx = *(uint16_t*)sp; sp += 2; // pop cx
     si = ax;
     ax++;
-    push(ax); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 0xc)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 8)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
-    // TODO: Translate: nop 
-    push(/* cs */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xc); // push *(uint16_t*)(bp_reg + 0xc)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xa); // push *(uint16_t*)(bp_reg + 0xa)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 8); // push *(uint16_t*)(bp_reg + 8)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 6); // push *(uint16_t*)(bp_reg + 6)
+    // No operation
+    sp -= 2; *(uint16_t*)sp = /* cs */; // push /* cs */
     sub_59FF();
 block_3EBD:
     sp += 0xa;
     dx = *(uint16_t*)(bp_reg + 8);
     ax = *(uint16_t*)(bp_reg + 6);
     ax += si;
-    si = pop(); // Simulate stack pop
-    bp = pop(); // Simulate stack pop
+    si = *(uint16_t*)sp; sp += 2; // pop si
+    // Standard function epilogue: restore old base pointer
     return;
 
 
@@ -2276,8 +2276,8 @@ void sub_3EF4(int base_bx) {
     int dos_env_segment;
 
 block_3EF4:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     goto block_3F11;
 }
 
@@ -2334,13 +2334,13 @@ void sub_3F2F(int count_cx) {
     int dos_env_segment;
 
 block_3F2F:
-    push(bp); // Simulate stack push
-    push(/* ds */); // Simulate stack push
-    push(cx); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = cx; // push cx
     cx = 0x40;
     /* ds */ = cx;
-    cx = pop(); // Simulate stack pop
-    // Compare ah and 0 (sets flags)
+    cx = *(uint16_t*)sp; sp += 2; // pop cx
+    compare(ah, 0); // Sets flags
 }
 
 
@@ -2365,15 +2365,15 @@ void sub_3FD7(void) {
     int dos_env_segment;
 
 block_3FD7:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     al = *(uint8_t*)(bp_reg + 4);
     *(uint8_t*)(0x7652) = al;
     ah = 0xf;
     sub_3F2F();
 block_3FE5:
     *(uint8_t*)(0x7654) = ah;
-    // Compare al and *(uint8_t*)(0x7652) (sets flags)
+    compare(al, *(uint8_t*)(0x7652)); // Sets flags
 
 }
 
@@ -2398,7 +2398,7 @@ void sub_40C4(int result_ax, int data_dx) {
     int dos_env_segment;
 
 block_40C4:
-    // Compare dx and word ptr cs:[0x24b8] (sets flags)
+    compare(dx, word ptr cs:[0x24b8]); // Sets flags
 }
 
 
@@ -2423,11 +2423,11 @@ int sub_4127(int result_ax, int data_dx) {
 
 block_4127:
     /* ds */ = dx;
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     /* es */ = *(uint16_t*)(2);
     *(uint16_t*)(2) = 0;
     *(uint16_t*)(8) = /* es */;
-    // Compare dx and word ptr cs:[0x24b8] (sets flags)
+    compare(dx, word ptr cs:[0x24b8]); // Sets flags
 }
 
 
@@ -2452,7 +2452,7 @@ void sub_4198(int base_bx) {
 
 block_4198:
     bx = /* ds */;
-    // Compare bx and *(uint16_t*)(6) (sets flags)
+    compare(bx, *(uint16_t*)(6)); // Sets flags
 }
 
 
@@ -2501,10 +2501,10 @@ void sub_41F8(int data_dx) {
     int dos_env_segment;
 
 block_41F8:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     word ptr cs:[0x24be] = /* ds */;
     dx = *(uint16_t*)(bp_reg + 8);
     dx |= dx;
@@ -2532,14 +2532,14 @@ void sub_4221(int result_ax, int data_dx) {
     int dos_env_segment;
 
 block_4221:
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     /* ds */ = word ptr cs:[0x24be];
     ax = 0;
-    push(ax); // Simulate stack push
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     sub_459F();
 block_422E:
-    sp += 4;
+    // Deallocate 4 bytes from stack
     ax &= 0xf;
 
 }
@@ -2566,20 +2566,20 @@ void sub_4285(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_4285:
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     bx = 0;
     bl = ah;
     cl = 4;
-    bx >>= cl; // Unsigned shift right
+    bx = (uint16_t)bx >> cl; // Logical shift right
     ax <<= cl;
     /* ds */ = word ptr cs:[0x24be];
-    push(bx); // Simulate stack push
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     sub_459F();
 block_429A:
-    sp += 4;
-    bx = pop(); // Simulate stack pop
-    // Compare ax and 0xffff (sets flags)
+    // Deallocate 4 bytes from stack
+    bx = *(uint16_t*)sp; sp += 2; // pop bx
+    compare(ax, 0xffff); // Sets flags
 
 }
 
@@ -2639,8 +2639,8 @@ int sub_4302(int result_ax) {
     int dos_env_segment;
 
 block_4302:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     dx = 0;
     ax = *(uint16_t*)(bp_reg + 6);
     goto block_4315;
@@ -2667,14 +2667,14 @@ void sub_430C(int result_ax, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_430C:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     dx = *(uint16_t*)(bp_reg + 8);
     ax = *(uint16_t*)(bp_reg + 6);
     cx = ax;
     cx |= dx;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     word ptr cs:[0x24be] = /* ds */;
 }
 
@@ -2699,15 +2699,15 @@ void sub_4389(int base_bx) {
     int dos_env_segment;
 
 block_4389:
-    push(bx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
     si = word ptr cs:[0x24c0];
-    push(si); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = si; // push si
     si = word ptr cs:[0x24c2];
-    push(si); // Simulate stack push
-    push(/* cs */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = /* cs */; // push /* cs */
     sub_430C();
 block_439A:
-    sp += 4;
+    // Deallocate 4 bytes from stack
     dx |= dx;
 
 }
@@ -2733,7 +2733,7 @@ void sub_4405(int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_4405:
-    // Compare bx and word ptr cs:[0x24ba] (sets flags)
+    compare(bx, word ptr cs:[0x24ba]); // Sets flags
 }
 
 
@@ -2757,16 +2757,16 @@ void sub_44EA(void) {
     int dos_env_segment;
 
 block_44EA:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
     si = *(uint16_t*)(bp_reg + 6);
     si++;
     si -= *(uint16_t*)(0x7b);
     si += 0x3f;
     cl = 6;
-    si >>= cl; // Unsigned shift right
-    // Compare si and *(uint16_t*)(0x7696) (sets flags)
+    si = (uint16_t)si >> cl; // Logical shift right
+    compare(si, *(uint16_t*)(0x7696)); // Sets flags
 }
 
 
@@ -2790,8 +2790,8 @@ void sub_4560(int result_ax, int base_bx, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_4560:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     cx = *(uint16_t*)(0x89);
     bx = *(uint16_t*)(0x87);
     dx = *(uint16_t*)(bp_reg + 6);
@@ -2822,19 +2822,19 @@ void sub_459F(int result_ax) {
     int dos_env_segment;
 
 block_459F:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 8;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 8 bytes on stack for local variables
     ax = *(uint16_t*)(0x8d);
     dx = 0;
     cl = 4;
     sub_2C9B();
 block_45AF:
     ax += *(uint16_t*)(0x8b);
-    // TODO: Translate: adc dx, 0
+    // 0x45B3: TODO: Translate: adc dx, 0
     ax += *(uint16_t*)(bp_reg + 4);
-    // TODO: Translate: adc dx, word ptr [bp + 6]
-    // Compare dx and 0xf (sets flags)
+    // 0x45B9: TODO: Translate: adc dx, word ptr [bp + 6]
+    compare(dx, 0xf); // Sets flags
 
 }
 
@@ -2859,17 +2859,17 @@ void sub_467A(void) {
     int dos_env_segment;
 
 block_467A:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     di = *(uint16_t*)(bp_reg + 6);
     si = *(uint16_t*)(bp_reg + 8);
-    push(di); // Simulate stack push
-    push(si); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 0xc)); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = di; // push di
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xa); // push *(uint16_t*)(bp_reg + 0xa)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xc); // push *(uint16_t*)(bp_reg + 0xc)
     sub_4A0E();
 block_4693:
     ax |= ax;
@@ -2897,17 +2897,17 @@ void sub_46D0(void) {
     int dos_env_segment;
 
 block_46D0:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     di = *(uint16_t*)(bp_reg + 6);
     si = *(uint16_t*)(bp_reg + 8);
-    push(di); // Simulate stack push
-    push(si); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 0xc)); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = di; // push di
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xa); // push *(uint16_t*)(bp_reg + 0xa)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xc); // push *(uint16_t*)(bp_reg + 0xc)
     sub_4A0E();
 block_46E9:
     ax |= ax;
@@ -2935,45 +2935,45 @@ void sub_4754(int result_ax) {
     int dos_env_segment;
 
 block_4754:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
-    push(/* ds */); // Simulate stack push
-    // TODO: Translate: lds si, ptr [bp + 0xe]
-    push(*(uint16_t*)(si_reg)); // Simulate stack push
-    push(*(uint16_t*)(si_reg + 6)); // Simulate stack push
-    // TODO: Translate: lds si, ptr [bp + 6]
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    // 0x475A: TODO: Translate: lds si, ptr [bp + 0xe]
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(si_reg); // push *(uint16_t*)(si_reg)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(si_reg + 6); // push *(uint16_t*)(si_reg + 6)
+    // 0x4762: TODO: Translate: lds si, ptr [bp + 6]
     ax = *(uint16_t*)(si_reg);
     bx = *(uint16_t*)(si_reg + 2);
     cx = *(uint16_t*)(si_reg + 4);
     dx = *(uint16_t*)(si_reg + 6);
     di = *(uint16_t*)(si_reg + 0xa);
     si = *(uint16_t*)(si_reg + 8);
-    /* ds */ = pop(); // Simulate stack pop
-    /* es */ = pop(); // Simulate stack pop
-    push(bp); // Simulate stack push
-    // DOS API call
-    bp = pop(); // Simulate stack pop
-    // TODO: Translate: pushf 
-    // TODO: Translate: pushf 
-    push(si); // Simulate stack push
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    // TODO: Translate: lds si, ptr [bp + 0xe]
-    *(uint16_t*)(si_reg) = pop(); // Simulate stack pop
-    *(uint16_t*)(si_reg + 6) = pop(); // Simulate stack pop
-    // TODO: Translate: lds si, ptr [bp + 0xa]
-    *(uint16_t*)(si_reg + 8) = pop(); // Simulate stack pop
-    *(uint16_t*)(si_reg + 0xe) = pop(); // Simulate stack pop
-    *(uint16_t*)(si_reg + 0xc) = pop(); // Simulate stack pop
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
+    /* es */ = *(uint16_t*)sp; sp += 2; // pop /* es */
+    // Standard function prologue: save old base pointer
+    // INT_21 - Interrupt 21h
+    // Standard function epilogue: restore old base pointer
+    // 0x477C: TODO: Translate: pushf 
+    // 0x477D: TODO: Translate: pushf 
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    // 0x4781: TODO: Translate: lds si, ptr [bp + 0xe]
+    *(uint16_t*)(si_reg) = *(uint16_t*)sp; sp += 2; // pop *(uint16_t*)(si_reg)
+    *(uint16_t*)(si_reg + 6) = *(uint16_t*)sp; sp += 2; // pop *(uint16_t*)(si_reg + 6)
+    // 0x4789: TODO: Translate: lds si, ptr [bp + 0xa]
+    *(uint16_t*)(si_reg + 8) = *(uint16_t*)sp; sp += 2; // pop *(uint16_t*)(si_reg + 8)
+    *(uint16_t*)(si_reg + 0xe) = *(uint16_t*)sp; sp += 2; // pop *(uint16_t*)(si_reg + 0xe)
+    *(uint16_t*)(si_reg + 0xc) = *(uint16_t*)sp; sp += 2; // pop *(uint16_t*)(si_reg + 0xc)
     *(uint16_t*)(si_reg + 0xc) &= 1;
     *(uint16_t*)(si_reg + 0xa) = di;
     *(uint16_t*)(si_reg + 6) = dx;
     *(uint16_t*)(si_reg + 4) = cx;
     *(uint16_t*)(si_reg + 2) = bx;
     *(uint16_t*)(si_reg) = ax;
-    /* ds */ = pop(); // Simulate stack pop
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
 }
 
 
@@ -2997,16 +2997,16 @@ void sub_47B4(int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_47B4:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(/* ds */); // Simulate stack push
-    // TODO: Translate: lds dx, ptr [bp + 0xa]
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    // 0x47B8: TODO: Translate: lds dx, ptr [bp + 0xa]
     ah = 0x44;
     al = *(uint8_t*)(bp_reg + 8);
     bx = *(uint16_t*)(bp_reg + 6);
     cx = *(uint16_t*)(bp_reg + 0xe);
-    // DOS API call
-    /* ds */ = pop(); // Simulate stack pop
+    // INT_21 - Interrupt 21h
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
 }
 
 
@@ -3030,17 +3030,17 @@ void sub_47EF(void) {
     int dos_env_segment;
 
 block_47EF:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 4;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 4 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     si = *(uint16_t*)(bp_reg + 8);
     di = *(uint16_t*)(bp_reg + 0xc);
-    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
-    push(si); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 6); // push *(uint16_t*)(bp_reg + 6)
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xa); // push *(uint16_t*)(bp_reg + 0xa)
+    sp -= 2; *(uint16_t*)sp = di; // push di
     sub_4A0E();
 block_4808:
     ax |= ax;
@@ -3160,18 +3160,18 @@ void sub_489C(int result_ax, int count_cx) {
     int dos_env_segment;
 
 block_489C:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
     ax = *(uint16_t*)(bp_reg + 4);
-    ax >>= 1; // Unsigned shift right
+    ax = (uint16_t)ax >> 1; // Logical shift right
     cx = ax;
     al = *(uint8_t*)(0x7654);
     ah = 0;
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = cx;
     dx = 0;
-    bx = pop(); // Simulate stack pop
+    bx = *(uint16_t*)sp; sp += 2; // pop bx
     ax = ax / bx; dx = ax % bx; // Unsigned divide
     bl = al;
     ah = 0;
@@ -3184,7 +3184,7 @@ block_489C:
     ah = bl;
     al = *(uint8_t*)(bp_reg - 1);
     sp = bp;
-    bp = pop(); // Simulate stack pop
+    // Standard function epilogue: restore old base pointer
     return;
 }
 
@@ -3209,12 +3209,12 @@ void sub_48D4(int base_bx, int data_dx) {
     int dos_env_segment;
 
 block_48D4:
-    push(bp); // Simulate stack push
-    bp = sp;
-    // TODO: Translate: les bx, ptr [bp + 8]
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // 0x48D7: TODO: Translate: les bx, ptr [bp + 8]
     dx = word ptr es:[bx];
-    // TODO: Translate: les bx, ptr [bp + 4]
-    // Compare dx and word ptr es:[bx] (sets flags)
+    // 0x48DD: TODO: Translate: les bx, ptr [bp + 4]
+    compare(dx, word ptr es:[bx]); // Sets flags
 }
 
 
@@ -3238,18 +3238,18 @@ void sub_4908(int result_ax) {
     int dos_env_segment;
 
 block_4908:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0xc;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     di = *(uint16_t*)(bp_reg + 4);
     sub_4D38();
 block_4916:
     *(uint16_t*)(bp_reg - 8) = ax;
     *(uint16_t*)(bp_reg - 6) = ax;
     ax = *(uint16_t*)(bp_reg + 0xc);
-    // Compare ax and *(uint16_t*)(0x7659) (sets flags)
+    compare(ax, *(uint16_t*)(0x7659)); // Sets flags
 
 }
 
@@ -3274,8 +3274,8 @@ void sub_49D2(int data_dx) {
     int dos_env_segment;
 
 block_49D2:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     dx = *(uint16_t*)(bp_reg + 4);
     al = *(uint8_t*)(0x7655);
     ah = 0;
@@ -3303,10 +3303,10 @@ void sub_4A0E(int result_ax, int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_4A0E:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     bx = *(uint16_t*)(bp_reg + 0xa);
     si = *(uint16_t*)(bp_reg + 8);
     di = *(uint16_t*)(bp_reg + 6);
@@ -3316,7 +3316,7 @@ block_4A0E:
     al = *(uint8_t*)(0x7653);
     ah = 0;
     dx = ax;
-    // Compare bx and cx (sets flags)
+    compare(bx, cx); // Sets flags
 }
 
 
@@ -3340,8 +3340,8 @@ void sub_4A63(int base_bx, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_4A63:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     dx = *(uint16_t*)(bp_reg + 6);
     ch = *(uint8_t*)(0x7650);
     cl = 0x20;
@@ -3369,8 +3369,8 @@ void sub_4A85(void) {
     int dos_env_segment;
 
 block_4A85:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0xa0;
     al = *(uint8_t*)(0x7655);
     ah = 0;
@@ -3422,12 +3422,12 @@ void sub_4D1C(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_4D1C:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     ah = 0x4a;
     bx = *(uint16_t*)(bp_reg + 8);
     /* es */ = *(uint16_t*)(bp_reg + 6);
-    // DOS API call
+    // INT_21 - Interrupt 21h
 }
 
 
@@ -3481,16 +3481,16 @@ void sub_4D9B(void) {
     int dos_env_segment;
 
 block_4D9B:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(bp); // Simulate stack push
-    // TODO: Translate: les si, ptr [bp + 6]
-    // TODO: Translate: cld 
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    // Standard function prologue: save old base pointer
+    // 0x4DA2: TODO: Translate: les si, ptr [bp + 6]
+    // 0x4DA5: TODO: Translate: cld 
     ax -= ax;
-    // TODO: Translate: cdq 
+    // 0x4DA8: TODO: Translate: cdq 
     cx = 0xa;
     bh = 0;
     di = 0x7233;
@@ -3517,15 +3517,15 @@ void sub_4E21(int count_cx) {
     int dos_env_segment;
 
 block_4E21:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(/* ds */); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     cx = *(uint16_t*)(bp_reg + 0xc);
     ah = 0x43;
     al = *(uint8_t*)(bp_reg + 0xa);
-    // TODO: Translate: lds dx, ptr [bp + 6]
-    // DOS API call
-    /* ds */ = pop(); // Simulate stack pop
+    // 0x4E2D: TODO: Translate: lds dx, ptr [bp + 6]
+    // INT_21 - Interrupt 21h
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
 }
 
 
@@ -3549,10 +3549,10 @@ void sub_4E3E(int result_ax, int base_bx, int data_dx) {
     int dos_env_segment;
 
 block_4E3E:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     dx = *(uint16_t*)(bp_reg + 6);
-    // Compare dx and *(uint16_t*)(0x74d0) (sets flags)
+    compare(dx, *(uint16_t*)(0x74d0)); // Sets flags
 }
 
 
@@ -3576,11 +3576,11 @@ void sub_4E66(int base_bx) {
     int dos_env_segment;
 
 block_4E66:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     ah = 0x3e;
     bx = *(uint16_t*)(bp_reg + 6);
-    // DOS API call
+    // INT_21 - Interrupt 21h
 }
 
 
@@ -3604,11 +3604,11 @@ void sub_4E84(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_4E84:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 4;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 4 bytes on stack for local variables
     ax = *(uint16_t*)(bp_reg + 6);
-    // Compare ax and *(uint16_t*)(0x74d0) (sets flags)
+    compare(ax, *(uint16_t*)(0x74d0)); // Sets flags
 }
 
 
@@ -3632,9 +3632,9 @@ void sub_4EFB(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_4EFB:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
     si = 0xffff;
     ax = *(uint16_t*)(bp_reg + 6);
     ax |= *(uint16_t*)(bp_reg + 8);
@@ -3661,9 +3661,9 @@ void sub_4FB3(int result_ax) {
     int dos_env_segment;
 
 block_4FB3:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
     ax = *(uint16_t*)(bp_reg + 6);
     ax |= *(uint16_t*)(bp_reg + 8);
 }
@@ -3689,11 +3689,11 @@ void sub_50E0(void) {
     int dos_env_segment;
 
 block_50E0:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 4;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 4 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     di = 0;
     si = *(uint16_t*)(0x74d0);
     *(uint16_t*)(bp_reg - 2) = /* ds */;
@@ -3723,16 +3723,16 @@ void sub_5122(int base_bx) {
     int dos_env_segment;
 
 block_5122:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     di = 0;
-    // TODO: Translate: les bx, ptr [bp + 0xc]
+    // 0x5129: TODO: Translate: les bx, ptr [bp + 0xc]
     *(uint16_t*)(bp_reg + 0xc)++;
     cl = byte ptr es:[bx];
     al = cl;
-    // Compare al and 0x72 (sets flags)
+    compare(al, 0x72); // Sets flags
 }
 
 
@@ -3756,20 +3756,20 @@ void sub_51DE(int result_ax) {
     int dos_env_segment;
 
 block_51DE:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 4;
-    push(*(uint16_t*)(bp_reg + 8)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
-    push(/* ss */); // Simulate stack push
-    ax = &(uint16_t*)(bp_reg - 2); // Calculate address
-    push(ax); // Simulate stack push
-    push(/* ss */); // Simulate stack push
-    ax = &(uint16_t*)(bp_reg - 4); // Calculate address
-    push(ax); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 4 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 8); // push *(uint16_t*)(bp_reg + 8)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 6); // push *(uint16_t*)(bp_reg + 6)
+    sp -= 2; *(uint16_t*)sp = /* ss */; // push /* ss */
+    ax = (uint16_t*)(bp_reg - 2); // Calculate address
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* ss */; // push /* ss */
+    ax = (uint16_t*)(bp_reg - 4); // Calculate address
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     sub_5122();
 block_51F7:
-    // TODO: Translate: les bx, ptr [bp + 0xe]
+    // 0x51F7: TODO: Translate: les bx, ptr [bp + 0xe]
     word ptr es:[bx + 2] = ax;
     ax |= ax;
 
@@ -3796,9 +3796,9 @@ void sub_52AF(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_52AF:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 4;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 4 bytes on stack for local variables
     *(uint16_t*)(bp_reg - 2) = /* ds */;
     *(uint16_t*)(bp_reg - 4) = 0x7340;
 }
@@ -3824,10 +3824,10 @@ void sub_534A(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_534A:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     goto block_542C;
 }
 
@@ -3852,12 +3852,12 @@ void sub_54CC(int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_54CC:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 4;
-    push(si); // Simulate stack push
-    // TODO: Translate: les bx, ptr [bp + 4]
-    // Compare word ptr es:[bx] and 0 (sets flags)
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 4 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    // 0x54D3: TODO: Translate: les bx, ptr [bp + 4]
+    compare(word ptr es:[bx], 0); // Sets flags
 }
 
 
@@ -3881,18 +3881,18 @@ void sub_554E(int count_cx) {
     int dos_env_segment;
 
 block_554E:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
     si = *(uint16_t*)(bp_reg + 0xe);
-    push(*(uint16_t*)(bp_reg + 8)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
-    // TODO: Translate: nop 
-    push(/* cs */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 8); // push *(uint16_t*)(bp_reg + 8)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 6); // push *(uint16_t*)(bp_reg + 6)
+    // No operation
+    sp -= 2; *(uint16_t*)sp = /* cs */; // push /* cs */
     sub_4FB3();
 block_5560:
-    cx = pop(); // Simulate stack pop
-    cx = pop(); // Simulate stack pop
+    cx = *(uint16_t*)sp; sp += 2; // pop cx
+    cx = *(uint16_t*)sp; sp += 2; // pop cx
     ax |= ax;
 
 }
@@ -3918,10 +3918,10 @@ void sub_5739(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_5739:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 4;
-    push(si); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 4 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = si; // push si
     si = 0x14;
     *(uint16_t*)(bp_reg - 2) = /* ds */;
     *(uint16_t*)(bp_reg - 4) = 0x7340;
@@ -3949,10 +3949,10 @@ void sub_5777(int result_ax, int base_bx, int data_dx) {
     int dos_env_segment;
 
 block_5777:
-    push(bp); // Simulate stack push
-    bp = sp;
-    // TODO: Translate: les bx, ptr [bp + 4]
-    // Test word ptr es:[bx + 2] & 0x200 (sets flags)
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // 0x577A: TODO: Translate: les bx, ptr [bp + 4]
+    test_bits(word ptr es:[bx + 2], 0x200); // Sets flags
 }
 
 
@@ -3976,18 +3976,18 @@ void sub_57EF(int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_57EF:
-    push(bp); // Simulate stack push
-    bp = sp;
-    // TODO: Translate: les bx, ptr [bp + 6]
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // 0x57F2: TODO: Translate: les bx, ptr [bp + 6]
     word ptr es:[bx]++;
-    push(*(uint16_t*)(bp_reg + 8)); // Simulate stack push
-    push(bx); // Simulate stack push
-    push(/* cs */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 8); // push *(uint16_t*)(bp_reg + 8)
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = /* cs */; // push /* cs */
     sub_5807();
 block_5800:
-    cx = pop(); // Simulate stack pop
-    cx = pop(); // Simulate stack pop
-    bp = pop(); // Simulate stack pop
+    cx = *(uint16_t*)sp; sp += 2; // pop cx
+    cx = *(uint16_t*)sp; sp += 2; // pop cx
+    // Standard function epilogue: restore old base pointer
     return;
 
 }
@@ -4013,9 +4013,9 @@ void sub_5807(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_5807:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
     ax = *(uint16_t*)(bp_reg + 6);
     ax |= *(uint16_t*)(bp_reg + 8);
 }
@@ -4041,17 +4041,17 @@ void sub_59FF(int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_59FF:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     dx = /* ds */;
-    // TODO: Translate: les di, ptr [bp + 6]
-    // TODO: Translate: lds si, ptr [bp + 0xa]
+    // 0x5A06: TODO: Translate: les di, ptr [bp + 6]
+    // 0x5A09: TODO: Translate: lds si, ptr [bp + 0xa]
     cx = *(uint16_t*)(bp_reg + 0xe);
-    cx >>= 1; // Unsigned shift right
-    // TODO: Translate: cld 
-    // TODO: Translate: rep movsw word ptr es:[di], word ptr [si]
+    cx = (uint16_t)cx >> 1; // Logical shift right
+    // 0x5A11: TODO: Translate: cld 
+    // 0x5A12: TODO: Translate: rep movsw word ptr es:[di], word ptr [si]
 }
 
 
@@ -4075,14 +4075,14 @@ void sub_5A23(int count_cx) {
     int dos_env_segment;
 
 block_5A23:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(/* ds */); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     cx = *(uint16_t*)(bp_reg + 4);
     ah = 0x3c;
-    // TODO: Translate: lds dx, ptr [bp + 6]
-    // DOS API call
-    /* ds */ = pop(); // Simulate stack pop
+    // 0x5A2C: TODO: Translate: lds dx, ptr [bp + 6]
+    // INT_21 - Interrupt 21h
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
 }
 
 
@@ -4106,14 +4106,14 @@ void sub_5A3E(int base_bx) {
     int dos_env_segment;
 
 block_5A3E:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     bx = *(uint16_t*)(bp_reg + 4);
     cx -= cx;
     dx -= dx;
     ah = 0x40;
-    // DOS API call
-    bp = pop(); // Simulate stack pop
+    // DOS_WriteFile (ah=0x40) - Write to file or device
+    // Standard function epilogue: restore old base pointer
     return;
 }
 
@@ -4138,14 +4138,14 @@ void sub_5A50(int result_ax) {
     int dos_env_segment;
 
 block_5A50:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 4;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 4 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     si = *(uint16_t*)(bp_reg + 0xa);
     di = *(uint16_t*)(bp_reg + 0xc);
-    // Test si & 0xc000 (sets flags)
+    test_bits(si, 0xc000); // Sets flags
 }
 
 
@@ -4169,12 +4169,12 @@ void sub_5BBF(int count_cx) {
     int dos_env_segment;
 
 block_5BBF:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
     al = 1;
     cx = *(uint16_t*)(bp_reg + 0xa);
-    // Test cx & 2 (sets flags)
+    test_bits(cx, 2); // Sets flags
 }
 
 
@@ -4198,21 +4198,21 @@ void sub_5C29(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_5C29:
-    push(bp); // Simulate stack push
-    bp = sp;
-    // TODO: Translate: les bx, ptr [bp + 8]
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // 0x5C2C: TODO: Translate: les bx, ptr [bp + 8]
     word ptr es:[bx]--;
-    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
-    push(bx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xa); // push *(uint16_t*)(bp_reg + 0xa)
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
     al = *(uint8_t*)(bp_reg + 6);
-    // TODO: Translate: cwde 
-    push(ax); // Simulate stack push
-    // TODO: Translate: nop 
-    push(/* cs */); // Simulate stack push
+    // 0x5C39: TODO: Translate: cwde 
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // No operation
+    sp -= 2; *(uint16_t*)sp = /* cs */; // push /* cs */
     sub_5C45();
 block_5C40:
-    sp += 6;
-    bp = pop(); // Simulate stack pop
+    // Deallocate 6 bytes from stack
+    // Standard function epilogue: restore old base pointer
     return;
 
 }
@@ -4238,13 +4238,13 @@ void sub_5C45(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_5C45:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
     al = *(uint8_t*)(bp_reg + 6);
     *(uint8_t*)(0x8792) = al;
-    // TODO: Translate: les bx, ptr [bp + 8]
-    // Compare word ptr es:[bx] and -1 (sets flags)
+    // 0x5C4F: TODO: Translate: les bx, ptr [bp + 8]
+    compare(word ptr es:[bx], -1); // Sets flags
 }
 
 
@@ -4268,15 +4268,15 @@ void sub_5DEE(int base_bx) {
     int dos_env_segment;
 
 block_5DEE:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     di = *(uint16_t*)(bp_reg + 8);
     *(uint16_t*)(bp_reg - 2) = di;
-    // TODO: Translate: les bx, ptr [bp + 4]
-    // Test word ptr es:[bx + 2] & 8 (sets flags)
+    // 0x5DFC: TODO: Translate: les bx, ptr [bp + 4]
+    test_bits(word ptr es:[bx + 2], 8); // Sets flags
 }
 
 
@@ -4300,13 +4300,13 @@ void sub_5FF1(int result_ax) {
     int dos_env_segment;
 
 block_5FF1:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 4;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 4 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = *(uint16_t*)(bp_reg + 6);
-    // Compare ax and *(uint16_t*)(0x74d0) (sets flags)
+    compare(ax, *(uint16_t*)(0x74d0)); // Sets flags
 }
 
 
@@ -4331,15 +4331,15 @@ void sub_60C5(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_60C5:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     di = *(uint16_t*)(bp_reg + 0xe);
     si = *(uint16_t*)(bp_reg + 0x10);
-    // TODO: Translate: les bx, ptr [bp + 6]
+    // 0x60D0: TODO: Translate: les bx, ptr [bp + 6]
     ax = word ptr es:[bx + 0x12];
-    // Compare ax and *(uint16_t*)(bp_reg + 6) (sets flags)
+    compare(ax, *(uint16_t*)(bp_reg + 6)); // Sets flags
 }
 
 
@@ -4363,9 +4363,9 @@ void sub_61E2(int result_ax) {
     int dos_env_segment;
 
 block_61E2:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
     si = *(uint16_t*)(bp_reg + 4);
     ax = *(uint16_t*)(bp_reg + 0xa);
     ax |= *(uint16_t*)(bp_reg + 0xc);
@@ -4392,11 +4392,11 @@ void sub_623B(int base_bx) {
     int dos_env_segment;
 
 block_623B:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    // TODO: Translate: les bx, ptr [bp + 4]
-    // Compare byte ptr es:[bx - 1] and 0x2e (sets flags)
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    // 0x6241: TODO: Translate: les bx, ptr [bp + 4]
+    compare(byte ptr es:[bx - 1], 0x2e); // Sets flags
 }
 
 
@@ -4420,11 +4420,11 @@ void sub_629B(int result_ax) {
     int dos_env_segment;
 
 block_629B:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0x58;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     di = 0;
     ax = *(uint16_t*)(bp_reg + 0xa);
     ax |= *(uint16_t*)(bp_reg + 0xc);
@@ -4451,29 +4451,29 @@ void sub_65B8(int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_65B8:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
-    // TODO: Translate: cld 
-    push(/* ds */); // Simulate stack push
-    // TODO: Translate: les di, ptr [bp + 6]
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
+    // 0x65BD: TODO: Translate: cld 
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    // 0x65BF: TODO: Translate: les di, ptr [bp + 6]
     dx = di;
     al = 0;
     cx = 0xffff;
-    // TODO: Translate: repne scasb al, byte ptr es:[di]
-    push(/* es */); // Simulate stack push
-    si = &(uint16_t*)(di_reg - 1); // Calculate address
-    // TODO: Translate: les di, ptr [bp + 0xa]
+    // 0x65C9: TODO: Translate: repne scasb al, byte ptr es:[di]
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    si = (uint16_t*)(di_reg - 1); // Calculate address
+    // 0x65CF: TODO: Translate: les di, ptr [bp + 0xa]
     cx = 0xffff;
-    // TODO: Translate: repne scasb al, byte ptr es:[di]
-    // TODO: Translate: not cx
+    // 0x65D5: TODO: Translate: repne scasb al, byte ptr es:[di]
+    // 0x65D7: TODO: Translate: not cx
     di -= cx;
-    push(/* es */); // Simulate stack push
-    /* ds */ = pop(); // Simulate stack pop
-    /* es */ = pop(); // Simulate stack pop
-    // TODO: Translate: xchg di, si
-    // Test si & 1 (sets flags)
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
+    /* es */ = *(uint16_t*)sp; sp += 2; // pop /* es */
+    swap(di, si); // Exchange values
+    test_bits(si, 1); // Sets flags
 }
 
 
@@ -4497,28 +4497,28 @@ void sub_65F7(int count_cx) {
     int dos_env_segment;
 
 block_65F7:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
-    // TODO: Translate: cld 
-    // TODO: Translate: les di, ptr [bp + 0xa]
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
+    // 0x65FC: TODO: Translate: cld 
+    // 0x65FD: TODO: Translate: les di, ptr [bp + 0xa]
     si = di;
     al = 0;
     cx = 0xffff;
-    // TODO: Translate: repne scasb al, byte ptr es:[di]
-    // TODO: Translate: not cx
-    push(/* ds */); // Simulate stack push
+    // 0x6607: TODO: Translate: repne scasb al, byte ptr es:[di]
+    // 0x6609: TODO: Translate: not cx
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = /* es */;
     /* ds */ = ax;
-    // TODO: Translate: les di, ptr [bp + 6]
-    // TODO: Translate: rep movsb byte ptr es:[di], byte ptr [si]
-    /* ds */ = pop(); // Simulate stack pop
+    // 0x6610: TODO: Translate: les di, ptr [bp + 6]
+    // 0x6613: TODO: Translate: rep movsb byte ptr es:[di], byte ptr [si]
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
     dx = *(uint16_t*)(bp_reg + 8);
     ax = *(uint16_t*)(bp_reg + 6);
-    di = pop(); // Simulate stack pop
-    si = pop(); // Simulate stack pop
-    bp = pop(); // Simulate stack pop
+    di = *(uint16_t*)sp; sp += 2; // pop di
+    si = *(uint16_t*)sp; sp += 2; // pop si
+    // Standard function epilogue: restore old base pointer
     return;
 }
 
@@ -4543,12 +4543,12 @@ void sub_6661(int result_ax) {
     int dos_env_segment;
 
 block_6661:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(di); // Simulate stack push
-    // TODO: Translate: les di, ptr [bp + 6]
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = di; // push di
+    // 0x6665: TODO: Translate: les di, ptr [bp + 6]
     ax = 0;
-    // Compare ax and *(uint16_t*)(bp_reg + 8) (sets flags)
+    compare(ax, *(uint16_t*)(bp_reg + 8)); // Sets flags
 }
 
 
@@ -4572,32 +4572,32 @@ void sub_6680(int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_6680:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
-    // TODO: Translate: cld 
-    // TODO: Translate: les di, ptr [bp + 0xa]
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
+    // 0x6685: TODO: Translate: cld 
+    // 0x6686: TODO: Translate: les di, ptr [bp + 0xa]
     si = di;
     al = 0;
     bx = *(uint16_t*)(bp_reg + 0xe);
     cx = bx;
-    // TODO: Translate: repne scasb al, byte ptr es:[di]
+    // 0x6692: TODO: Translate: repne scasb al, byte ptr es:[di]
     bx -= cx;
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     di = /* es */;
     /* ds */ = di;
-    // TODO: Translate: les di, ptr [bp + 6]
-    // TODO: Translate: xchg bx, cx
-    // TODO: Translate: rep movsb byte ptr es:[di], byte ptr [si]
+    // 0x669B: TODO: Translate: les di, ptr [bp + 6]
+    swap(bx, cx); // Exchange values
+    // 0x66A0: TODO: Translate: rep movsb byte ptr es:[di], byte ptr [si]
     cx = bx;
-    // TODO: Translate: rep stosb byte ptr es:[di], al
-    /* ds */ = pop(); // Simulate stack pop
+    // 0x66A4: TODO: Translate: rep stosb byte ptr es:[di], al
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
     dx = *(uint16_t*)(bp_reg + 8);
     ax = *(uint16_t*)(bp_reg + 6);
-    di = pop(); // Simulate stack pop
-    si = pop(); // Simulate stack pop
-    bp = pop(); // Simulate stack pop
+    di = *(uint16_t*)sp; sp += 2; // pop di
+    si = *(uint16_t*)sp; sp += 2; // pop si
+    // Standard function epilogue: restore old base pointer
     return;
 }
 
@@ -4622,13 +4622,13 @@ void sub_679C(int result_ax) {
     int dos_env_segment;
 
 block_679C:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0x8e;
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     di = *(uint16_t*)(bp_reg + 6);
-    // Compare di and *(uint16_t*)(0x74d0) (sets flags)
+    compare(di, *(uint16_t*)(0x74d0)); // Sets flags
 }
 
 
@@ -4652,11 +4652,11 @@ void sub_68ED(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_68ED:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     bx = *(uint16_t*)(bp_reg + 6);
     bx <<= 1;
-    // Test *(uint16_t*)(bx_reg + 0x74d2) & 1 (sets flags)
+    test_bits(*(uint16_t*)(bx_reg + 0x74d2), 1); // Sets flags
 }
 
 
@@ -4680,13 +4680,13 @@ void sub_70A0(int result_ax) {
     int dos_env_segment;
 
 block_70A0:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     ax = *(uint16_t*)(bp_reg + 6);
@@ -4713,17 +4713,17 @@ void sub_715E(int result_ax) {
     int dos_env_segment;
 
 block_715E:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 4;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 4 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: pushf 
-    // Compare *(uint16_t*)(0x54d2) and -1 (sets flags)
+    // 0x716D: TODO: Translate: pushf 
+    compare(*(uint16_t*)(0x54d2), -1); // Sets flags
 }
 
 
@@ -4747,19 +4747,19 @@ void sub_7229(int result_ax) {
     int dos_env_segment;
 
 block_7229:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    push(/* cs */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* cs */; // push /* cs */
     sub_715E();
 block_723C:
-    // Compare *(uint16_t*)(bp_reg + 8) and dx (sets flags)
+    compare(*(uint16_t*)(bp_reg + 8), dx); // Sets flags
 
 }
 
@@ -4784,8 +4784,8 @@ void sub_731C(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_731C:
-    push(di); // Simulate stack push
-    push(bx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = di; // push di
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
     di = 0xffff;
     bx = 0;
 }
@@ -4811,13 +4811,13 @@ void sub_7353(int result_ax) {
     int dos_env_segment;
 
 block_7353:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     cl = *(uint8_t*)(bp_reg + 0xa);
@@ -4826,7 +4826,7 @@ block_7353:
     cl &= 0x3f;
     dx &= 0x3f3f;
     ax = *(uint16_t*)(bp_reg + 0xc);
-    // Compare ax and 4 (sets flags)
+    compare(ax, 4); // Sets flags
 }
 
 
@@ -4850,18 +4850,18 @@ void sub_7426(int result_ax) {
     int dos_env_segment;
 
 block_7426:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: lds si, ptr [bp + 0xa]
-    // TODO: Translate: les di, ptr [bp + 6]
-    // TODO: Translate: lodsb al, byte ptr [si]
+    // 0x7435: TODO: Translate: lds si, ptr [bp + 0xa]
+    // 0x7438: TODO: Translate: les di, ptr [bp + 6]
+    // 0x743B: TODO: Translate: lodsb al, byte ptr [si]
     ah = 0;
     bx = ax;
     bx <<= 1;
@@ -4871,14 +4871,14 @@ block_7426:
     si = 0x3adc;
     si += bx;
     cx = 3;
-    // TODO: Translate: rep movsb byte ptr es:[di], byte ptr [si]
-    // TODO: Translate: lds si, ptr [bp + 0xa]
+    // 0x7451: TODO: Translate: rep movsb byte ptr es:[di], byte ptr [si]
+    // 0x7453: TODO: Translate: lds si, ptr [bp + 0xa]
     bl = *(uint8_t*)(si_reg + 1);
     bl &= 3;
     ax = 0x1ab5;
     /* ds */ = ax;
     si = 0x3ab8;
-    // Compare bl and 0 (sets flags)
+    compare(bl, 0); // Sets flags
 }
 
 
@@ -4902,17 +4902,17 @@ void sub_74D9(int result_ax) {
     int dos_env_segment;
 
 block_74D9:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: lds si, ptr [bp + 0xa]
-    // TODO: Translate: les di, ptr [bp + 6]
+    // 0x74E8: TODO: Translate: lds si, ptr [bp + 0xa]
+    // 0x74EB: TODO: Translate: les di, ptr [bp + 6]
     cx = *(uint16_t*)(bp_reg + 0xe);
     cx |= cx;
 }
@@ -4938,17 +4938,17 @@ void sub_756A(int result_ax) {
     int dos_env_segment;
 
 block_756A:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 8;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 8 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: lds si, ptr [bp + 0xa]
-    // Compare *(uint16_t*)(bp_reg + 0xe) and 0 (sets flags)
+    // 0x7579: TODO: Translate: lds si, ptr [bp + 0xa]
+    compare(*(uint16_t*)(bp_reg + 0xe), 0); // Sets flags
 }
 
 
@@ -4972,21 +4972,21 @@ void sub_7678(int result_ax) {
     int dos_env_segment;
 
 block_7678:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 6;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 6 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     *(uint8_t*)(bp_reg - 6) = 0;
     *(uint8_t*)(bp_reg - 5) = 8;
     *(uint8_t*)(bp_reg - 4) = 1;
     *(uint8_t*)(bp_reg - 3) = 9;
-    // TODO: Translate: lds si, ptr [bp + 0xa]
-    // TODO: Translate: les di, ptr [bp + 6]
+    // 0x7697: TODO: Translate: lds si, ptr [bp + 0xa]
+    // 0x769A: TODO: Translate: les di, ptr [bp + 6]
     cx = *(uint16_t*)(bp_reg + 0xe);
     bx = 0;
     cx |= cx;
@@ -5013,17 +5013,17 @@ void sub_770A(int result_ax) {
     int dos_env_segment;
 
 block_770A:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: lds si, ptr [bp + 0xc]
-    // TODO: Translate: les di, ptr [bp + 6]
+    // 0x7719: TODO: Translate: lds si, ptr [bp + 0xc]
+    // 0x771C: TODO: Translate: les di, ptr [bp + 6]
     dh = 0x1e;
     dl = 0x3b;
     ch = 0xb;
@@ -5050,20 +5050,20 @@ void sub_7A56(int result_ax) {
     int dos_env_segment;
 
 block_7A56:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     *(uint16_t*)(bp_reg - 2) = 0xffe8;
-    // TODO: Translate: les di, ptr [bp + 0x10]
+    // 0x7A6A: TODO: Translate: les di, ptr [bp + 0x10]
     ax = *(uint16_t*)(bp_reg + 0xa);
-    push(ax); // Simulate stack push
-    // TODO: Translate: lcall 0x98e, 0x12a
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // 0x7A71: TODO: Translate: lcall 0x98e, 0x12a
 }
 
 
@@ -5087,16 +5087,16 @@ void sub_8346(int result_ax) {
     int dos_env_segment;
 
 block_8346:
-    // TODO: Translate: in al, dx
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // 0x8348: TODO: Translate: in al, dx
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
-    // TODO: Translate: lcall 0x98e, 0x12a
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 6); // push *(uint16_t*)(bp_reg + 6)
+    // 0x8358: TODO: Translate: lcall 0x98e, 0x12a
 }
 
 
@@ -5120,24 +5120,24 @@ void sub_85ED(int result_ax) {
     int dos_env_segment;
 
 block_85ED:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 4;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 4 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: lds si, ptr [bp + 6]
-    push(dx); // Simulate stack push
+    // 0x85FC: TODO: Translate: lds si, ptr [bp + 6]
+    sp -= 2; *(uint16_t*)sp = dx; // push dx
     dx = 0x40;
     /* es */ = dx;
-    dx = pop(); // Simulate stack pop
+    dx = *(uint16_t*)sp; sp += 2; // pop dx
     dx = word ptr es:[0x63];
     dx += 6;
     *(uint16_t*)(bp_reg - 4) = dx;
-    // Compare *(uint16_t*)(bp_reg + 0xa) and 0 (sets flags)
+    compare(*(uint16_t*)(bp_reg + 0xa), 0); // Sets flags
 }
 
 
@@ -5161,17 +5161,17 @@ void sub_8791(int result_ax) {
     int dos_env_segment;
 
 block_8791:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0x18;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: les di, ptr [bp + 6]
-    // Compare *(uint16_t*)(bp_reg + 0xe) and 0 (sets flags)
+    // 0x87A0: TODO: Translate: les di, ptr [bp + 6]
+    compare(*(uint16_t*)(bp_reg + 0xe), 0); // Sets flags
 }
 
 
@@ -5195,13 +5195,13 @@ void sub_893A(int result_ax) {
     int dos_env_segment;
 
 block_893A:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0x80;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     *(uint8_t*)(bp_reg - 0x36) = 0x78;
@@ -5318,7 +5318,7 @@ block_893A:
     *(uint8_t*)(bp_reg - 0x63) = 0xfc;
     *(uint8_t*)(bp_reg - 0x62) = 0xfc;
     si = *(uint16_t*)(bp_reg + 6);
-    // Compare si and 0x28 (sets flags)
+    compare(si, 0x28); // Sets flags
 }
 
 
@@ -5343,8 +5343,8 @@ void sub_901A(int result_ax, int base_bx) {
 
 block_901A:
     ax = 0;
-    push(ax); // Simulate stack push
-    // TODO: Translate: lcall 0x98e, 0x12a
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // 0x901D: TODO: Translate: lcall 0x98e, 0x12a
     bx = ax;
     *(uint16_t*)(bx_reg + 0x30) = 0x312;
     bx += 0x36;
@@ -5406,8 +5406,8 @@ void sub_987E(int result_ax, int base_bx) {
 
 block_987E:
     ax = 0;
-    push(ax); // Simulate stack push
-    // TODO: Translate: lcall 0x98e, 0x12a
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // 0x9881: TODO: Translate: lcall 0x98e, 0x12a
     bx = ax;
     *(uint16_t*)(bx_reg + 0x2c) = 0x1e6;
     bx += 0x36;
@@ -5468,17 +5468,17 @@ void sub_9EBD(int result_ax) {
     int dos_env_segment;
 
 block_9EBD:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 4;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 4 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: les di, ptr [bp + 8]
-    // Compare byte ptr es:[di] and 1 (sets flags)
+    // 0x9ECC: TODO: Translate: les di, ptr [bp + 8]
+    compare(byte ptr es:[di], 1); // Sets flags
 }
 
 
@@ -5502,17 +5502,17 @@ void sub_9F7D(int result_ax) {
     int dos_env_segment;
 
 block_9F7D:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0x116;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: lds si, ptr [bp + 0x10]
-    // Compare *(uint8_t*)(si_reg) and 0 (sets flags)
+    // 0x9F8D: TODO: Translate: lds si, ptr [bp + 0x10]
+    compare(*(uint8_t*)(si_reg), 0); // Sets flags
 }
 
 
@@ -5537,8 +5537,8 @@ void sub_A70D(int result_ax, int base_bx) {
 
 block_A70D:
     ax = 0;
-    push(ax); // Simulate stack push
-    // TODO: Translate: lcall 0x98e, 0x12a
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // 0xA710: TODO: Translate: lcall 0x98e, 0x12a
     bx = ax;
     *(uint16_t*)(bx_reg + 0x2a) = 0x1b5;
     bx += 0x36;
@@ -5599,20 +5599,20 @@ void sub_AE16(int result_ax) {
     int dos_env_segment;
 
 block_AE16:
-    // TODO: Translate: in al, dx
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // 0xAE18: TODO: Translate: in al, dx
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     *(uint16_t*)(bp_reg - 2) = 0xffd9;
-    // TODO: Translate: les di, ptr [bp + 6]
+    // 0xAE2A: TODO: Translate: les di, ptr [bp + 6]
     ah = 0x4f;
     al = 0;
-    // Video BIOS call
-    // Compare ax and 0x4f (sets flags)
+    // VIDEO_SetVideoMode (al=0x0) - Set video mode
+    compare(ax, 0x4f); // Sets flags
 }
 
 
@@ -5636,20 +5636,20 @@ void sub_AE65(int result_ax) {
     int dos_env_segment;
 
 block_AE65:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 6;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 6 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    push(/* ss */); // Simulate stack push
-    ax = &(uint16_t*)(bp_reg - 6); // Calculate address
-    push(ax); // Simulate stack push
-    // TODO: Translate: lcall 0xae3, 0
-    // Compare *(uint8_t*)(bp_reg - 6) and 5 (sets flags)
+    sp -= 2; *(uint16_t*)sp = /* ss */; // push /* ss */
+    ax = (uint16_t*)(bp_reg - 6); // Calculate address
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // 0xAE79: TODO: Translate: lcall 0xae3, 0
+    compare(*(uint8_t*)(bp_reg - 6), 5); // Sets flags
 }
 
 
@@ -5673,24 +5673,24 @@ void sub_AFB5(int result_ax) {
     int dos_env_segment;
 
 block_AFB5:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     ax = *(uint16_t*)(0x43b9);
     *(uint16_t*)(bp_reg - 2) = ax;
     ax = *(uint16_t*)(bp_reg - 2);
-    di = pop(); // Simulate stack pop
-    si = pop(); // Simulate stack pop
-    /* es */ = pop(); // Simulate stack pop
-    /* ds */ = pop(); // Simulate stack pop
+    di = *(uint16_t*)sp; sp += 2; // pop di
+    si = *(uint16_t*)sp; sp += 2; // pop si
+    /* es */ = *(uint16_t*)sp; sp += 2; // pop /* es */
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
     sp = bp;
-    bp = pop(); // Simulate stack pop
+    // Standard function epilogue: restore old base pointer
     return;
 }
 
@@ -5715,19 +5715,19 @@ void sub_B00C(int result_ax) {
     int dos_env_segment;
 
 block_B00C:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     *(uint16_t*)(bp_reg - 2) = 0;
-    // TODO: Translate: les di, ptr [bp + 6]
+    // 0xB020: TODO: Translate: les di, ptr [bp + 6]
     ax = *(uint16_t*)(bp_reg + 0xa);
-    // Compare ax and 1 (sets flags)
+    compare(ax, 1); // Sets flags
 }
 
 
@@ -5751,31 +5751,31 @@ void sub_B316(int result_ax) {
     int dos_env_segment;
 
 block_B316:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: les di, ptr [bp + 0xa]
+    // 0xB325: TODO: Translate: les di, ptr [bp + 0xa]
     ax = *(uint16_t*)(0x54c3);
     word ptr es:[di + 2] = ax;
     ax = *(uint16_t*)(0x54c1);
     word ptr es:[di] = ax;
-    // TODO: Translate: les di, ptr [bp + 6]
+    // 0xB335: TODO: Translate: les di, ptr [bp + 6]
     ax = *(uint16_t*)(0x54bf);
     word ptr es:[di] = ax;
     *(uint16_t*)(bp_reg - 2) = 0;
     ax = *(uint16_t*)(bp_reg - 2);
-    di = pop(); // Simulate stack pop
-    si = pop(); // Simulate stack pop
-    /* es */ = pop(); // Simulate stack pop
-    /* ds */ = pop(); // Simulate stack pop
+    di = *(uint16_t*)sp; sp += 2; // pop di
+    si = *(uint16_t*)sp; sp += 2; // pop si
+    /* es */ = *(uint16_t*)sp; sp += 2; // pop /* es */
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
     sp = bp;
-    bp = pop(); // Simulate stack pop
+    // Standard function epilogue: restore old base pointer
     return;
 }
 
@@ -5800,19 +5800,19 @@ void sub_B350(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_B350:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 8;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 8 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    push(bx); // Simulate stack push
-    push(cx); // Simulate stack push
-    push(dx); // Simulate stack push
-    // Compare *(uint16_t*)(0x54c6) and -1 (sets flags)
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = cx; // push cx
+    sp -= 2; *(uint16_t*)sp = dx; // push dx
+    compare(*(uint16_t*)(0x54c6), -1); // Sets flags
 }
 
 
@@ -5836,16 +5836,16 @@ void sub_B4EC(int result_ax) {
     int dos_env_segment;
 
 block_B4EC:
-    // TODO: Translate: in al, dx
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // 0xB4EE: TODO: Translate: in al, dx
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     ax = *(uint16_t*)(bp_reg + 8);
-    // Compare ax and 0x24 (sets flags)
+    compare(ax, 0x24); // Sets flags
 }
 
 
@@ -5869,17 +5869,17 @@ void sub_B586(int result_ax) {
     int dos_env_segment;
 
 block_B586:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
-    push(/* cs */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 6); // push *(uint16_t*)(bp_reg + 6)
+    sp -= 2; *(uint16_t*)sp = /* cs */; // push /* cs */
     sub_B5BF();
 block_B59C:
 
@@ -5906,17 +5906,17 @@ void sub_B5BF(int result_ax) {
     int dos_env_segment;
 
 block_B5BF:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     ax = *(uint16_t*)(bp_reg + 6);
-    // Compare ax and 0x28 (sets flags)
+    compare(ax, 0x28); // Sets flags
 }
 
 
@@ -5940,17 +5940,17 @@ void sub_B60A(int result_ax) {
     int dos_env_segment;
 
 block_B60A:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     ax = *(uint16_t*)(bp_reg + 6);
-    // Compare ax and 0x28 (sets flags)
+    compare(ax, 0x28); // Sets flags
 }
 
 
@@ -5974,16 +5974,16 @@ void sub_B66A(int result_ax) {
     int dos_env_segment;
 
 block_B66A:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // Compare *(uint16_t*)(0x43b9) and 7 (sets flags)
+    compare(*(uint16_t*)(0x43b9), 7); // Sets flags
 }
 
 
@@ -6007,13 +6007,13 @@ void sub_B6A8(int result_ax) {
     int dos_env_segment;
 
 block_B6A8:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     ax = *(uint16_t*)(bp_reg + 6);
@@ -6041,8 +6041,8 @@ void sub_B995(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_B995:
-    push(ax); // Simulate stack push
-    // Compare al and 2 (sets flags)
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    compare(al, 2); // Sets flags
 }
 
 
@@ -6066,21 +6066,21 @@ void sub_BFC3(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_BFC3:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    push(bx); // Simulate stack push
-    push(cx); // Simulate stack push
-    push(dx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = cx; // push cx
+    sp -= 2; *(uint16_t*)sp = dx; // push dx
     *(uint16_t*)(bp_reg - 2) = 0;
     ax = *(uint16_t*)(0x43b9);
-    // Compare ax and 1 (sets flags)
+    compare(ax, 1); // Sets flags
 }
 
 
@@ -6105,8 +6105,8 @@ void sub_C3B3(int result_ax, int base_bx) {
 
 block_C3B3:
     ax = 0;
-    push(ax); // Simulate stack push
-    // TODO: Translate: lcall 0x98e, 0x12a
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // 0xC3B6: TODO: Translate: lcall 0x98e, 0x12a
     bx = ax;
     *(uint16_t*)(bx_reg + 0x2e) = 0x32b;
     bx += 0x36;
@@ -6168,11 +6168,11 @@ void sub_CA9B(int count_cx) {
 
 block_CA9B:
     al = 0;
-    push(bp); // Simulate stack push
+    // Standard function prologue: save old base pointer
     ah = 0x1a;
-    // Video BIOS call
-    bp = pop(); // Simulate stack pop
-    // Compare al and 0x1a (sets flags)
+    // INT_10_AH1A (ah=0x1A) - Interrupt 10h Function 1Ah
+    // Standard function epilogue: restore old base pointer
+    compare(al, 0x1a); // Sets flags
 }
 
 
@@ -6197,11 +6197,11 @@ void sub_CB80(void) {
 
 block_CB80:
     bl = 0x10;
-    push(bp); // Simulate stack push
+    // Standard function prologue: save old base pointer
     ah = 0x12;
-    // Video BIOS call
-    bp = pop(); // Simulate stack pop
-    // Compare bl and 0x10 (sets flags)
+    // INT_10_AH12 (ah=0x12) - Interrupt 10h Function 12h
+    // Standard function epilogue: restore old base pointer
+    compare(bl, 0x10); // Sets flags
 }
 
 
@@ -6226,7 +6226,7 @@ void sub_CBCF(int data_dx) {
 
 block_CBCF:
     dx = 0x3d4;
-    push(/* cs */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* cs */; // push /* cs */
     sub_CC23();
 block_CBD6:
 
@@ -6254,7 +6254,7 @@ void sub_CBE1(int count_cx, int data_dx) {
 
 block_CBE1:
     dx = 0x3b4;
-    push(/* cs */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* cs */; // push /* cs */
     sub_CC23();
 block_CBE8:
 
@@ -6282,17 +6282,17 @@ void sub_CC23(int count_cx) {
 
 block_CC23:
     al = 0xf;
-    // TODO: Translate: out dx, al
+    // 0xCC25: TODO: Translate: out dx, al
     dx++;
-    // TODO: Translate: in al, dx
+    // 0xCC27: TODO: Translate: in al, dx
     ah = al;
     al = 0x66;
-    // TODO: Translate: out dx, al
+    // 0xCC2C: TODO: Translate: out dx, al
     cx = 0x100;
-    // TODO: Translate: in al, dx
-    // TODO: Translate: xchg al, ah
-    // TODO: Translate: out dx, al
-    // Compare ah and 0x66 (sets flags)
+    // 0xCC32: TODO: Translate: in al, dx
+    swap(al, ah); // Exchange values
+    // 0xCC35: TODO: Translate: out dx, al
+    compare(ah, 0x66); // Sets flags
 }
 
 
@@ -6316,7 +6316,7 @@ void sub_CC40(void) {
     int dos_env_segment;
 
 block_CC40:
-    // Compare byte ptr es:[di + 2] and 0 (sets flags)
+    compare(byte ptr es:[di + 2], 0); // Sets flags
 }
 
 
@@ -6340,7 +6340,7 @@ void sub_CC7A(int result_ax) {
     int dos_env_segment;
 
 block_CC7A:
-    // Compare byte ptr es:[di] and 0 (sets flags)
+    compare(byte ptr es:[di], 0); // Sets flags
 }
 
 
@@ -6364,18 +6364,18 @@ void sub_D552(int result_ax) {
     int dos_env_segment;
 
 block_D552:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     ax = 0x4300;
-    interrupt(0x2f); // Call interrupt 0x2f
-    // Compare al and 0x80 (sets flags)
+    // Interrupt 0x2f
+    compare(al, 0x80); // Sets flags
 }
 
 
@@ -6489,26 +6489,26 @@ void sub_DE14(int data_dx) {
     int dos_env_segment;
 
 block_DE14:
-    push(si); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = si; // push si
     cl = bl;
-    push(dx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = dx; // push dx
     dx = *(uint16_t*)(bp_reg - 8);
     ax = al * dx; // Assuming 8-bit multiply
-    dx = pop(); // Simulate stack pop
-    bx >>= 1; // Unsigned shift right
-    bx >>= 1; // Unsigned shift right
-    bx >>= 1; // Unsigned shift right
+    dx = *(uint16_t*)sp; sp += 2; // pop dx
+    bx = (uint16_t)bx >> 1; // Logical shift right
+    bx = (uint16_t)bx >> 1; // Logical shift right
+    bx = (uint16_t)bx >> 1; // Logical shift right
     bx += ax;
     si = 0x6cda;
     bx += *(uint16_t*)(si_reg + 0xa);
-    push(dx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = dx; // push dx
     dx = 0xa000;
     /* es */ = dx;
-    dx = pop(); // Simulate stack pop
+    dx = *(uint16_t*)sp; sp += 2; // pop dx
     cl &= 7;
     cl ^= 7;
     ah = 1;
-    si = pop(); // Simulate stack pop
+    si = *(uint16_t*)sp; sp += 2; // pop si
     return;
 }
 
@@ -6536,11 +6536,11 @@ block_DFD5:
     dx = *(uint16_t*)(bp_reg - 8);
     ax = al * dx; // Assuming 8-bit multiply
     bx += ax;
-    // TODO: Translate: adc dx, 0
-    push(dx); // Simulate stack push
+    // 0xDFDC: TODO: Translate: adc dx, 0
+    sp -= 2; *(uint16_t*)sp = dx; // push dx
     dx = 0xa000;
     /* es */ = dx;
-    dx = pop(); // Simulate stack pop
+    dx = *(uint16_t*)sp; sp += 2; // pop dx
     return;
 }
 
@@ -6565,14 +6565,14 @@ void sub_E3A5(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_E3A5:
-    push(/* ds */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = 0x1ab5;
     /* ds */ = ax;
     si = 0x6cda;
-    ax = pop(); // Simulate stack pop
-    // Compare ax and *(uint16_t*)(si_reg + 0x1a) (sets flags)
+    ax = *(uint16_t*)sp; sp += 2; // pop ax
+    compare(ax, *(uint16_t*)(si_reg + 0x1a)); // Sets flags
 }
 
 
@@ -6596,13 +6596,13 @@ void sub_E3CC(int result_ax) {
     int dos_env_segment;
 
 block_E3CC:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 6;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 6 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     *(uint16_t*)(bp_reg - 6) = 0;
@@ -6630,13 +6630,13 @@ void sub_E4E0(int result_ax) {
     int dos_env_segment;
 
 block_E4E0:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 6;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 6 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     *(uint16_t*)(bp_reg - 6) = 0;
@@ -6667,7 +6667,7 @@ block_E58D:
     ax = 0;
     cx = *(uint16_t*)(bp_reg + 0xc);
     dx = *(uint16_t*)(bp_reg + 0xa);
-    // Compare cx and *(uint16_t*)(si_reg + 0x1a) (sets flags)
+    compare(cx, *(uint16_t*)(si_reg + 0x1a)); // Sets flags
 }
 
 
@@ -6691,9 +6691,9 @@ void sub_E9D0(int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_E9D0:
-    push(bx); // Simulate stack push
-    push(cx); // Simulate stack push
-    // Compare bx and 0 (sets flags)
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = cx; // push cx
+    compare(bx, 0); // Sets flags
 }
 
 
@@ -6717,7 +6717,7 @@ void sub_ECFD(int result_ax, int data_dx) {
     int dos_env_segment;
 
 block_ECFD:
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = dx;
     ax = al * cx; // Assuming 8-bit multiply
     dx |= dx;
@@ -6744,12 +6744,12 @@ void sub_ED11(int base_bx, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_ED11:
-    push(si); // Simulate stack push
-    push(bx); // Simulate stack push
-    push(cx); // Simulate stack push
-    push(dx); // Simulate stack push
-    // TODO: Translate: neg cx
-    // Compare bx and 0 (sets flags)
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = cx; // push cx
+    sp -= 2; *(uint16_t*)sp = dx; // push dx
+    // 0xED15: TODO: Translate: neg cx
+    compare(bx, 0); // Sets flags
 }
 
 
@@ -6775,16 +6775,16 @@ void sub_ED84(int result_ax) {
     int dos_env_segment;
 
 block_ED84:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0x20;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: cld 
+    // 0xED93: TODO: Translate: cld 
     ax = *(uint16_t*)(0x54c1);
     *(uint16_t*)(bp_reg - 0xc) = ax;
     di = ax;
@@ -6793,8 +6793,8 @@ block_ED84:
     /* es */ = ax;
     ax = *(uint16_t*)(0x54bf);
     *(uint16_t*)(bp_reg - 0xe) = ax;
-    ax >>= 1; // Unsigned shift right
-    ax >>= 1; // Unsigned shift right
+    ax = (uint16_t)ax >> 1; // Logical shift right
+    ax = (uint16_t)ax >> 1; // Logical shift right
     ax -= 4;
 }
 
@@ -6819,7 +6819,7 @@ void sub_EFFC(int result_ax) {
     int dos_env_segment;
 
 block_EFFC:
-    // Compare ax and 0x168 (sets flags)
+    compare(ax, 0x168); // Sets flags
 }
 
 
@@ -6843,7 +6843,7 @@ void sub_F03C(int result_ax) {
     int dos_env_segment;
 
 block_F03C:
-    // Compare ax and 0x168 (sets flags)
+    compare(ax, 0x168); // Sets flags
 }
 
 
@@ -6867,17 +6867,17 @@ void sub_F100(int result_ax) {
     int dos_env_segment;
 
 block_F100:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0x32;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     si = 0x6cda;
-    // Compare *(uint16_t*)(si_reg + 0x3c) and 1 (sets flags)
+    compare(*(uint16_t*)(si_reg + 0x3c), 1); // Sets flags
 }
 
 
@@ -6901,9 +6901,9 @@ void sub_F40D(int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_F40D:
-    push(bx); // Simulate stack push
-    push(cx); // Simulate stack push
-    // Compare *(uint16_t*)(bp_reg + 6) and 2 (sets flags)
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = cx; // push cx
+    compare(*(uint16_t*)(bp_reg + 6), 2); // Sets flags
 }
 
 
@@ -6927,7 +6927,7 @@ void sub_F5DB(int result_ax, int data_dx) {
     int dos_env_segment;
 
 block_F5DB:
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = dx;
     ax = al * cx; // Assuming 8-bit multiply
     dx |= dx;
@@ -6954,17 +6954,17 @@ void sub_F768(int result_ax) {
     int dos_env_segment;
 
 block_F768:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0x4e;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: cld 
-    // Compare *(uint8_t*)(0x6d33) and 1 (sets flags)
+    // 0xF777: TODO: Translate: cld 
+    compare(*(uint8_t*)(0x6d33), 1); // Sets flags
 }
 
 
@@ -7078,26 +7078,26 @@ void sub_102B1(int data_dx) {
     int dos_env_segment;
 
 block_102B1:
-    push(si); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = si; // push si
     cl = bl;
-    push(dx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = dx; // push dx
     dx = *(uint16_t*)(bp_reg - 0x20);
     ax = al * dx; // Assuming 8-bit multiply
-    dx = pop(); // Simulate stack pop
-    bx >>= 1; // Unsigned shift right
-    bx >>= 1; // Unsigned shift right
-    bx >>= 1; // Unsigned shift right
+    dx = *(uint16_t*)sp; sp += 2; // pop dx
+    bx = (uint16_t)bx >> 1; // Logical shift right
+    bx = (uint16_t)bx >> 1; // Logical shift right
+    bx = (uint16_t)bx >> 1; // Logical shift right
     bx += ax;
     si = 0x6cda;
     bx += *(uint16_t*)(si_reg + 0xa);
-    push(dx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = dx; // push dx
     dx = 0xa000;
     /* es */ = dx;
-    dx = pop(); // Simulate stack pop
+    dx = *(uint16_t*)sp; sp += 2; // pop dx
     cl &= 7;
     cl ^= 7;
     ah = 1;
-    si = pop(); // Simulate stack pop
+    si = *(uint16_t*)sp; sp += 2; // pop si
     return;
 }
 
@@ -7125,11 +7125,11 @@ block_106BF:
     dx = *(uint16_t*)(bp_reg - 0x20);
     ax = al * dx; // Assuming 8-bit multiply
     bx += ax;
-    // TODO: Translate: adc dx, 0
-    push(dx); // Simulate stack push
+    // 0x106C6: TODO: Translate: adc dx, 0
+    sp -= 2; *(uint16_t*)sp = dx; // push dx
     dx = 0xa000;
     /* es */ = dx;
-    dx = pop(); // Simulate stack pop
+    dx = *(uint16_t*)sp; sp += 2; // pop dx
     return;
 }
 
@@ -7157,76 +7157,76 @@ void sub_10BCD(int result_ax) {
     int dos_env_segment;
 
 block_10BCD:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 4;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 4 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     ax = 0;
-    push(ax); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x5d68;
-    push(ax); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x5fe8;
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(0x43b1);
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = 0x10;
-    push(ax); // Simulate stack push
-    push(ax); // Simulate stack push
-    // TODO: Translate: lcall 0x5e5, 6
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // 0x10BF3: TODO: Translate: lcall 0x5e5, 6
     ax = 0;
-    push(ax); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x5ce8;
-    push(ax); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x5ee8;
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(0x43b1);
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = 0x10;
-    push(ax); // Simulate stack push
-    push(ax); // Simulate stack push
-    // TODO: Translate: lcall 0x5e5, 6
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // 0x10C0F: TODO: Translate: lcall 0x5e5, 6
     ax = 0;
-    push(ax); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x5de8;
-    push(ax); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x60e8;
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(0x43b1);
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = 0x10;
-    push(ax); // Simulate stack push
-    push(ax); // Simulate stack push
-    // TODO: Translate: lcall 0x5e5, 6
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // 0x10C2B: TODO: Translate: lcall 0x5e5, 6
     ax = 0;
-    push(ax); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x5e68;
-    push(ax); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x61e8;
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(0x43b1);
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = 0x20;
-    push(ax); // Simulate stack push
-    push(ax); // Simulate stack push
-    // TODO: Translate: lcall 0x5e5, 6
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // 0x10C47: TODO: Translate: lcall 0x5e5, 6
     si = 0x5d68;
     al = *(uint8_t*)(si_reg + 0x12);
     bl = *(uint8_t*)(si_reg + 0x13);
     ax = al * bl; // Assuming 8-bit multiply
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     si = 0x67fe;
     ax = *(uint16_t*)(0x5c7c);
     bx = 0x44;
@@ -7240,8 +7240,8 @@ block_10BCD:
     ax = 0x1ab5;
     /* es */ = ax;
     di = 0x5ee8;
-    ax = pop(); // Simulate stack pop
-    // Compare ax and 1 (sets flags)
+    ax = *(uint16_t*)sp; sp += 2; // pop ax
+    compare(ax, 1); // Sets flags
 }
 
 
@@ -7267,89 +7267,89 @@ void sub_10DC0(int result_ax, int base_bx) {
 block_10DC0:
     ax = si;
     bx = di;
-    push(ax); // Simulate stack push
-    push(bx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
     ax += *(uint16_t*)(0x5c8a);
     bx += *(uint16_t*)(0x5c8c);
-    push(ax); // Simulate stack push
-    push(bx); // Simulate stack push
-    push(*(uint16_t*)(0x43b7)); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(0x43b7); // push *(uint16_t*)(0x43b7)
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x5de8;
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = 0;
-    push(ax); // Simulate stack push
-    push(ax); // Simulate stack push
-    // TODO: Translate: lcall 0x71a, 0xc
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // 0x10DDD: TODO: Translate: lcall 0x71a, 0xc
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x5de8;
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     bx = 0;
-    push(bx); // Simulate stack push
-    push(bx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
     ax = *(uint16_t*)(0x5c8a);
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(0x5c8c);
-    push(ax); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x5e68;
-    push(ax); // Simulate stack push
-    push(bx); // Simulate stack push
-    push(bx); // Simulate stack push
-    push(bx); // Simulate stack push
-    // TODO: Translate: lcall 0xb44, 0xc
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    // 0x10DFB: TODO: Translate: lcall 0xb44, 0xc
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x5ce8;
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     bx = 0;
-    push(bx); // Simulate stack push
-    push(bx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
     ax = *(uint16_t*)(0x5c8a);
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(0x5c8c);
-    push(ax); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x5e68;
-    push(ax); // Simulate stack push
-    push(bx); // Simulate stack push
-    push(bx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
     ax = 1;
-    push(ax); // Simulate stack push
-    // TODO: Translate: lcall 0xb44, 0xc
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // 0x10E1C: TODO: Translate: lcall 0xb44, 0xc
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x5d68;
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     bx = 0;
-    push(bx); // Simulate stack push
-    push(bx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
     ax = *(uint16_t*)(0x5c8a);
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(0x5c8c);
-    push(ax); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x5e68;
-    push(ax); // Simulate stack push
-    push(bx); // Simulate stack push
-    push(bx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
     ax = 2;
-    push(ax); // Simulate stack push
-    // TODO: Translate: lcall 0xb44, 0xc
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // 0x10E3D: TODO: Translate: lcall 0xb44, 0xc
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x5e68;
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     bx = 0;
-    push(bx); // Simulate stack push
-    push(bx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
     ax = si;
     bx = di;
-    push(ax); // Simulate stack push
-    push(bx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
     ax += *(uint16_t*)(0x5c8a);
     bx += *(uint16_t*)(0x5c8c);
-    push(ax); // Simulate stack push
-    push(bx); // Simulate stack push
-    push(*(uint16_t*)(0x43b7)); // Simulate stack push
-    // TODO: Translate: lcall 0xa52, 0xe
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(0x43b7); // push *(uint16_t*)(0x43b7)
+    // 0x10E5F: TODO: Translate: lcall 0xa52, 0xe
     *(uint16_t*)(0x5c86) = si;
     *(uint16_t*)(0x5c88) = di;
     return;
@@ -7376,22 +7376,22 @@ void sub_10E6D(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_10E6D:
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x5de8;
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = 0;
-    push(ax); // Simulate stack push
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(0x5c86);
     bx = *(uint16_t*)(0x5c88);
-    push(ax); // Simulate stack push
-    push(bx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
     ax += *(uint16_t*)(0x5c8a);
     bx += *(uint16_t*)(0x5c8c);
-    push(ax); // Simulate stack push
-    push(bx); // Simulate stack push
-    push(*(uint16_t*)(0x43b7)); // Simulate stack push
-    // TODO: Translate: lcall 0xa52, 0xe
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(0x43b7); // push *(uint16_t*)(0x43b7)
+    // 0x10E8D: TODO: Translate: lcall 0xa52, 0xe
     return;
 }
 
@@ -7416,7 +7416,7 @@ void sub_10E93(void) {
     int dos_env_segment;
 
 block_10E93:
-    // Compare si and *(uint16_t*)(0x5cca) (sets flags)
+    compare(si, *(uint16_t*)(0x5cca)); // Sets flags
 }
 
 
@@ -7453,7 +7453,7 @@ void sub_10ECE(int result_ax) {
 block_10ECE:
     si -= *(uint16_t*)(0x5c6c);
     di -= *(uint16_t*)(0x5c6e);
-    // Compare *(uint16_t*)(0x5c74) and 0 (sets flags)
+    compare(*(uint16_t*)(0x5c74), 0); // Sets flags
 }
 
 
@@ -7520,7 +7520,7 @@ block_110C1:
     ax = *(uint16_t*)(si_reg + 0x10);
     ax--;
     *(uint16_t*)(0x5cd0) = ax;
-    // Compare *(uint16_t*)(0x5ce6) and 0 (sets flags)
+    compare(*(uint16_t*)(0x5ce6), 0); // Sets flags
 }
 
 
@@ -7545,16 +7545,16 @@ void sub_11249(int result_ax) {
     int dos_env_segment;
 
 block_11249:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // Compare *(uint16_t*)(0x5ce6) and 0 (sets flags)
+    compare(*(uint16_t*)(0x5ce6), 0); // Sets flags
 }
 
 
@@ -7578,16 +7578,16 @@ void sub_114B2(int result_ax) {
     int dos_env_segment;
 
 block_114B2:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // Compare *(uint16_t*)(0x5ce6) and 0 (sets flags)
+    compare(*(uint16_t*)(0x5ce6), 0); // Sets flags
 }
 
 
@@ -7611,16 +7611,16 @@ void sub_114F8(int result_ax) {
     int dos_env_segment;
 
 block_114F8:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // Compare *(uint16_t*)(0x5ce6) and 1 (sets flags)
+    compare(*(uint16_t*)(0x5ce6), 1); // Sets flags
 }
 
 
@@ -7646,17 +7646,17 @@ void sub_11576(int result_ax) {
     int dos_env_segment;
 
 block_11576:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     ax = *(uint16_t*)(bp_reg + 8);
-    // Compare ax and 0 (sets flags)
+    compare(ax, 0); // Sets flags
 }
 
 
@@ -7680,8 +7680,8 @@ void sub_117C2(int result_ax, int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_117C2:
-    push(*(uint16_t*)(0x43b1)); // Simulate stack push
-    // TODO: Translate: lcall 0x98e, 0x12a
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(0x43b1); // push *(uint16_t*)(0x43b1)
+    // 0x117C6: TODO: Translate: lcall 0x98e, 0x12a
 }
 
 
@@ -7706,7 +7706,7 @@ void sub_1183C(int result_ax) {
 
 block_1183C:
     ax = *(uint16_t*)(0x43b3);
-    // Compare ax and 0xe (sets flags)
+    compare(ax, 0xe); // Sets flags
 }
 
 
@@ -7731,7 +7731,7 @@ void sub_1193C(int result_ax) {
 
 block_1193C:
     ax = *(uint16_t*)(0x43b3);
-    // Compare ax and 0xe (sets flags)
+    compare(ax, 0xe); // Sets flags
 }
 
 
@@ -7756,8 +7756,8 @@ void sub_11A23(int result_ax) {
 
 block_11A23:
     ax = 0x1a00;
-    // Video BIOS call
-    // Compare al and 0x1a (sets flags)
+    // INT_10 - Interrupt 10h
+    compare(al, 0x1a); // Sets flags
 }
 
 
@@ -7782,7 +7782,7 @@ void sub_11A48(void) {
 
 block_11A48:
     ax = 0;
-    // Compare si and *(uint16_t*)(0x5cd6) (sets flags)
+    compare(si, *(uint16_t*)(0x5cd6)); // Sets flags
 }
 
 
@@ -7806,16 +7806,16 @@ void sub_11A68(int result_ax) {
     int dos_env_segment;
 
 block_11A68:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0x28;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: cld 
+    // 0x11A77: TODO: Translate: cld 
     ax = *(uint16_t*)(0x54bf);
     ax -= 0xc;
     *(uint16_t*)(bp_reg - 0x22) = ax;
@@ -7852,16 +7852,16 @@ void sub_11D00(int result_ax) {
     int dos_env_segment;
 
 block_11D00:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0xe;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: les di, ptr [0x54c1]
+    // 0x11D0F: TODO: Translate: les di, ptr [0x54c1]
     *(uint16_t*)(bp_reg - 6) = 0;
     ax = *(uint16_t*)(bp_reg + 6);
     *(uint16_t*)(bp_reg - 4) = ax;
@@ -7888,18 +7888,18 @@ void sub_11DD9(int result_ax) {
     int dos_env_segment;
 
 block_11DD9:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     si = 0x6cda;
     ax = *(uint16_t*)(bp_reg + 0xa);
-    // Compare ax and *(uint16_t*)(bp_reg + 6) (sets flags)
+    compare(ax, *(uint16_t*)(bp_reg + 6)); // Sets flags
 }
 
 
@@ -7923,13 +7923,13 @@ void sub_11E61(int result_ax) {
     int dos_env_segment;
 
 block_11E61:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0x1e;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     si = 0x6cda;
@@ -7949,21 +7949,21 @@ block_11E61:
     *(uint16_t*)(bp_reg - 0xc) = ax;
     ax = *(uint16_t*)(si_reg + 0x32);
     *(uint16_t*)(bp_reg - 0xe) = ax;
-    // TODO: Translate: les di, ptr [0x54c1]
-    ax = &(uint16_t*)(bp_reg + 8); // Calculate address
-    push(/* ss */); // Simulate stack push
-    push(ax); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
-    ax = &(uint16_t*)(bp_reg - 0x14); // Calculate address
-    push(/* ss */); // Simulate stack push
-    push(ax); // Simulate stack push
-    ax = &(uint16_t*)(bp_reg - 0x16); // Calculate address
-    push(/* ss */); // Simulate stack push
-    push(ax); // Simulate stack push
-    push(/* cs */); // Simulate stack push
+    // 0x11EA7: TODO: Translate: les di, ptr [0x54c1]
+    ax = (uint16_t*)(bp_reg + 8); // Calculate address
+    sp -= 2; *(uint16_t*)sp = /* ss */; // push /* ss */
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 6); // push *(uint16_t*)(bp_reg + 6)
+    ax = (uint16_t*)(bp_reg - 0x14); // Calculate address
+    sp -= 2; *(uint16_t*)sp = /* ss */; // push /* ss */
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    ax = (uint16_t*)(bp_reg - 0x16); // Calculate address
+    sp -= 2; *(uint16_t*)sp = /* ss */; // push /* ss */
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* cs */; // push /* cs */
     sub_11A68();
 block_11EC1:
-    // Compare ax and 0 (sets flags)
+    compare(ax, 0); // Sets flags
 
 }
 
@@ -7988,17 +7988,17 @@ void sub_12166(int result_ax) {
     int dos_env_segment;
 
 block_12166:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0xc;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     si = 0x6cda;
-    // Compare *(uint16_t*)(si_reg + 0x3c) and 1 (sets flags)
+    compare(*(uint16_t*)(si_reg + 0x3c), 1); // Sets flags
 }
 
 
@@ -8022,16 +8022,16 @@ void sub_12524(int result_ax) {
     int dos_env_segment;
 
 block_12524:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // Test *(uint16_t*)(0x6ab2) & 0xffff (sets flags)
+    test_bits(*(uint16_t*)(0x6ab2), 0xffff); // Sets flags
 }
 
 
@@ -8055,19 +8055,19 @@ void sub_12580(int result_ax) {
     int dos_env_segment;
 
 block_12580:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: pushf 
-    // TODO: Translate: cli 
+    // 0x1258F: TODO: Translate: pushf 
+    // 0x12590: TODO: Translate: cli 
     cx = *(uint16_t*)(0x6ab2);
-    // Compare cx and *(uint16_t*)(0x6ab0) (sets flags)
+    compare(cx, *(uint16_t*)(0x6ab0)); // Sets flags
 }
 
 
@@ -8151,16 +8151,16 @@ void sub_1485A(int result_ax) {
     int dos_env_segment;
 
 block_1485A:
-    // TODO: Translate: in al, dx
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // 0x1485C: TODO: Translate: in al, dx
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: lds si, ptr [bp + 6]
-    // Compare *(uint8_t*)(si_reg) and 0xa (sets flags)
+    // 0x14869: TODO: Translate: lds si, ptr [bp + 6]
+    compare(*(uint8_t*)(si_reg), 0xa); // Sets flags
 }
 
 
@@ -8184,18 +8184,18 @@ void sub_14D0E(int result_ax) {
     int dos_env_segment;
 
 block_14D0E:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 6;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 6 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     ax = *(uint16_t*)(bp_reg + 0xe);
-    push(ax); // Simulate stack push
-    // TODO: Translate: lcall 0x98e, 0x12a
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // 0x14D21: TODO: Translate: lcall 0x98e, 0x12a
 }
 
 
@@ -8219,18 +8219,18 @@ void sub_14E1F(int result_ax) {
     int dos_env_segment;
 
 block_14E1F:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     ax = *(uint16_t*)(bp_reg + 0xe);
-    push(ax); // Simulate stack push
-    // TODO: Translate: lcall 0x98e, 0x12a
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // 0x14E32: TODO: Translate: lcall 0x98e, 0x12a
 }
 
 
@@ -8254,27 +8254,27 @@ void sub_15048(int result_ax) {
     int dos_env_segment;
 
 block_15048:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0x10;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     ax = *(uint16_t*)(bp_reg + 0x10);
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(bp_reg + 0xe);
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(bp_reg + 0xc);
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(bp_reg + 0xa);
-    push(ax); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     si = 0x43bf;
-    push(si); // Simulate stack push
-    // TODO: Translate: lcall 0x80c, 0x56c
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    // 0x1506C: TODO: Translate: lcall 0x80c, 0x56c
     ax |= ax;
 }
 
@@ -8299,27 +8299,27 @@ void sub_15454(int result_ax) {
     int dos_env_segment;
 
 block_15454:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 4;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 4 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     ax = *(uint16_t*)(bp_reg + 0xc);
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(bp_reg + 0xa);
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(bp_reg + 8);
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(bp_reg + 6);
-    push(ax); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     si = 0x43bf;
-    push(si); // Simulate stack push
-    // TODO: Translate: lcall 0x80c, 0x56c
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    // 0x15478: TODO: Translate: lcall 0x80c, 0x56c
     ax |= ax;
 }
 
@@ -8344,27 +8344,27 @@ void sub_154D0(int result_ax) {
     int dos_env_segment;
 
 block_154D0:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
     ax = *(uint16_t*)(bp_reg + 0x10);
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(bp_reg + 0xe);
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(bp_reg + 0xc);
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     ax = *(uint16_t*)(bp_reg + 0xa);
-    push(ax); // Simulate stack push
-    push(/* cs */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* cs */; // push /* cs */
     sub_15454();
 block_154F3:
-    // Compare ax and 0 (sets flags)
+    compare(ax, 0); // Sets flags
 
 }
 
@@ -8389,18 +8389,18 @@ void sub_156C6(int result_ax) {
     int dos_env_segment;
 
 block_156C6:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 4;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 4 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: les di, ptr [bp + 0x10]
+    // 0x156D5: TODO: Translate: les di, ptr [bp + 0x10]
     ax = *(uint16_t*)(bp_reg + 8);
-    // Compare ax and *(uint16_t*)(bp_reg + 6) (sets flags)
+    compare(ax, *(uint16_t*)(bp_reg + 6)); // Sets flags
 }
 
 
@@ -8424,18 +8424,18 @@ void sub_15798(int result_ax) {
     int dos_env_segment;
 
 block_15798:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: lds si, ptr [bp + 0xa]
-    // TODO: Translate: les di, ptr [bp + 6]
-    // Compare *(uint16_t*)(si_reg) and 0xca00 (sets flags)
+    // 0x157A7: TODO: Translate: lds si, ptr [bp + 0xa]
+    // 0x157AA: TODO: Translate: les di, ptr [bp + 6]
+    compare(*(uint16_t*)(si_reg), 0xca00); // Sets flags
 }
 
 
@@ -8459,21 +8459,21 @@ void sub_15AB6(int result_ax) {
     int dos_env_segment;
 
 block_15AB6:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: lds si, ptr [bp + 0x12]
-    // TODO: Translate: les di, ptr [bp + 0xe]
+    // 0x15AC5: TODO: Translate: lds si, ptr [bp + 0x12]
+    // 0x15AC8: TODO: Translate: les di, ptr [bp + 0xe]
     cx = *(uint16_t*)(bp_reg + 0xc);
     dx = *(uint16_t*)(bp_reg + 6);
-    // TODO: Translate: cld 
-    // Compare *(uint16_t*)(bp_reg + 0xa) and 1 (sets flags)
+    // 0x15AD1: TODO: Translate: cld 
+    compare(*(uint16_t*)(bp_reg + 0xa), 1); // Sets flags
 }
 
 
@@ -8591,23 +8591,23 @@ void sub_177DA(int result_ax) {
     int dos_env_segment;
 
 block_177DA:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 4;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 4 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    push(*(uint16_t*)(bp_reg + 0xc)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 8)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xc); // push *(uint16_t*)(bp_reg + 0xc)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xa); // push *(uint16_t*)(bp_reg + 0xa)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 8); // push *(uint16_t*)(bp_reg + 8)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 6); // push *(uint16_t*)(bp_reg + 6)
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     si = 0x43bf;
-    push(si); // Simulate stack push
-    // TODO: Translate: lcall 0x80c, 0x56c
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    // 0x177FA: TODO: Translate: lcall 0x80c, 0x56c
     ax |= ax;
 }
 
@@ -8632,7 +8632,7 @@ void sub_17F32(int result_ax) {
     int dos_env_segment;
 
 block_17F32:
-    // Compare *(uint16_t*)(bp_reg - 0x48) and 0 (sets flags)
+    compare(*(uint16_t*)(bp_reg - 0x48), 0); // Sets flags
 }
 
 
@@ -8656,7 +8656,7 @@ void sub_1867D(int result_ax) {
     int dos_env_segment;
 
 block_1867D:
-    // Compare *(uint16_t*)(bp_reg - 0x48) and 0 (sets flags)
+    compare(*(uint16_t*)(bp_reg - 0x48), 0); // Sets flags
 }
 
 
@@ -8680,7 +8680,7 @@ void sub_18B44(int result_ax) {
     int dos_env_segment;
 
 block_18B44:
-    // Compare *(uint16_t*)(bp_reg - 0x48) and 0 (sets flags)
+    compare(*(uint16_t*)(bp_reg - 0x48), 0); // Sets flags
 }
 
 
@@ -8704,7 +8704,7 @@ void sub_19038(int result_ax) {
     int dos_env_segment;
 
 block_19038:
-    // Compare *(uint16_t*)(bp_reg - 0x48) and 0 (sets flags)
+    compare(*(uint16_t*)(bp_reg - 0x48), 0); // Sets flags
 }
 
 
@@ -8728,16 +8728,16 @@ void sub_19831(int result_ax) {
     int dos_env_segment;
 
 block_19831:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0xa2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // Compare *(uint8_t*)(0x712c) and 1 (sets flags)
+    compare(*(uint8_t*)(0x712c), 1); // Sets flags
 }
 
 
@@ -8762,7 +8762,7 @@ void sub_19B03(int result_ax, int base_bx) {
 
 block_19B03:
     bx = *(uint16_t*)(bp_reg - 0x46);
-    // Compare *(uint16_t*)(bp_reg - 0x48) and 0 (sets flags)
+    compare(*(uint16_t*)(bp_reg - 0x48), 0); // Sets flags
 }
 
 
@@ -8786,7 +8786,7 @@ void sub_19D41(int result_ax) {
     int dos_env_segment;
 
 block_19D41:
-    // Compare *(uint16_t*)(bp_reg - 0x48) and 0 (sets flags)
+    compare(*(uint16_t*)(bp_reg - 0x48), 0); // Sets flags
 }
 
 
@@ -8810,7 +8810,7 @@ void sub_19F12(int result_ax) {
     int dos_env_segment;
 
 block_19F12:
-    // Compare *(uint16_t*)(bp_reg - 0x48) and 0 (sets flags)
+    compare(*(uint16_t*)(bp_reg - 0x48), 0); // Sets flags
 }
 
 
@@ -8834,30 +8834,30 @@ void sub_1A25E(int result_ax) {
     int dos_env_segment;
 
 block_1A25E:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 2;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 2 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    // TODO: Translate: les di, ptr [bp + 6]
-    // TODO: Translate: cld 
+    // 0x1A26D: TODO: Translate: les di, ptr [bp + 6]
+    // 0x1A270: TODO: Translate: cld 
     al = 0;
     cx = 0x80;
-    // TODO: Translate: repne scasb al, byte ptr es:[di]
+    // 0x1A276: TODO: Translate: repne scasb al, byte ptr es:[di]
     di -= *(uint16_t*)(bp_reg + 6);
     di--;
     *(uint16_t*)(bp_reg - 2) = di;
     ax = *(uint16_t*)(bp_reg - 2);
-    di = pop(); // Simulate stack pop
-    si = pop(); // Simulate stack pop
-    /* es */ = pop(); // Simulate stack pop
-    /* ds */ = pop(); // Simulate stack pop
+    di = *(uint16_t*)sp; sp += 2; // pop di
+    si = *(uint16_t*)sp; sp += 2; // pop si
+    /* es */ = *(uint16_t*)sp; sp += 2; // pop /* es */
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
     sp = bp;
-    bp = pop(); // Simulate stack pop
+    // Standard function epilogue: restore old base pointer
     return;
 }
 
@@ -8882,19 +8882,19 @@ void sub_1A2DE(int result_ax) {
     int dos_env_segment;
 
 block_1A2DE:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0x16;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    push(/* ss */); // Simulate stack push
-    ax = &(uint16_t*)(bp_reg - 0x16); // Calculate address
-    push(ax); // Simulate stack push
-    // TODO: Translate: lcall 0x185d, 0x46
+    sp -= 2; *(uint16_t*)sp = /* ss */; // push /* ss */
+    ax = (uint16_t*)(bp_reg - 0x16); // Calculate address
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    // 0x1A2F2: TODO: Translate: lcall 0x185d, 0x46
     ax |= ax;
 }
 
@@ -8919,7 +8919,7 @@ void sub_1A78A(int result_ax, int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_1A78A:
-    // Compare *(uint16_t*)(bp_reg - 0x48) and 0 (sets flags)
+    compare(*(uint16_t*)(bp_reg - 0x48), 0); // Sets flags
 }
 
 
@@ -8943,23 +8943,23 @@ void sub_1A878(int result_ax) {
     int dos_env_segment;
 
 block_1A878:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0x90;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    push(*(uint16_t*)(bp_reg + 0x14)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 0x12)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 0x10)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 0xe)); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0x14); // push *(uint16_t*)(bp_reg + 0x14)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0x12); // push *(uint16_t*)(bp_reg + 0x12)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0x10); // push *(uint16_t*)(bp_reg + 0x10)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xe); // push *(uint16_t*)(bp_reg + 0xe)
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     si = 0x43bf;
-    push(si); // Simulate stack push
-    // TODO: Translate: lcall 0x80c, 0x56c
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    // 0x1A899: TODO: Translate: lcall 0x80c, 0x56c
     ax |= ax;
 }
 
@@ -8984,26 +8984,26 @@ void sub_1A97C(int result_ax) {
     int dos_env_segment;
 
 block_1A97C:
-    push(bp); // Simulate stack push
-    bp = sp;
-    sp -= 6;
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    // Allocate 6 bytes on stack for local variables
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
     ax = 0x1ab5;
     /* ds */ = ax;
-    push(*(uint16_t*)(bp_reg + 0xc)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 8)); // Simulate stack push
-    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
-    push(/* ss */); // Simulate stack push
-    ax = &(uint16_t*)(bp_reg - 4); // Calculate address
-    push(ax); // Simulate stack push
-    push(/* ss */); // Simulate stack push
-    ax = &(uint16_t*)(bp_reg - 6); // Calculate address
-    push(ax); // Simulate stack push
-    push(/* cs */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xc); // push *(uint16_t*)(bp_reg + 0xc)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 0xa); // push *(uint16_t*)(bp_reg + 0xa)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 8); // push *(uint16_t*)(bp_reg + 8)
+    sp -= 2; *(uint16_t*)sp = *(uint16_t*)(bp_reg + 6); // push *(uint16_t*)(bp_reg + 6)
+    sp -= 2; *(uint16_t*)sp = /* ss */; // push /* ss */
+    ax = (uint16_t*)(bp_reg - 4); // Calculate address
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* ss */; // push /* ss */
+    ax = (uint16_t*)(bp_reg - 6); // Calculate address
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
+    sp -= 2; *(uint16_t*)sp = /* cs */; // push /* cs */
     sub_1A878();
 block_1A9A5:
     ax |= ax;
@@ -9031,12 +9031,12 @@ void sub_1ABE3(int count_cx) {
     int dos_env_segment;
 
 block_1ABE3:
-    // TODO: Translate: lds si, ptr [bp + 0xe]
-    // TODO: Translate: les di, ptr [bp + 0xe]
+    // 0x1ABE3: TODO: Translate: lds si, ptr [bp + 0xe]
+    // 0x1ABE6: TODO: Translate: les di, ptr [bp + 0xe]
     cx = *(uint16_t*)(bp_reg - 0xe);
-    // TODO: Translate: cld 
+    // 0x1ABEC: TODO: Translate: cld 
     al = 0x20;
-    // TODO: Translate: repne scasb al, byte ptr es:[di]
+    // 0x1ABEF: TODO: Translate: repne scasb al, byte ptr es:[di]
     cx |= cx;
 }
 
@@ -9061,15 +9061,15 @@ void sub_1AD1A(void) {
     int dos_env_segment;
 
 block_1AD1A:
-    push(bp); // Simulate stack push
-    bp = sp;
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
     sp -= 0x14;
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     /* ds */ = word ptr cs:[0xf];
-    push(si); // Simulate stack push
-    push(di); // Simulate stack push
-    // TODO: Translate: cld 
-    // Compare *(uint16_t*)(0xa0) and 0 (sets flags)
+    sp -= 2; *(uint16_t*)sp = si; // push si
+    sp -= 2; *(uint16_t*)sp = di; // push di
+    // 0x1AD28: TODO: Translate: cld 
+    compare(*(uint16_t*)(0xa0), 0); // Sets flags
 }
 
 
@@ -9093,25 +9093,25 @@ void sub_1AE4A(int base_bx) {
     int dos_env_segment;
 
 block_1AE4A:
-    push(bp); // Simulate stack push
-    bp = sp;
-    push(/* ds */); // Simulate stack push
+    // Standard function prologue: save old base pointer
+    // Standard function prologue: set up stack frame pointer
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     /* ds */ = word ptr cs:[0xf];
     al = *(uint8_t*)(0xa1);
     ah = 0x35;
-    // DOS API call
-    push(/* es */); // Simulate stack push
-    push(bx); // Simulate stack push
-    push(/* ds */); // Simulate stack push
+    // INT_21_AH35 (ah=0x35) - Interrupt 21h Function 35h
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
+    sp -= 2; *(uint16_t*)sp = bx; // push bx
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     al = *(uint8_t*)(0xa1);
     dx = *(uint16_t*)(2);
     /* ds */ = *(uint16_t*)(4);
     ah = 0x25;
-    // DOS API call
-    /* ds */ = pop(); // Simulate stack pop
-    *(uint16_t*)(2) = pop(); // Simulate stack pop
-    *(uint16_t*)(4) = pop(); // Simulate stack pop
-    // Compare *(uint16_t*)(0xb8) and 0 (sets flags)
+    // INT_21_AH25 (ah=0x25) - Interrupt 21h Function 25h
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
+    *(uint16_t*)(2) = *(uint16_t*)sp; sp += 2; // pop *(uint16_t*)(2)
+    *(uint16_t*)(4) = *(uint16_t*)sp; sp += 2; // pop *(uint16_t*)(4)
+    compare(*(uint16_t*)(0xb8), 0); // Sets flags
 }
 
 
@@ -9135,13 +9135,13 @@ void sub_1AEBF(void) {
     int dos_env_segment;
 
 block_1AEBF:
-    push(/* ds */); // Simulate stack push
-    di = &(uint16_t*)(0x1c); // Calculate address
-    push(/* ds */); // Simulate stack push
-    /* es */ = pop(); // Simulate stack pop
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    di = (uint16_t*)(0x1c); // Calculate address
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    /* es */ = *(uint16_t*)sp; sp += 2; // pop /* es */
     sub_1AF6D();
 block_1AEC9:
-    /* ds */ = pop(); // Simulate stack pop
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
     return;
 
 }
@@ -9169,8 +9169,8 @@ void sub_1AECB(int result_ax) {
 
 block_1AECB:
     ah = 0x30;
-    // DOS API call
-    // Compare al and 3 (sets flags)
+    // INT_21_AH30 (ah=0x30) - Interrupt 21h Function 30h
+    compare(al, 3); // Sets flags
 }
 
 
@@ -9194,7 +9194,7 @@ void sub_1AF10(int result_ax, int count_cx) {
     int dos_env_segment;
 
 block_1AF10:
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x1ab5;
     /* ds */ = ax;
     /* ds */ = *(uint16_t*)(0x77);
@@ -9222,7 +9222,7 @@ void sub_1AF6D(int result_ax, int count_cx) {
     int dos_env_segment;
 
 block_1AF6D:
-    // TODO: Translate: lds si, ptr [bp + 6]
+    // 0x1AF6D: TODO: Translate: lds si, ptr [bp + 6]
     ax = /* ds */;
     ax |= si;
 }
@@ -9248,13 +9248,13 @@ void sub_1AF95(int result_ax, int count_cx) {
     int dos_env_segment;
 
 block_1AF95:
-    push(/* ds */); // Simulate stack push
-    dx = &(uint16_t*)(bp_reg - 0x14); // Calculate address
-    push(/* ss */); // Simulate stack push
-    /* ds */ = pop(); // Simulate stack pop
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    dx = (uint16_t*)(bp_reg - 0x14); // Calculate address
+    sp -= 2; *(uint16_t*)sp = /* ss */; // push /* ss */
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
     ah = 0x3f;
-    // DOS API call
-    /* ds */ = pop(); // Simulate stack pop
+    // DOS_ReadFile (ah=0x3F) - Read from file or device
+    /* ds */ = *(uint16_t*)sp; sp += 2; // pop /* ds */
 }
 
 
@@ -9287,7 +9287,7 @@ block_1AFA5:
     /* es */ = ax;
     bx = 0;
     di = 0;
-    si = &(uint16_t*)(0xc0); // Calculate address
+    si = (uint16_t*)(0xc0); // Calculate address
 }
 
 
@@ -9316,7 +9316,7 @@ block_1B025:
     bx = cx;
     si = *(uint16_t*)(0xb4);
     di = *(uint16_t*)(0xb6);
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
 }
 
 
@@ -9340,12 +9340,12 @@ void sub_1B0F2(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_1B0F2:
-    push(ax); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = ax; // push ax
     bx = *(uint16_t*)(0xb8);
     ax = 0x4200;
-    // DOS API call
-    ax = pop(); // Simulate stack pop
-    push(/* ds */); // Simulate stack push
+    // INT_21 - Interrupt 21h
+    ax = *(uint16_t*)sp; sp += 2; // pop ax
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     /* ds */ = ax;
     goto block_1B109;
 }
@@ -9371,32 +9371,32 @@ void sub_1B12B(int result_ax, int data_dx) {
     int dos_env_segment;
 
 block_1B12B:
-    push(/* ds */); // Simulate stack push
-    push(/* es */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
     ax = word ptr es:[8];
     si = ax;
     si &= 0xf;
-    ax >>= 1; // Unsigned shift right
-    ax >>= 1; // Unsigned shift right
-    ax >>= 1; // Unsigned shift right
-    ax >>= 1; // Unsigned shift right
+    ax = (uint16_t)ax >> 1; // Logical shift right
+    ax = (uint16_t)ax >> 1; // Logical shift right
+    ax = (uint16_t)ax >> 1; // Logical shift right
+    ax = (uint16_t)ax >> 1; // Logical shift right
     dx = word ptr es:[0x10];
     ax += dx;
     /* ds */ = ax;
     /* es */ = dx;
-    cx >>= 1; // Unsigned shift right
-    // TODO: Translate: cld 
-    // TODO: Translate: lodsw ax, word ptr [si]
+    cx = (uint16_t)cx >> 1; // Logical shift right
+    // 0x1B14B: TODO: Translate: cld 
+    // 0x1B14C: TODO: Translate: lodsw ax, word ptr [si]
     bx = ax;
     di = word ptr es:[bx];
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x19b2;
     /* ds */ = ax;
     ax = di;
     di &= 0xfff8;
     dx = *(uint16_t*)(di_reg);
     word ptr es:[bx] = dx;
-    // Test ax & 1 (sets flags)
+    test_bits(ax, 1); // Sets flags
 }
 
 
@@ -9420,12 +9420,12 @@ void sub_1B170(int result_ax, int base_bx, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_1B170:
-    push(cx); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = cx; // push cx
     /* ds */ = dx;
     ah = byte ptr es:[bx - 1];
     al = ah;
     ax &= 0xf807;
-    // Compare ah and 0xb8 (sets flags)
+    compare(ah, 0xb8); // Sets flags
 }
 
 
@@ -9449,7 +9449,7 @@ void sub_1B264(int result_ax, int data_dx) {
     int dos_env_segment;
 
 block_1B264:
-    push(/* es */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* es */; // push /* es */
     *(uint16_t*)(0xba)++;
     sub_1B4B7();
 block_1B26C:
@@ -9479,7 +9479,7 @@ void sub_1B2AE(void) {
 
 block_1B2AE:
     *(uint16_t*)(0xac)++;
-    // Compare word ptr es:[0x10] and 0 (sets flags)
+    compare(word ptr es:[0x10], 0); // Sets flags
 }
 
 
@@ -9505,7 +9505,7 @@ void sub_1B329(void) {
 block_1B329:
     sub_1B3BB();
 block_1B32C:
-    // Compare word ptr es:[0x18] and 0x4d0 (sets flags)
+    compare(word ptr es:[0x18], 0x4d0); // Sets flags
 
 }
 
@@ -9555,7 +9555,7 @@ int sub_1B37C(int result_ax, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_1B37C:
-    // Compare word ptr es:[0xc] and 0 (sets flags)
+    compare(word ptr es:[0xc], 0); // Sets flags
 }
 
 
@@ -9582,14 +9582,14 @@ block_1B39D:
     bx = word ptr es:[0x10];
     cx = word ptr es:[0xc];
     di = 0x20;
-    // TODO: Translate: cld 
+    // 0x1B3AA: TODO: Translate: cld 
     dx = word ptr es:[di + 2];
     al = 0xea;
-    // TODO: Translate: stosb byte ptr es:[di], al
+    // 0x1B3B1: TODO: Translate: stosb byte ptr es:[di], al
     ax = dx;
-    // TODO: Translate: stosw word ptr es:[di], ax
+    // 0x1B3B4: TODO: Translate: stosw word ptr es:[di], ax
     ax = bx;
-    // TODO: Translate: stosw word ptr es:[di], ax
+    // 0x1B3B7: TODO: Translate: stosw word ptr es:[di], ax
     return;
 }
 
@@ -9614,7 +9614,7 @@ void sub_1B3BB(int result_ax, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_1B3BB:
-    // Compare byte ptr es:[0x20] and 0xcd (sets flags)
+    compare(byte ptr es:[0x20], 0xcd); // Sets flags
 }
 
 
@@ -9643,10 +9643,10 @@ block_1B3EE:
     word ptr es:[0x10] = ax;
     cx = word ptr es:[8];
     cx++;
-    cx >>= 1; // Unsigned shift right
+    cx = (uint16_t)cx >> 1; // Logical shift right
     si = 0;
-    // TODO: Translate: cld 
-    // Compare ax and dx (sets flags)
+    // 0x1B404: TODO: Translate: cld 
+    compare(ax, dx); // Sets flags
 }
 
 
@@ -9673,7 +9673,7 @@ block_1B43F:
     sub_1B4AB();
 block_1B442:
     *(uint16_t*)(0xb0) += ax;
-    push(/* ds */); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = /* ds */; // push /* ds */
     ax = 0x19b0;
 
 }
@@ -9727,8 +9727,8 @@ void sub_1B469(int count_cx) {
 
 block_1B469:
     bx = 0;
-    push(cx); // Simulate stack push
-    push(bp); // Simulate stack push
+    sp -= 2; *(uint16_t*)sp = cx; // push cx
+    // Standard function prologue: save old base pointer
     goto block_1B473;
 }
 
@@ -9781,7 +9781,7 @@ block_1B4AB:
     ax = word ptr es:[8];
     ax += 0x11;
     cl = 4;
-    ax >>= cl; // Unsigned shift right
+    ax = (uint16_t)ax >> cl; // Logical shift right
     return;
 }
 
@@ -9809,10 +9809,10 @@ block_1B4B7:
     cl = 4;
     ax = word ptr es:[8];
     ax += 0x11;
-    ax >>= cl; // Unsigned shift right
+    ax = (uint16_t)ax >> cl; // Logical shift right
     dx = word ptr es:[0xa];
     dx += 0xf;
-    dx >>= cl; // Unsigned shift right
+    dx = (uint16_t)dx >> cl; // Logical shift right
     dx += ax;
     return;
 }

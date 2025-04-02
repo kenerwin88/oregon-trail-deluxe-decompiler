@@ -353,11 +353,13 @@ typedef struct {
         lines.append(f"{'    ' * (indent_level - 1)}block_{block.start_address:X}:")
 
         # Add block instructions
+        prev_instr = None
         for instr in block.instructions:
-            # Convert instruction to C code
-            c_code = self._instruction_to_c(instr)
+            # Convert instruction to C code, passing previous instruction for context
+            c_code = self._instruction_to_c(instr, prev_instr)
             if c_code:
                 lines.append(f"{'    ' * indent_level}{c_code}")
+            prev_instr = instr # Update previous instruction for next iteration
 
         # Handle successors based on control flow
         if len(block.successors) == 0:
@@ -440,7 +442,7 @@ typedef struct {
 
         return "\n".join(lines) + "\n"
 
-    def _instruction_to_c(self, instr: X86Instruction) -> str:
+    def _instruction_to_c(self, instr: X86Instruction, prev_instr = None) -> str:
         """
         Convert an x86 instruction to C code.
 
@@ -453,15 +455,24 @@ typedef struct {
         mnemonic = instr.mnemonic.lower()
 
         # Handle different instruction types
-        if mnemonic.startswith("mov"):
+        if mnemonic == "mov":
             dest, src = self._parse_operands(instr.operands)
-            if dest and src: return f"{dest} = {src};"
-        elif mnemonic.startswith("add"):
+            if dest == "bp" and src == "sp":
+                 return "// Standard function prologue: set up stack frame pointer"
+            elif dest and src:
+                 return f"{dest} = {src};"
+        elif mnemonic == "add":
             dest, src = self._parse_operands(instr.operands)
-            if dest and src: return f"{dest} += {src};"
-        elif mnemonic.startswith("sub"):
+            if dest == "sp" and src.isdigit():
+                 return f"// Deallocate {src} bytes from stack"
+            elif dest and src:
+                 return f"{dest} += {src};"
+        elif mnemonic == "sub":
             dest, src = self._parse_operands(instr.operands)
-            if dest and src: return f"{dest} -= {src};"
+            if dest == "sp" and src.isdigit():
+                 return f"// Allocate {src} bytes on stack for local variables"
+            elif dest and src:
+                 return f"{dest} -= {src};"
         elif mnemonic.startswith("mul"):
             src = self._parse_operands(instr.operands)[0]
             if src: return f"ax = al * {src}; // Assuming 8-bit multiply"
@@ -506,58 +517,107 @@ typedef struct {
         elif mnemonic.startswith("shl") or mnemonic.startswith("sal"):
             dest, src = self._parse_operands(instr.operands)
             if dest and src: return f"{dest} <<= {src};"
-        elif mnemonic.startswith("shr"):
+        elif mnemonic.startswith("shr"): # Logical shift right
             dest, src = self._parse_operands(instr.operands)
-            if dest and src: return f"{dest} >>= {src}; // Unsigned shift right"
+            if dest and src: return f"{dest} = (uint16_t){dest} >> {src}; // Logical shift right" # Cast to unsigned for logical shift
         elif mnemonic.startswith("sar"):
             dest, src = self._parse_operands(instr.operands)
             if dest and src: return f"{dest} >>= {src}; // Signed shift right"
-        elif mnemonic.startswith("push"):
-            src = self._parse_operands(instr.operands)[0]
-            if src: return f"push({src}); // Simulate stack push"
-        elif mnemonic.startswith("pop"):
-            dest = self._parse_operands(instr.operands)[0]
-            if dest: return f"{dest} = pop(); // Simulate stack pop"
+        elif mnemonic == "push":
+             src = self._parse_operands(instr.operands)[0]
+             if src == "bp":
+                 return "// Standard function prologue: save old base pointer"
+             elif src:
+                 # Assuming push decrements SP by 2 (for 16-bit)
+                 return f"sp -= 2; *(uint16_t*)sp = {src}; // push {src}"
+        elif mnemonic == "pop":
+             dest = self._parse_operands(instr.operands)[0]
+             if dest == "bp":
+                 return "// Standard function epilogue: restore old base pointer"
+             elif dest:
+                 # Assuming pop increments SP by 2 (for 16-bit)
+                 return f"{dest} = *(uint16_t*)sp; sp += 2; // pop {dest}"
         elif mnemonic.startswith("lea"): # Load Effective Address
             dest, src_mem = self._parse_operands(instr.operands)
             # LEA calculates an address, so we remove the dereference (*) added by _convert_memory_reference
             if dest and src_mem and src_mem.startswith("*("):
-                 address_calculation = src_mem[2:-1] # Extract content inside *()
-                 return f"{dest} = &({address_calculation}); // Calculate address"
-            elif dest and src_mem: # Handle cases where src_mem might not be a pointer expression
-                 return f"{dest} = &({src_mem}); // Calculate address"
-        elif mnemonic.startswith("cmp"):
+                 # LEA calculates an address, treat src_mem as the address calculation itself
+                 # Need to handle different forms potentially generated by _convert_memory_reference
+                 if src_mem.startswith("*("): # If it looks like a pointer dereference, remove it
+                     address_calculation = src_mem[2:-1]
+                 else: # Otherwise assume it's already the address expression
+                     address_calculation = src_mem
+                 return f"{dest} = ({address_calculation}); // Calculate address"
+            elif dest and src_mem:
+                 # Fallback if src_mem wasn't parsed as expected
+                 return f"{dest} = &({src_mem}); // Calculate address (fallback)"
+        elif mnemonic == "xchg":
+             op1, op2 = self._parse_operands(instr.operands)
+             if op1 and op2: return f"swap({op1}, {op2}); // Exchange values"
+        elif mnemonic == "cmp":
             op1, op2 = self._parse_operands(instr.operands)
-            if op1 and op2: return f"// Compare {op1} and {op2} (sets flags)"
+            if op1 and op2: return f"compare({op1}, {op2}); // Sets flags"
         elif mnemonic.startswith("test"):
             op1, op2 = self._parse_operands(instr.operands)
-            if op1 and op2: return f"// Test {op1} & {op2} (sets flags)"
-        elif mnemonic.startswith("call"):
+            if op1 and op2: return f"test_bits({op1}, {op2}); // Sets flags"
+        elif mnemonic == "call":
             func_target = self._parse_operands(instr.operands)[0]
             if func_target:
                  # Resolve function name if it's an address
                  if func_target.startswith("0x"):
                      try:
                          target_addr = int(func_target, 16)
-                         for func in self.functions:
-                             if func.start_address == target_addr:
-                                 func_target = func.name
-                                 break
+                         # Find function by address - requires self.functions to be available
+                         func_name = next((f.name for f in self.functions if f.start_address == target_addr), func_target)
+                         func_target = func_name
                      except ValueError: pass # Keep original target if not a valid address
                  return f"{func_target}();"
-        elif mnemonic.startswith("int"):
-            interrupt = instr.operands.strip()
-            # TODO: Add logic to check AH/AL before interrupt for specific function
-            if interrupt == "0x21": return "// DOS API call"
-            elif interrupt == "0x10": return "// Video BIOS call"
-            elif interrupt == "0x16": return "// Keyboard BIOS call"
-            else: return f"interrupt({interrupt}); // Call interrupt {interrupt}"
-        elif mnemonic.startswith("j") or mnemonic.startswith("loop") or mnemonic.startswith("ret"):
+        elif mnemonic == "int":
+            interrupt_str = instr.operands.strip()
+            interrupt_num = -1
+            try:
+                interrupt_num = int(interrupt_str, 16)
+            except ValueError:
+                pass
+
+            func_code = None
+            func_reg = None
+            # Check previous instruction for mov ah/al, value
+            if prev_instr and prev_instr.mnemonic.lower() == "mov":
+                 dest, src = self._parse_operands(prev_instr.operands)
+                 # Check if dest is ah/al and src is a number
+                 if dest in ["ah", "al"] and (src.startswith("0x") or src.isdigit()):
+                     try:
+                         func_code = int(src, 0)
+                         func_reg = dest
+                     except ValueError: pass
+
+            # Look up specific interrupt function using dos_api helper
+            from .dos_api import recognize_interrupt # Ensure import is available
+            dos_interrupt = recognize_interrupt(interrupt_num, func_code)
+
+            if dos_interrupt:
+                 # Generate a detailed comment
+                 comment = f"// {dos_interrupt.name}"
+                 if func_reg:
+                     comment += f" ({func_reg}=0x{func_code:X})" if func_code is not None else ""
+                 comment += f" - {dos_interrupt.description}"
+                 return comment
+            else:
+                 # Fallback comment if specific function not found
+                 comment = f"// Interrupt {interrupt_str}"
+                 if func_reg:
+                     comment += f" ({func_reg}=0x{func_code:X})" if func_code is not None else ""
+                 return comment
+        elif mnemonic.startswith("j") or mnemonic.startswith("loop") or mnemonic == "ret" or mnemonic == "retf":
              # Jumps, loops, and returns are handled by the block generation logic
              return "" # Return empty string, don't generate separate C code for these
+        elif mnemonic == "nop":
+             return "// No operation" # Common instruction, translate to comment
 
         # Default - return the instruction as a comment, indicating it needs translation
-        return f"// TODO: Translate: {instr.mnemonic} {instr.operands}"
+        # Include address for context
+        return f"// 0x{instr.address:X}: TODO: Translate: {instr.mnemonic} {instr.operands}"
 
     def _parse_operands(self, operands: str) -> Tuple[str, str]:
         """
