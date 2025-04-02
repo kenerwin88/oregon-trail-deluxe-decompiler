@@ -171,6 +171,9 @@ python3 main.py convert raw_extracted --output modern --type snd
 python3 main.py convert raw_extracted --output modern --type text
 python3 main.py convert raw_extracted --output modern --type ani
 python3 main.py convert raw_extracted --output modern --type lst
+
+# Run the decompiler
+python main.py decompile --output decompiled
 ```
 
 ### Running the Original Game

@@ -1,0 +1,69 @@
+=== State Machine Analysis Report ===
+
+Game States:
+  GAME_STATE_MENU (ID: 0)
+    Incoming transitions: 0
+    Outgoing transitions: 0
+  GAME_STATE_SETUP (ID: 1)
+    Incoming transitions: 0
+    Outgoing transitions: 0
+  GAME_STATE_TRAVELING (ID: 2)
+    Incoming transitions: 0
+    Outgoing transitions: 0
+  GAME_STATE_HUNTING (ID: 3)
+    Incoming transitions: 0
+    Outgoing transitions: 0
+  GAME_STATE_TRADING (ID: 4)
+    Incoming transitions: 0
+    Outgoing transitions: 0
+  GAME_STATE_RIVER_CROSSING (ID: 5)
+    Incoming transitions: 0
+    Outgoing transitions: 0
+  GAME_STATE_EVENT (ID: 6)
+    Incoming transitions: 0
+    Outgoing transitions: 0
+  GAME_STATE_LANDMARK (ID: 7)
+    Incoming transitions: 0
+    Outgoing transitions: 0
+  GAME_STATE_DEATH (ID: 8)
+    Incoming transitions: 0
+    Outgoing transitions: 0
+  GAME_STATE_END_GAME (ID: 9)
+    Incoming transitions: 0
+    Outgoing transitions: 0
+  GAME_STATE_SAVE_GAME (ID: 10)
+    Incoming transitions: 0
+    Outgoing transitions: 0
+  GAME_STATE_LOAD_GAME (ID: 11)
+    Incoming transitions: 0
+    Outgoing transitions: 0
+
+Entry States:
+  GAME_STATE_MENU (ID: 0)
+  GAME_STATE_SETUP (ID: 1)
+  GAME_STATE_TRAVELING (ID: 2)
+  GAME_STATE_HUNTING (ID: 3)
+  GAME_STATE_TRADING (ID: 4)
+  GAME_STATE_RIVER_CROSSING (ID: 5)
+  GAME_STATE_EVENT (ID: 6)
+  GAME_STATE_LANDMARK (ID: 7)
+  GAME_STATE_DEATH (ID: 8)
+  GAME_STATE_END_GAME (ID: 9)
+  GAME_STATE_SAVE_GAME (ID: 10)
+  GAME_STATE_LOAD_GAME (ID: 11)
+
+Exit States:
+  GAME_STATE_MENU (ID: 0)
+  GAME_STATE_SETUP (ID: 1)
+  GAME_STATE_TRAVELING (ID: 2)
+  GAME_STATE_HUNTING (ID: 3)
+  GAME_STATE_TRADING (ID: 4)
+  GAME_STATE_RIVER_CROSSING (ID: 5)
+  GAME_STATE_EVENT (ID: 6)
+  GAME_STATE_LANDMARK (ID: 7)
+  GAME_STATE_DEATH (ID: 8)
+  GAME_STATE_END_GAME (ID: 9)
+  GAME_STATE_SAVE_GAME (ID: 10)
+  GAME_STATE_LOAD_GAME (ID: 11)
+
+Functions Handling State Transitions:

@@ -1,0 +1,3 @@
+=== Resource Analysis Report ===
+
+Resource Types Referenced:

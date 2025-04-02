@@ -1,5 +1,3 @@
-Strings found in OREGON.EXE:
-
 00001C3A: "CC&8"
 00001FA7: "<MIu"
 00001FCB: "<KEu"

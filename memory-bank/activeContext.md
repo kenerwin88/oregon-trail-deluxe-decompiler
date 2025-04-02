@@ -70,3 +70,6 @@
 3. Expand format documentation
 4. Add more error handling edge cases
 5. Improve conversion verification
+
+### Command Reference
+- Run the decompiler with: `python main.py decompile --output decompiled`
