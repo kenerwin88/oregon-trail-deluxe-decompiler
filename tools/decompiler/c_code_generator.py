@@ -2,6 +2,7 @@
 C code generator for the Oregon Trail decompiler.
 """
 
+import re
 from typing import Dict, List, Tuple
 
 from .models import DOSFunction, X86Instruction
@@ -342,7 +343,8 @@ typedef struct {
             return f"{'    ' * indent_level}// Missing block\n"
 
         if block.start_address in visited:
-            return f"{'    ' * indent_level}goto block_{block.start_address:X};\n"
+            # Already visited this block, likely a loop or jump target
+            return f"{'    ' * indent_level}// Jump to already visited block\n{'    ' * indent_level}goto block_{block.start_address:X};\n"
 
         visited.add(block.start_address)
         lines = []
@@ -364,22 +366,32 @@ typedef struct {
                 lines.append(f"{'    ' * indent_level}return;")
         elif len(block.successors) == 1:
             # One successor - unconditional jump or fall-through
-            next_block = None
-            # Find the block for the successor
-            for blk in cfg.blocks:
-                if (
-                    hasattr(blk, "start_address")
-                    and hasattr(block, "successors")
-                    and block.successors
-                    and blk.start_address == block.successors[0]
-                ):
-                    next_block = blk
-                    break
+            target_addr = block.successors[0]
+            next_block = cfg.blocks.get(target_addr) # Use dict.get for safety
 
-            if next_block:
-                lines.append(
-                    self._generate_block_code(cfg, next_block, visited, indent_level)
-                )
+            # Check if the last instruction is an explicit JMP
+            last_instr = block.instructions[-1] if block.instructions else None
+            is_explicit_jmp = last_instr and last_instr.mnemonic.lower() == "jmp"
+
+            if is_explicit_jmp:
+                 # Generate a goto for explicit jumps
+                 lines.append(f"{'    ' * indent_level}goto block_{target_addr:X};")
+                 # Don't generate code for the target block here if it's an explicit jump
+                 # to avoid duplicating code or infinite recursion in simple loops.
+                 # The target block will be generated when encountered naturally.
+            elif next_block:
+                 # If it's a fall-through, generate the next block's code inline
+                 # This avoids unnecessary labels for simple sequential code.
+                 # However, ensure we don't infinitely recurse if the next block loops back immediately.
+                 if next_block.start_address not in visited:
+                     lines.append(
+                         self._generate_block_code(cfg, next_block, visited, indent_level)
+                     )
+                 else:
+                      # If the fall-through target was already visited, generate a goto
+                      lines.append(f"{'    ' * indent_level}// Fall-through to visited block\n{'    ' * indent_level}goto block_{next_block.start_address:X};")
+            else:
+                 lines.append(f"{'    ' * indent_level}// Successor block 0x{target_addr:X} not found in CFG")
         elif len(block.successors) == 2:
             # Two successors - conditional jump
             # Find the condition
@@ -436,94 +448,116 @@ typedef struct {
             instr: Instruction to convert
 
         Returns:
-            String containing C code
+            String containing C code, or an empty string if handled by control flow logic
         """
+        mnemonic = instr.mnemonic.lower()
+
         # Handle different instruction types
-        if instr.mnemonic.startswith("mov"):
-            # Move instruction
+        if mnemonic.startswith("mov"):
             dest, src = self._parse_operands(instr.operands)
-            if dest and src:
-                return f"{dest} = {src};"
-        elif instr.mnemonic.startswith("add"):
-            # Add instruction
+            if dest and src: return f"{dest} = {src};"
+        elif mnemonic.startswith("add"):
             dest, src = self._parse_operands(instr.operands)
-            if dest and src:
-                return f"{dest} += {src};"
-        elif instr.mnemonic.startswith("sub"):
-            # Subtract instruction
+            if dest and src: return f"{dest} += {src};"
+        elif mnemonic.startswith("sub"):
             dest, src = self._parse_operands(instr.operands)
-            if dest and src:
-                return f"{dest} -= {src};"
-        elif instr.mnemonic.startswith("mul"):
-            # Multiply instruction
+            if dest and src: return f"{dest} -= {src};"
+        elif mnemonic.startswith("mul"):
             src = self._parse_operands(instr.operands)[0]
-            if src:
-                return f"ax = al * {src};"
-        elif instr.mnemonic.startswith("div"):
-            # Divide instruction
+            if src: return f"ax = al * {src}; // Assuming 8-bit multiply"
+        elif mnemonic.startswith("imul"):
+             # Handle different forms of imul
+            parts = instr.operands.split(',')
+            if len(parts) == 1:
+                src = self._parse_operands(parts[0])[0]
+                if src: return f"ax = al * {src}; // Signed multiply"
+            elif len(parts) == 2:
+                dest, src = self._parse_operands(instr.operands)
+                if dest and src: return f"{dest} *= {src}; // Signed multiply"
+            elif len(parts) == 3:
+                dest, src1, src2 = [self._parse_operands(p)[0] for p in parts]
+                if dest and src1 and src2: return f"{dest} = {src1} * {src2}; // Signed multiply"
+        elif mnemonic.startswith("div"):
             src = self._parse_operands(instr.operands)[0]
-            if src:
-                return f"ax = ax / {src}; dx = ax % {src};"
-        elif instr.mnemonic.startswith("inc"):
-            # Increment instruction
+            if src: return f"ax = ax / {src}; dx = ax % {src}; // Unsigned divide"
+        elif mnemonic.startswith("idiv"):
+            src = self._parse_operands(instr.operands)[0]
+            if src: return f"ax = ax / {src}; dx = ax % {src}; // Signed divide"
+        elif mnemonic.startswith("inc"):
             dest = self._parse_operands(instr.operands)[0]
-            if dest:
-                return f"{dest}++;"
-        elif instr.mnemonic.startswith("dec"):
-            # Decrement instruction
+            if dest: return f"{dest}++;"
+        elif mnemonic.startswith("dec"):
             dest = self._parse_operands(instr.operands)[0]
-            if dest:
-                return f"{dest}--;"
-        elif instr.mnemonic.startswith("and"):
-            # Bitwise AND instruction
+            if dest: return f"{dest}--;"
+        elif mnemonic.startswith("and"):
+            dest, src = self._parse_operands(instr.operands)
+            if dest and src: return f"{dest} &= {src};"
+        elif mnemonic.startswith("or"):
+            dest, src = self._parse_operands(instr.operands)
+            if dest and src: return f"{dest} |= {src};"
+        elif mnemonic.startswith("xor"):
             dest, src = self._parse_operands(instr.operands)
             if dest and src:
-                return f"{dest} &= {src};"
-        elif instr.mnemonic.startswith("or"):
-            # Bitwise OR instruction
+                # Check for common XOR to zero register pattern
+                if dest == src:
+                    return f"{dest} = 0;"
+                else:
+                    return f"{dest} ^= {src};"
+        elif mnemonic.startswith("shl") or mnemonic.startswith("sal"):
             dest, src = self._parse_operands(instr.operands)
-            if dest and src:
-                return f"{dest} |= {src};"
-        elif instr.mnemonic.startswith("xor"):
-            # Bitwise XOR instruction
+            if dest and src: return f"{dest} <<= {src};"
+        elif mnemonic.startswith("shr"):
             dest, src = self._parse_operands(instr.operands)
-            if dest and src:
-                return f"{dest} ^= {src};"
-        elif instr.mnemonic.startswith("shl"):
-            # Shift left instruction
+            if dest and src: return f"{dest} >>= {src}; // Unsigned shift right"
+        elif mnemonic.startswith("sar"):
             dest, src = self._parse_operands(instr.operands)
-            if dest and src:
-                return f"{dest} <<= {src};"
-        elif instr.mnemonic.startswith("shr"):
-            # Shift right instruction
-            dest, src = self._parse_operands(instr.operands)
-            if dest and src:
-                return f"{dest} >>= {src};"
-        elif instr.mnemonic.startswith("call"):
-            # Function call instruction
-            func_name = instr.operands.strip()
-            if func_name.startswith("0x"):
-                # Convert address to function name
-                for func in self.functions:
-                    if hex(func.start_address) == func_name:
-                        func_name = func.name
-                        break
-
-            return f"{func_name}();"
-        elif instr.mnemonic.startswith("int"):
-            # Interrupt instruction
+            if dest and src: return f"{dest} >>= {src}; // Signed shift right"
+        elif mnemonic.startswith("push"):
+            src = self._parse_operands(instr.operands)[0]
+            if src: return f"push({src}); // Simulate stack push"
+        elif mnemonic.startswith("pop"):
+            dest = self._parse_operands(instr.operands)[0]
+            if dest: return f"{dest} = pop(); // Simulate stack pop"
+        elif mnemonic.startswith("lea"): # Load Effective Address
+            dest, src_mem = self._parse_operands(instr.operands)
+            # LEA calculates an address, so we remove the dereference (*) added by _convert_memory_reference
+            if dest and src_mem and src_mem.startswith("*("):
+                 address_calculation = src_mem[2:-1] # Extract content inside *()
+                 return f"{dest} = &({address_calculation}); // Calculate address"
+            elif dest and src_mem: # Handle cases where src_mem might not be a pointer expression
+                 return f"{dest} = &({src_mem}); // Calculate address"
+        elif mnemonic.startswith("cmp"):
+            op1, op2 = self._parse_operands(instr.operands)
+            if op1 and op2: return f"// Compare {op1} and {op2} (sets flags)"
+        elif mnemonic.startswith("test"):
+            op1, op2 = self._parse_operands(instr.operands)
+            if op1 and op2: return f"// Test {op1} & {op2} (sets flags)"
+        elif mnemonic.startswith("call"):
+            func_target = self._parse_operands(instr.operands)[0]
+            if func_target:
+                 # Resolve function name if it's an address
+                 if func_target.startswith("0x"):
+                     try:
+                         target_addr = int(func_target, 16)
+                         for func in self.functions:
+                             if func.start_address == target_addr:
+                                 func_target = func.name
+                                 break
+                     except ValueError: pass # Keep original target if not a valid address
+                 return f"{func_target}();"
+        elif mnemonic.startswith("int"):
             interrupt = instr.operands.strip()
-            if interrupt == "0x21":
-                return "// DOS API call"
-            elif interrupt == "0x10":
-                return "// Video BIOS call"
-            elif interrupt == "0x16":
-                return "// Keyboard BIOS call"
-            else:
-                return f"// Interrupt {interrupt}"
+            # TODO: Add logic to check AH/AL before interrupt for specific function
+            if interrupt == "0x21": return "// DOS API call"
+            elif interrupt == "0x10": return "// Video BIOS call"
+            elif interrupt == "0x16": return "// Keyboard BIOS call"
+            else: return f"interrupt({interrupt}); // Call interrupt {interrupt}"
+        elif mnemonic.startswith("j") or mnemonic.startswith("loop") or mnemonic.startswith("ret"):
+             # Jumps, loops, and returns are handled by the block generation logic
+             return "" # Return empty string, don't generate separate C code for these
 
-        # Default - return the instruction as a comment
-        return f"// {instr.mnemonic} {instr.operands}"
+        # Default - return the instruction as a comment, indicating it needs translation
+        return f"// TODO: Translate: {instr.mnemonic} {instr.operands}"
 
     def _parse_operands(self, operands: str) -> Tuple[str, str]:
         """
@@ -552,58 +586,78 @@ typedef struct {
 
     def _convert_memory_reference(self, operand: str) -> str:
         """
-        Convert a memory reference to a C variable.
+        Convert an assembly memory reference operand to a C-like expression.
 
         Args:
-            operand: Memory reference
+            operand: Memory reference operand string (e.g., "word ptr [bx+si+4]", "[0x5C00]", "byte ptr [bp-2]")
 
         Returns:
-            C variable name
+            C-like expression (e.g., "*(uint16_t*)(bx + si + 4)", "game_state.current_month", "*(uint8_t*)(bp - 2)")
         """
-        # Check for memory references
-        if operand.startswith("[") and operand.endswith("]"):
-            # Extract address
-            address = operand[1:-1]
+        operand = operand.strip()
+        
+        # Regex to capture size specifier (byte, word, dword) and the content inside brackets []
+        mem_match = re.match(r"(?:(byte|word|dword)\s+ptr\s+)?\[(.+)\]", operand, re.IGNORECASE)
 
-            # Check for known memory addresses
-            if address.startswith("0x"):
-                try:
-                    addr_val = int(address, 16)
+        if mem_match:
+            size_spec = mem_match.group(1)
+            content = mem_match.group(2).strip().lower() # Normalize content
+            
+            # Determine C type based on size specifier
+            c_type = "uint16_t" # Default to word for 16-bit arch
+            if size_spec:
+                if size_spec.lower() == "byte":
+                    c_type = "uint8_t"
+                elif size_spec.lower() == "dword":
+                    c_type = "uint32_t"
+            
+            # Try to resolve known absolute addresses first
+            if content.startswith("0x"):
+                 try:
+                     addr_val = int(content, 16)
+                     # Check known global structs
+                     for addr, name in MEMORY_ADDRESSES.items():
+                         if addr_val == addr: return f"game_state.{name}" # Assumes word access for simplicity
+                     for addr, name in GRAPHICS_ADDRESSES.items():
+                         if addr_val == addr: return f"graphics_state.{name}"
+                     for addr, name in SOUND_ADDRESSES.items():
+                         if addr_val == addr: return f"sound_state.{name}"
+                     for addr, name in INPUT_ADDRESSES.items():
+                         if addr_val == addr: return f"input_state.{name}"
+                     # If not a known named address, treat as direct memory access pointer
+                     return f"*({c_type}*)({content})"
+                 except ValueError:
+                     pass # Fall through if not a valid hex number
 
-                    # Check game state variables
-                    for addr, name in MEMORY_ADDRESSES.items():
-                        if addr_val == addr:
-                            return f"game_state.{name}"
+            # Handle register-based addressing (e.g., [bx+si], [bp-4], [di+var+2])
+            # Replace register names and handle basic arithmetic within brackets
+            # This is a simplified parser for common cases like [reg+reg], [reg+offset], [reg-offset]
+            content = content.replace('bp', 'bp_reg') # Use temp names to avoid conflicts if var names exist
+            content = content.replace('bx', 'bx_reg')
+            content = content.replace('si', 'si_reg')
+            content = content.replace('di', 'di_reg')
+            # Convert arithmetic operations
+            content = re.sub(r'\s*\+\s*', ' + ', content)
+            content = re.sub(r'\s*-\s*', ' - ', content)
+            
+            # Assume registers used in addressing hold addresses (pointers)
+            # A more sophisticated analysis would track register types
+            return f"*({c_type}*)({content})"
 
-                    # Check graphics variables
-                    for addr, name in GRAPHICS_ADDRESSES.items():
-                        if addr_val == addr:
-                            return f"graphics_state.{name}"
-
-                    # Check sound variables
-                    for addr, name in SOUND_ADDRESSES.items():
-                        if addr_val == addr:
-                            return f"sound_state.{name}"
-
-                    # Check input variables
-                    for addr, name in INPUT_ADDRESSES.items():
-                        if addr_val == addr:
-                            return f"input_state.{name}"
-                except ValueError:
-                    pass
-
-            # Default - return as memory reference
-            return f"memory[{address}]"
-
-        # Check for register references
-        if operand.lower() in ["ax", "bx", "cx", "dx", "si", "di", "bp", "sp"]:
+        # Handle simple register operands (e.g., "ax", "al")
+        if operand.lower() in ["ax", "bx", "cx", "dx", "si", "di", "bp", "sp", "al", "ah", "bl", "bh", "cl", "ch", "dl", "dh"]:
             return operand.lower()
 
-        # Check for immediate values
+        # Handle immediate values (hex or decimal)
         if operand.startswith("0x") or operand.isdigit():
             return operand
+            
+        # Handle segment registers (comment them out as they are implicit in C)
+        if operand.lower() in ["cs", "ds", "es", "ss", "fs", "gs"]:
+             return f"/* {operand} */"
 
-        # Default - return as is
+        # Default: return operand as is (might be a label, variable name, or unrecognized)
+        # Could potentially look up labels/variables here if available
         return operand
 
     def _get_jump_condition(self, instr: X86Instruction) -> str:

@@ -515,14 +515,23 @@ block_3E:
     word ptr cs:[0x291] = dx;
     ah = 0x30;
     // DOS API call
-    bp = word ptr [2];
-    bx = word ptr [0x2c];
-    ds = dx;
-    word ptr [0x7d] = ax;
-    word ptr [0x7b] = es;
-    word ptr [0x77] = bx;
-    word ptr [0x91] = bp;
+    bp = *(uint16_t*)(2);
+    bx = *(uint16_t*)(0x2c);
+    /* ds */ = dx;
+    *(uint16_t*)(0x7d) = ax;
+    *(uint16_t*)(0x7b) = /* es */;
+    *(uint16_t*)(0x77) = bx;
+    *(uint16_t*)(0x91) = bp;
     sub_1D7D();
+block_1C28:
+    ax = *(uint16_t*)(0x77);
+    /* es */ = ax;
+    ax = 0;
+    bx = ax;
+    di = ax;
+    cx = 0x7fff;
+    // TODO: Translate: cld 
+
 }
 
 
@@ -546,12 +555,17 @@ void sub_1D57(void) {
     int dos_env_segment;
 
 block_1D57:
-    es = word ptr cs:[0x291];
-    // push si
-    // push di
+    /* es */ = word ptr cs:[0x291];
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     si = 0x76d0;
     di = 0x76d6;
     sub_1E31();
+block_1D67:
+    di = pop(); // Simulate stack pop
+    si = pop(); // Simulate stack pop
+    return;
+
 }
 
 
@@ -575,7 +589,6 @@ void sub_1D6A(void) {
     int dos_env_segment;
 
 block_1D6A:
-    // retf 
     return;
 }
 
@@ -602,11 +615,11 @@ void sub_1D6B(int count_cx, int data_dx) {
 block_1D6B:
     bp = sp;
     ah = 0x4c;
-    al = byte ptr [bp + 4];
+    al = *(uint8_t*)(bp_reg + 4);
     // DOS API call
     cx = 0xe;
     dx = 0x2f;
-    // jmp 0x1e80
+    goto block_1E80;
 }
 
 
@@ -630,30 +643,29 @@ void sub_1D7D(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_1D7D:
-    // push ds
+    push(/* ds */); // Simulate stack push
     ax = 0x3500;
     // DOS API call
-    word ptr [0x5b] = bx;
-    word ptr [0x5d] = es;
+    *(uint16_t*)(0x5b) = bx;
+    *(uint16_t*)(0x5d) = /* es */;
     ax = 0x3504;
     // DOS API call
-    word ptr [0x5f] = bx;
-    word ptr [0x61] = es;
+    *(uint16_t*)(0x5f) = bx;
+    *(uint16_t*)(0x61) = /* es */;
     ax = 0x3505;
     // DOS API call
-    word ptr [0x63] = bx;
-    word ptr [0x65] = es;
+    *(uint16_t*)(0x63) = bx;
+    *(uint16_t*)(0x65) = /* es */;
     ax = 0x3506;
     // DOS API call
-    word ptr [0x67] = bx;
-    word ptr [0x69] = es;
+    *(uint16_t*)(0x67) = bx;
+    *(uint16_t*)(0x69) = /* es */;
     ax = 0x2500;
-    dx = cs;
-    ds = dx;
+    dx = /* cs */;
+    /* ds */ = dx;
     dx = 0x174;
     // DOS API call
-    // pop ds
-    // ret 
+    /* ds */ = pop(); // Simulate stack pop
     return;
 }
 
@@ -678,27 +690,26 @@ void sub_1DC0(int result_ax) {
     int dos_env_segment;
 
 block_1DC0:
-    // push ds
+    push(/* ds */); // Simulate stack push
     ax = 0x2500;
-    // lds dx, ptr [0x5b]
+    // TODO: Translate: lds dx, ptr [0x5b]
     // DOS API call
-    // pop ds
-    // push ds
+    /* ds */ = pop(); // Simulate stack pop
+    push(/* ds */); // Simulate stack push
     ax = 0x2504;
-    // lds dx, ptr [0x5f]
+    // TODO: Translate: lds dx, ptr [0x5f]
     // DOS API call
-    // pop ds
-    // push ds
+    /* ds */ = pop(); // Simulate stack pop
+    push(/* ds */); // Simulate stack push
     ax = 0x2505;
-    // lds dx, ptr [0x63]
+    // TODO: Translate: lds dx, ptr [0x63]
     // DOS API call
-    // pop ds
-    // push ds
+    /* ds */ = pop(); // Simulate stack pop
+    push(/* ds */); // Simulate stack push
     ax = 0x2506;
-    // lds dx, ptr [0x67]
+    // TODO: Translate: lds dx, ptr [0x67]
     // DOS API call
-    // pop ds
-    // retf 
+    /* ds */ = pop(); // Simulate stack pop
     return;
 }
 
@@ -778,7 +789,6 @@ block_1E72:
     ah = 0x40;
     bx = 2;
     // DOS API call
-    // ret 
     return;
 }
 
@@ -803,14 +813,13 @@ void sub_1F91(int result_ax) {
     int dos_env_segment;
 
 block_1F91:
-    // push ds
-    // push si
+    push(/* ds */); // Simulate stack push
+    push(si); // Simulate stack push
     si = 0x198;
-    ax ^= ax;
-    ds = ax;
-    // lds si, ptr [si]
+    ax = 0;
+    /* ds */ = ax;
+    // TODO: Translate: lds si, ptr [si]
     si |= si;
-    // je 0x1fe3
 }
 
 
@@ -834,14 +843,13 @@ void sub_2128(int result_ax) {
     int dos_env_segment;
 
 block_2128:
-    // push ds
-    // push si
+    push(/* ds */); // Simulate stack push
+    push(si); // Simulate stack push
     si = 0x198;
-    ax ^= ax;
-    ds = ax;
-    // lds si, ptr [si]
+    ax = 0;
+    /* ds */ = ax;
+    // TODO: Translate: lds si, ptr [si]
     si |= si;
-    // je 0x2156
 }
 
 
@@ -865,17 +873,16 @@ void sub_2495(void) {
     int dos_env_segment;
 
 block_2495:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push di
-    // push si
-    // push ds
-    si = ds;
-    // lds dx, ptr [bp + 6]
-    al ^= al;
+    push(di); // Simulate stack push
+    push(si); // Simulate stack push
+    push(/* ds */); // Simulate stack push
+    si = /* ds */;
+    // TODO: Translate: lds dx, ptr [bp + 6]
+    al = 0;
     ah = 0x3d;
     // DOS API call
-    // jae 0x24ab
 }
 
 
@@ -899,43 +906,42 @@ void sub_2827(void) {
     int dos_env_segment;
 
 block_2827:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push es
-    // push ds
-    // push si
-    // push di
-    // cld 
-    // les di, ptr [bp + 6]
-    // push di
-    // push es
-    // pop ds
+    push(/* es */); // Simulate stack push
+    push(/* ds */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    // TODO: Translate: cld 
+    // TODO: Translate: les di, ptr [bp + 6]
+    push(di); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    /* ds */ = pop(); // Simulate stack pop
     ah = 0x19;
     // DOS API call
     al += 0x41;
-    // stosb byte ptr es:[di], al
+    // TODO: Translate: stosb byte ptr es:[di], al
     al = 0x3a;
-    // stosb byte ptr es:[di], al
+    // TODO: Translate: stosb byte ptr es:[di], al
     al = 0x5c;
-    // stosb byte ptr es:[di], al
-    dl ^= dl;
+    // TODO: Translate: stosb byte ptr es:[di], al
+    dl = 0;
     si = di;
     ah = 0x47;
     // DOS API call
-    // pop di
+    di = pop(); // Simulate stack pop
     cx = 0xffff;
-    ax ^= ax;
-    // repne scasb al, byte ptr es:[di]
-    // not cx
+    ax = 0;
+    // TODO: Translate: repne scasb al, byte ptr es:[di]
+    // TODO: Translate: not cx
     cx--;
     ax = cx;
-    // pop di
-    // pop si
-    // pop ds
-    // pop es
+    di = pop(); // Simulate stack pop
+    si = pop(); // Simulate stack pop
+    /* ds */ = pop(); // Simulate stack pop
+    /* es */ = pop(); // Simulate stack pop
     sp = bp;
-    // pop bp
-    // retf 
+    bp = pop(); // Simulate stack pop
     return;
 }
 
@@ -960,15 +966,14 @@ void sub_2A03(void) {
     int dos_env_segment;
 
 block_2A03:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push ds
+    push(/* ds */); // Simulate stack push
     ah = 0x43;
-    al ^= al;
-    // lds dx, ptr [bp + 6]
+    al = 0;
+    // TODO: Translate: lds dx, ptr [bp + 6]
     // DOS API call
-    // pop ds
-    // jb 0x2a1d
+    /* ds */ = pop(); // Simulate stack pop
 }
 
 
@@ -992,16 +997,15 @@ void sub_2A40(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_2A40:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     ah = 0x19;
     // DOS API call
     ah = 0;
     ax++;
-    // les bx, ptr [bp + 6]
+    // TODO: Translate: les bx, ptr [bp + 6]
     word ptr es:[bx] = ax;
-    // pop bp
-    // retf 
+    bp = pop(); // Simulate stack pop
     return;
 }
 
@@ -1026,17 +1030,16 @@ void sub_2A52(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_2A52:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    dl = byte ptr [bp + 6];
+    dl = *(uint8_t*)(bp_reg + 6);
     dl--;
     ah = 0xe;
     // DOS API call
     ah = 0;
-    // les bx, ptr [bp + 8]
+    // TODO: Translate: les bx, ptr [bp + 8]
     word ptr es:[bx] = ax;
-    // pop bp
-    // retf 
+    bp = pop(); // Simulate stack pop
     return;
 }
 
@@ -1061,12 +1064,11 @@ void sub_2A69(int base_bx) {
     int dos_env_segment;
 
 block_2A69:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    si = word ptr [bp + 8];
+    push(si); // Simulate stack push
+    si = *(uint16_t*)(bp_reg + 8);
     si |= si;
-    // jne 0x2a96
 }
 
 
@@ -1090,13 +1092,17 @@ void sub_2AC0(int result_ax) {
     int dos_env_segment;
 
 block_2AC0:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    ax ^= ax;
-    // push ax
-    // push ax
-    // push word ptr [bp + 6]
+    ax = 0;
+    push(ax); // Simulate stack push
+    push(ax); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
     sub_2A69();
+block_2ACD:
+    bp = pop(); // Simulate stack pop
+    return;
+
 }
 
 
@@ -1120,14 +1126,18 @@ void sub_2ACF(int result_ax) {
     int dos_env_segment;
 
 block_2ACF:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     ax = 1;
-    // push ax
-    ax ^= ax;
-    // push ax
-    // push word ptr [bp + 6]
+    push(ax); // Simulate stack push
+    ax = 0;
+    push(ax); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
     sub_2A69();
+block_2ADF:
+    bp = pop(); // Simulate stack pop
+    return;
+
 }
 
 
@@ -1151,16 +1161,15 @@ void sub_2B2E(void) {
     int dos_env_segment;
 
 block_2B2E:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    // push ds
+    push(si); // Simulate stack push
+    push(/* ds */); // Simulate stack push
     ah = 0x47;
-    dl = byte ptr [bp + 6];
-    // lds si, ptr [bp + 8]
+    dl = *(uint8_t*)(bp_reg + 6);
+    // TODO: Translate: lds si, ptr [bp + 8]
     // DOS API call
-    // pop ds
-    // jb 0x2b44
+    /* ds */ = pop(); // Simulate stack pop
 }
 
 
@@ -1184,15 +1193,24 @@ void sub_2B71(int result_ax, int count_cx) {
     int dos_env_segment;
 
 block_2B71:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ss
-    // lea ax, [bp - 2]
-    // push ax
-    // nop 
-    // push cs
+    push(/* ss */); // Simulate stack push
+    ax = &(uint16_t*)(bp_reg - 2); // Calculate address
+    push(ax); // Simulate stack push
+    // TODO: Translate: nop 
+    push(/* cs */); // Simulate stack push
     sub_2A40();
+block_2B81:
+    cx = pop(); // Simulate stack pop
+    cx = pop(); // Simulate stack pop
+    ax = *(uint16_t*)(bp_reg - 2);
+    ax--;
+    sp = bp;
+    bp = pop(); // Simulate stack pop
+    return;
+
 }
 
 
@@ -1216,11 +1234,10 @@ void sub_2C9B(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_2C9B:
-    // pop bx
-    // push cs
-    // push bx
-    // cmp cl, 0x10
-    // jae 0x2cb3
+    bx = pop(); // Simulate stack pop
+    push(/* cs */); // Simulate stack push
+    push(bx); // Simulate stack push
+    // Compare cl and 0x10 (sets flags)
 }
 
 
@@ -1244,11 +1261,10 @@ void sub_2CBC(void) {
     int dos_env_segment;
 
 block_2CBC:
-    // pop es
-    // push cs
-    // push es
+    /* es */ = pop(); // Simulate stack pop
+    push(/* cs */); // Simulate stack push
+    push(/* es */); // Simulate stack push
     cx |= cx;
-    // jge 0x2ccf
 }
 
 
@@ -1272,29 +1288,28 @@ void sub_2D1C(int count_cx) {
     int dos_env_segment;
 
 block_2D1C:
-    // pop es
-    // push cs
-    // push es
-    // push di
+    /* es */ = pop(); // Simulate stack pop
+    push(/* cs */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(di); // Simulate stack push
     di = cx;
     ch = dh;
     cl = 4;
     dx <<= cl;
-    ch >>= cl;
+    ch >>= cl; // Unsigned shift right
     dx += ax;
-    // adc ch, 0
+    // TODO: Translate: adc ch, 0
     ax = di;
     di <<= cl;
-    ah >>= cl;
+    ah >>= cl; // Unsigned shift right
     bx += di;
-    // adc ah, 0
+    // TODO: Translate: adc ah, 0
     dx -= bx;
-    // sbb ch, ah
+    // TODO: Translate: sbb ch, ah
     al = ch;
-    // cwde 
-    // xchg dx, ax
-    // pop di
-    // retf 
+    // TODO: Translate: cwde 
+    // TODO: Translate: xchg dx, ax
+    di = pop(); // Simulate stack pop
     return;
 }
 
@@ -1319,12 +1334,11 @@ void sub_2D44(void) {
     int dos_env_segment;
 
 block_2D44:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    si = word ptr [bp + 4];
+    push(si); // Simulate stack push
+    si = *(uint16_t*)(bp_reg + 4);
     si |= si;
-    // jl 0x2d64
 }
 
 
@@ -1348,12 +1362,18 @@ void sub_2D7D(int result_ax) {
     int dos_env_segment;
 
 block_2D7D:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    si = word ptr [bp + 4];
-    // push si
+    push(si); // Simulate stack push
+    si = *(uint16_t*)(bp_reg + 4);
+    push(si); // Simulate stack push
     sub_2D44();
+block_2D88:
+    ax = si;
+    si = pop(); // Simulate stack pop
+    bp = pop(); // Simulate stack pop
+    return;
+
 }
 
 
@@ -1377,15 +1397,14 @@ void sub_2F4E(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_2F4E:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     ax = 0x4400;
-    bx = word ptr [bp + 6];
+    bx = *(uint16_t*)(bp_reg + 6);
     // DOS API call
-    // xchg dx, ax
+    // TODO: Translate: xchg dx, ax
     ax &= 0x80;
-    // pop bp
-    // retf 
+    bp = pop(); // Simulate stack pop
     return;
 }
 
@@ -1410,16 +1429,15 @@ void sub_2F5F(int base_bx) {
     int dos_env_segment;
 
 block_2F5F:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0x22;
-    // push si
-    // push di
-    // push es
-    // les di, ptr [bp + 0xa]
-    bx = word ptr [bp + 8];
-    // cmp bx, 0x24
-    // ja 0x2fcf
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    // TODO: Translate: les di, ptr [bp + 0xa]
+    bx = *(uint16_t*)(bp_reg + 8);
+    // Compare bx and 0x24 (sets flags)
 }
 
 
@@ -1443,20 +1461,24 @@ void sub_2FE1(int result_ax) {
     int dos_env_segment;
 
 block_2FE1:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    ax ^= ax;
-    // push ax
-    // push word ptr [bp + 8]
-    // push word ptr [bp + 6]
-    // push word ptr [bp + 4]
+    ax = 0;
+    push(ax); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 8)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 4)); // Simulate stack push
     ax = 0xa;
-    // push ax
+    push(ax); // Simulate stack push
     al = 0;
-    // push ax
+    push(ax); // Simulate stack push
     al = 0x61;
-    // push ax
+    push(ax); // Simulate stack push
     sub_2F5F();
+block_2FFD:
+    bp = pop(); // Simulate stack pop
+    return;
+
 }
 
 
@@ -1480,18 +1502,17 @@ void sub_3001(int base_bx, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_3001:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    bx = word ptr [bp + 6];
+    bx = *(uint16_t*)(bp_reg + 6);
     bx <<= 1;
-    word ptr [bx + 0x74d2] &= 0xfdff;
+    *(uint16_t*)(bx_reg + 0x74d2) &= 0xfdff;
     ah = 0x42;
-    al = byte ptr [bp + 0xc];
-    bx = word ptr [bp + 6];
-    cx = word ptr [bp + 0xa];
-    dx = word ptr [bp + 8];
+    al = *(uint8_t*)(bp_reg + 0xc);
+    bx = *(uint16_t*)(bp_reg + 6);
+    cx = *(uint16_t*)(bp_reg + 0xa);
+    dx = *(uint16_t*)(bp_reg + 8);
     // DOS API call
-    // jb 0x3023
 }
 
 
@@ -1515,11 +1536,10 @@ void sub_302A(int result_ax) {
     int dos_env_segment;
 
 block_302A:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    ax = word ptr [bp + 0xa];
-    ax |= word ptr [bp + 0xc];
-    // jne 0x303d
+    ax = *(uint16_t*)(bp_reg + 0xa);
+    ax |= *(uint16_t*)(bp_reg + 0xc);
 }
 
 
@@ -1543,11 +1563,10 @@ void sub_30E0(int result_ax) {
     int dos_env_segment;
 
 block_30E0:
-    // push si
-    // xchg si, ax
-    // xchg dx, ax
-    // test ax, ax
-    // je 0x30e9
+    push(si); // Simulate stack push
+    // TODO: Translate: xchg si, ax
+    // TODO: Translate: xchg dx, ax
+    // Test ax & ax (sets flags)
 }
 
 
@@ -1571,21 +1590,20 @@ void sub_30F7(int count_cx) {
     int dos_env_segment;
 
 block_30F7:
-    // push cx
+    push(cx); // Simulate stack push
     ch = al;
     cl = 4;
-    ax >>= cl;
+    ax >>= cl; // Unsigned shift right
     dx += ax;
     al = ch;
     ah = bl;
-    bx >>= cl;
-    // pop cx
+    bx >>= cl; // Unsigned shift right
+    cx = pop(); // Simulate stack pop
     cx += bx;
     bl = ah;
     ax &= 0xf;
     bx &= 0xf;
-    // cmp dx, cx
-    // jne 0x3117
+    // Compare dx and cx (sets flags)
 }
 
 
@@ -1609,12 +1627,11 @@ void sub_3118(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_3118:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    bx = word ptr [bp + 6];
+    bx = *(uint16_t*)(bp_reg + 6);
     bx <<= 1;
-    // test word ptr [bx + 0x74d2], 2
-    // je 0x312e
+    // Test *(uint16_t*)(bx_reg + 0x74d2) & 2 (sets flags)
 }
 
 
@@ -1638,14 +1655,14 @@ void sub_3147(void) {
     int dos_env_segment;
 
 block_3147:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0x2a;
-    // push si
-    // push di
-    word ptr [bp - 4] = 0;
-    word ptr [bp - 6] = 0;
-    // jmp 0x3176
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    *(uint16_t*)(bp_reg - 4) = 0;
+    *(uint16_t*)(bp_reg - 6) = 0;
+    goto block_3176;
 }
 
 
@@ -1669,9 +1686,8 @@ void sub_315B(void) {
     int dos_env_segment;
 
 block_315B:
-    // les di, ptr [bp + 0x10]
-    // test byte ptr [bp - 1], 0x20
-    // je 0x316c
+    // TODO: Translate: les di, ptr [bp + 0x10]
+    // Test *(uint8_t*)(bp_reg - 1) & 0x20 (sets flags)
 }
 
 
@@ -1695,11 +1711,10 @@ void sub_32DA(int result_ax) {
     int dos_env_segment;
 
 block_32DA:
-    // jmp 0x357b
-    // push word ptr [bp + 0xa]
-    // push word ptr [bp + 8]
-    // push ax
-    word ptr [bp + 6]();
+    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 8)); // Simulate stack push
+    push(ax); // Simulate stack push
+    *(uint16_t*)(bp_reg + 6)();
 }
 
 
@@ -1723,10 +1738,8 @@ void sub_32F5(int result_ax, int data_dx) {
     int dos_env_segment;
 
 block_32F5:
-    // jmp 0x35a5
-    // push dx
-    // cmp al, 0x3a
-    // je 0x3316
+    push(dx); // Simulate stack push
+    // Compare al and 0x3a (sets flags)
 }
 
 
@@ -1750,10 +1763,8 @@ void sub_3319(int result_ax, int base_bx, int data_dx) {
     int dos_env_segment;
 
 block_3319:
-    // jmp 0x35a5
-    // pop bx
+    bx = pop(); // Simulate stack pop
     ax |= ax;
-    // jle 0x3335
 }
 
 
@@ -1777,9 +1788,7 @@ void sub_33BE(void) {
     int dos_env_segment;
 
 block_33BE:
-    // jmp 0x357b
-    // test byte ptr [bp - 1], 1
-    // jne 0x33cd
+    // Test *(uint8_t*)(bp_reg - 1) & 1 (sets flags)
 }
 
 
@@ -1803,9 +1812,8 @@ void sub_363B(int base_bx) {
     int dos_env_segment;
 
 block_363B:
-    // push bx
+    push(bx); // Simulate stack push
     bl -= 0x30;
-    // jb 0x3663
 }
 
 
@@ -1829,14 +1837,14 @@ void sub_3666(void) {
     int dos_env_segment;
 
 block_3666:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 6;
-    // push si
-    // push di
-    byte ptr [bp - 1] = 0;
-    word ptr [bp - 4] = 0;
-    word ptr [bp - 6] = 1;
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    *(uint8_t*)(bp_reg - 1) = 0;
+    *(uint16_t*)(bp_reg - 4) = 0;
+    *(uint16_t*)(bp_reg - 6) = 1;
 }
 
 
@@ -1860,20 +1868,19 @@ void sub_3808(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_3808:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    bx = es;
-    // les si, ptr [bp + 6]
+    push(si); // Simulate stack push
+    bx = /* es */;
+    // TODO: Translate: les si, ptr [bp + 6]
     word ptr es:[si] = bx;
-    ax = word ptr [bp + 4];
+    ax = *(uint16_t*)(bp_reg + 4);
     word ptr es:[si + 2] = ax;
-    word ptr es:[si + 4] = ss;
-    word ptr es:[si + 6] = ds;
-    es = bx;
-    // pop si
-    // pop bp
-    // retf 
+    word ptr es:[si + 4] = /* ss */;
+    word ptr es:[si + 6] = /* ds */;
+    /* es */ = bx;
+    si = pop(); // Simulate stack pop
+    bp = pop(); // Simulate stack pop
     return;
 }
 
@@ -1898,14 +1905,13 @@ void sub_3905(void) {
     int dos_env_segment;
 
 block_3905:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push ds
+    push(/* ds */); // Simulate stack push
     ah = 0x41;
-    // lds dx, ptr [bp + 6]
+    // TODO: Translate: lds dx, ptr [bp + 6]
     // DOS API call
-    // pop ds
-    // jb 0x3917
+    /* ds */ = pop(); // Simulate stack pop
 }
 
 
@@ -1931,6 +1937,9 @@ void sub_391D(void) {
 block_391D:
     al = dh;
     sub_3924();
+block_3922:
+    al = dl;
+
 }
 
 
@@ -1954,9 +1963,12 @@ void sub_3924(void) {
     int dos_env_segment;
 
 block_3924:
-    // aam 0x10
-    // xchg al, ah
+    // TODO: Translate: aam 0x10
+    // TODO: Translate: xchg al, ah
     sub_392D();
+block_392B:
+    // TODO: Translate: xchg al, ah
+
 }
 
 
@@ -1981,11 +1993,10 @@ void sub_392D(void) {
 
 block_392D:
     al += 0x90;
-    // daa 
-    // adc al, 0x40
-    // daa 
-    // stosb byte ptr es:[di], al
-    // ret 
+    // TODO: Translate: daa 
+    // TODO: Translate: adc al, 0x40
+    // TODO: Translate: daa 
+    // TODO: Translate: stosb byte ptr es:[di], al
     return;
 }
 
@@ -2010,15 +2021,15 @@ void sub_3935(void) {
     int dos_env_segment;
 
 block_3935:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0x96;
-    // push si
-    // push di
-    word ptr [bp - 0x12] = 0;
-    word ptr [bp - 0x14] = 0x50;
-    word ptr [bp - 0x16] = 0;
-    // jmp 0x3999
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    *(uint16_t*)(bp_reg - 0x12) = 0;
+    *(uint16_t*)(bp_reg - 0x14) = 0x50;
+    *(uint16_t*)(bp_reg - 0x16) = 0;
+    goto block_3999;
 }
 
 
@@ -2042,14 +2053,13 @@ void sub_394F(int count_cx) {
     int dos_env_segment;
 
 block_394F:
-    // push di
+    push(di); // Simulate stack push
     cx = 0xffff;
-    al ^= al;
-    // repne scasb al, byte ptr es:[di]
-    // not cx
+    al = 0;
+    // TODO: Translate: repne scasb al, byte ptr es:[di]
+    // TODO: Translate: not cx
     cx--;
-    // pop di
-    // ret 
+    di = pop(); // Simulate stack pop
     return;
 }
 
@@ -2076,8 +2086,7 @@ void sub_395C(void) {
 block_395C:
     byte ptr ss:[di] = al;
     di++;
-    byte ptr [bp - 0x14]--;
-    // jne 0x3998
+    *(uint8_t*)(bp_reg - 0x14)--;
 }
 
 
@@ -2101,19 +2110,22 @@ void sub_3965(int result_ax, int base_bx, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_3965:
-    // push bx
-    // push cx
-    // push dx
-    // push es
-    // lea ax, [bp - 0x96]
+    push(bx); // Simulate stack push
+    push(cx); // Simulate stack push
+    push(dx); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    ax = &(uint16_t*)(bp_reg - 0x96); // Calculate address
     di -= ax;
-    // push ss
-    // lea ax, [bp - 0x96]
-    // push ax
-    // push di
-    // push word ptr [bp + 0xc]
-    // push word ptr [bp + 0xa]
-    word ptr [bp + 0xe]();
+    push(/* ss */); // Simulate stack push
+    ax = &(uint16_t*)(bp_reg - 0x96); // Calculate address
+    push(ax); // Simulate stack push
+    push(di); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 0xc)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
+    *(uint16_t*)(bp_reg + 0xe)();
+block_397F:
+    ax |= ax;
+
 }
 
 
@@ -2137,23 +2149,22 @@ void sub_3DF8(int result_ax, int data_dx) {
     int dos_env_segment;
 
 block_3DF8:
-    // in al, dx
-    al = byte ptr [0x7654];
+    // TODO: Translate: in al, dx
+    al = *(uint8_t*)(0x7654);
     ah = 0;
-    dx = word ptr [bp + 4];
+    dx = *(uint16_t*)(bp_reg + 4);
     dx--;
-    // imul dx
-    // push ax
-    ax = word ptr [0x7657];
-    // pop dx
+    ax = al * dx; // Signed multiply
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(0x7657);
+    dx = pop(); // Simulate stack pop
     ax += dx;
-    dx = word ptr [bp + 6];
+    dx = *(uint16_t*)(bp_reg + 6);
     dx--;
     ax += dx;
     ax <<= 1;
-    dx = word ptr [0x7659];
-    // pop bp
-    // ret 4
+    dx = *(uint16_t*)(0x7659);
+    bp = pop(); // Simulate stack pop
     return;
 }
 
@@ -2178,17 +2189,16 @@ void sub_3E1D(int result_ax, int count_cx) {
     int dos_env_segment;
 
 block_3E1D:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push si
-    // push di
-    al = byte ptr [0x7656];
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    al = *(uint8_t*)(0x7656);
     ah = 0;
-    word ptr [bp - 2] = ax;
-    // push ds
-    cx = word ptr [bp + 4];
-    // jcxz 0x3e8d
+    *(uint16_t*)(bp_reg - 2) = ax;
+    push(/* ds */); // Simulate stack push
+    cx = *(uint16_t*)(bp_reg + 4);
 }
 
 
@@ -2212,14 +2222,37 @@ void sub_3E97(int count_cx) {
     int dos_env_segment;
 
 block_3E97:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    // push word ptr [bp + 0xc]
-    // push word ptr [bp + 0xa]
-    // nop 
-    // push cs
+    push(si); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 0xc)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
+    // TODO: Translate: nop 
+    push(/* cs */); // Simulate stack push
     sub_6661();
+block_3EA6:
+    cx = pop(); // Simulate stack pop
+    cx = pop(); // Simulate stack pop
+    si = ax;
+    ax++;
+    push(ax); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 0xc)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 8)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
+    // TODO: Translate: nop 
+    push(/* cs */); // Simulate stack push
+    sub_59FF();
+block_3EBD:
+    sp += 0xa;
+    dx = *(uint16_t*)(bp_reg + 8);
+    ax = *(uint16_t*)(bp_reg + 6);
+    ax += si;
+    si = pop(); // Simulate stack pop
+    bp = pop(); // Simulate stack pop
+    return;
+
+
 }
 
 
@@ -2243,9 +2276,9 @@ void sub_3EF4(int base_bx) {
     int dos_env_segment;
 
 block_3EF4:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // jmp 0x3f11
+    goto block_3F11;
 }
 
 
@@ -2272,6 +2305,12 @@ block_3F21:
     ah = 0x12;
     bl = 0x10;
     sub_3F2F();
+block_3F28:
+    al = bl;
+    al += 0xf0;
+    ah = 0;
+    return;
+
 }
 
 
@@ -2295,14 +2334,13 @@ void sub_3F2F(int count_cx) {
     int dos_env_segment;
 
 block_3F2F:
-    // push bp
-    // push ds
-    // push cx
+    push(bp); // Simulate stack push
+    push(/* ds */); // Simulate stack push
+    push(cx); // Simulate stack push
     cx = 0x40;
-    ds = cx;
-    // pop cx
-    // cmp ah, 0
-    // je 0x3f46
+    /* ds */ = cx;
+    cx = pop(); // Simulate stack pop
+    // Compare ah and 0 (sets flags)
 }
 
 
@@ -2327,12 +2365,16 @@ void sub_3FD7(void) {
     int dos_env_segment;
 
 block_3FD7:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    al = byte ptr [bp + 4];
-    byte ptr [0x7652] = al;
+    al = *(uint8_t*)(bp_reg + 4);
+    *(uint8_t*)(0x7652) = al;
     ah = 0xf;
     sub_3F2F();
+block_3FE5:
+    *(uint8_t*)(0x7654) = ah;
+    // Compare al and *(uint8_t*)(0x7652) (sets flags)
+
 }
 
 
@@ -2356,8 +2398,7 @@ void sub_40C4(int result_ax, int data_dx) {
     int dos_env_segment;
 
 block_40C4:
-    // cmp dx, word ptr cs:[0x24b8]
-    // je 0x4102
+    // Compare dx and word ptr cs:[0x24b8] (sets flags)
 }
 
 
@@ -2381,13 +2422,12 @@ int sub_4127(int result_ax, int data_dx) {
     int dos_env_segment;
 
 block_4127:
-    ds = dx;
-    // push ds
-    es = word ptr [2];
-    word ptr [2] = 0;
-    word ptr [8] = es;
-    // cmp dx, word ptr cs:[0x24b8]
-    // je 0x416d
+    /* ds */ = dx;
+    push(/* ds */); // Simulate stack push
+    /* es */ = *(uint16_t*)(2);
+    *(uint16_t*)(2) = 0;
+    *(uint16_t*)(8) = /* es */;
+    // Compare dx and word ptr cs:[0x24b8] (sets flags)
 }
 
 
@@ -2411,9 +2451,8 @@ void sub_4198(int base_bx) {
     int dos_env_segment;
 
 block_4198:
-    bx = ds;
-    // cmp bx, word ptr [6]
-    // je 0x41b9
+    bx = /* ds */;
+    // Compare bx and *(uint16_t*)(6) (sets flags)
 }
 
 
@@ -2439,7 +2478,6 @@ void sub_41C1(int result_ax, int base_bx) {
 block_41C1:
     ax = word ptr cs:[0x24bc];
     ax |= ax;
-    // je 0x41ea
 }
 
 
@@ -2463,14 +2501,13 @@ void sub_41F8(int data_dx) {
     int dos_env_segment;
 
 block_41F8:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    // push di
-    word ptr cs:[0x24be] = ds;
-    dx = word ptr [bp + 8];
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    word ptr cs:[0x24be] = /* ds */;
+    dx = *(uint16_t*)(bp_reg + 8);
     dx |= dx;
-    // je 0x4218
 }
 
 
@@ -2495,12 +2532,16 @@ void sub_4221(int result_ax, int data_dx) {
     int dos_env_segment;
 
 block_4221:
-    // push ax
-    ds = word ptr cs:[0x24be];
-    ax ^= ax;
-    // push ax
-    // push ax
+    push(ax); // Simulate stack push
+    /* ds */ = word ptr cs:[0x24be];
+    ax = 0;
+    push(ax); // Simulate stack push
+    push(ax); // Simulate stack push
     sub_459F();
+block_422E:
+    sp += 4;
+    ax &= 0xf;
+
 }
 
 
@@ -2525,16 +2566,21 @@ void sub_4285(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_4285:
-    // push ax
-    bx ^= bx;
+    push(ax); // Simulate stack push
+    bx = 0;
     bl = ah;
     cl = 4;
-    bx >>= cl;
+    bx >>= cl; // Unsigned shift right
     ax <<= cl;
-    ds = word ptr cs:[0x24be];
-    // push bx
-    // push ax
+    /* ds */ = word ptr cs:[0x24be];
+    push(bx); // Simulate stack push
+    push(ax); // Simulate stack push
     sub_459F();
+block_429A:
+    sp += 4;
+    bx = pop(); // Simulate stack pop
+    // Compare ax and 0xffff (sets flags)
+
 }
 
 
@@ -2559,17 +2605,16 @@ void sub_42DF(int result_ax, int base_bx, int data_dx) {
 
 block_42DF:
     bx = dx;
-    word ptr [0] -= ax;
-    dx += word ptr [0];
-    ds = dx;
-    word ptr [0] = ax;
-    word ptr [2] = bx;
+    *(uint16_t*)(0) -= ax;
+    dx += *(uint16_t*)(0);
+    /* ds */ = dx;
+    *(uint16_t*)(0) = ax;
+    *(uint16_t*)(2) = bx;
     bx = dx;
-    bx += word ptr [0];
-    ds = bx;
-    word ptr [2] = dx;
+    bx += *(uint16_t*)(0);
+    /* ds */ = bx;
+    *(uint16_t*)(2) = dx;
     ax = 4;
-    // ret 
     return;
 }
 
@@ -2594,11 +2639,11 @@ int sub_4302(int result_ax) {
     int dos_env_segment;
 
 block_4302:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    dx ^= dx;
-    ax = word ptr [bp + 6];
-    // jmp 0x4315
+    dx = 0;
+    ax = *(uint16_t*)(bp_reg + 6);
+    goto block_4315;
 }
 
 
@@ -2622,16 +2667,15 @@ void sub_430C(int result_ax, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_430C:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    dx = word ptr [bp + 8];
-    ax = word ptr [bp + 6];
+    dx = *(uint16_t*)(bp_reg + 8);
+    ax = *(uint16_t*)(bp_reg + 6);
     cx = ax;
     cx |= dx;
-    // push si
-    // push di
-    word ptr cs:[0x24be] = ds;
-    // je 0x4380
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    word ptr cs:[0x24be] = /* ds */;
 }
 
 
@@ -2655,13 +2699,17 @@ void sub_4389(int base_bx) {
     int dos_env_segment;
 
 block_4389:
-    // push bx
+    push(bx); // Simulate stack push
     si = word ptr cs:[0x24c0];
-    // push si
+    push(si); // Simulate stack push
     si = word ptr cs:[0x24c2];
-    // push si
-    // push cs
+    push(si); // Simulate stack push
+    push(/* cs */); // Simulate stack push
     sub_430C();
+block_439A:
+    sp += 4;
+    dx |= dx;
+
 }
 
 
@@ -2685,8 +2733,7 @@ void sub_4405(int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_4405:
-    // cmp bx, word ptr cs:[0x24ba]
-    // je 0x4451
+    // Compare bx and word ptr cs:[0x24ba] (sets flags)
 }
 
 
@@ -2710,17 +2757,16 @@ void sub_44EA(void) {
     int dos_env_segment;
 
 block_44EA:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    si = word ptr [bp + 6];
+    push(si); // Simulate stack push
+    si = *(uint16_t*)(bp_reg + 6);
     si++;
-    si -= word ptr [0x7b];
+    si -= *(uint16_t*)(0x7b);
     si += 0x3f;
     cl = 6;
-    si >>= cl;
-    // cmp si, word ptr [0x7696]
-    // jne 0x4515
+    si >>= cl; // Unsigned shift right
+    // Compare si and *(uint16_t*)(0x7696) (sets flags)
 }
 
 
@@ -2744,13 +2790,15 @@ void sub_4560(int result_ax, int base_bx, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_4560:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    cx = word ptr [0x89];
-    bx = word ptr [0x87];
-    dx = word ptr [bp + 6];
-    ax = word ptr [bp + 4];
+    cx = *(uint16_t*)(0x89);
+    bx = *(uint16_t*)(0x87);
+    dx = *(uint16_t*)(bp_reg + 6);
+    ax = *(uint16_t*)(bp_reg + 4);
     sub_30F7();
+block_4574:
+
 }
 
 
@@ -2774,13 +2822,20 @@ void sub_459F(int result_ax) {
     int dos_env_segment;
 
 block_459F:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 8;
-    ax = word ptr [0x8d];
-    dx ^= dx;
+    ax = *(uint16_t*)(0x8d);
+    dx = 0;
     cl = 4;
     sub_2C9B();
+block_45AF:
+    ax += *(uint16_t*)(0x8b);
+    // TODO: Translate: adc dx, 0
+    ax += *(uint16_t*)(bp_reg + 4);
+    // TODO: Translate: adc dx, word ptr [bp + 6]
+    // Compare dx and 0xf (sets flags)
+
 }
 
 
@@ -2804,18 +2859,21 @@ void sub_467A(void) {
     int dos_env_segment;
 
 block_467A:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push si
-    // push di
-    di = word ptr [bp + 6];
-    si = word ptr [bp + 8];
-    // push di
-    // push si
-    // push word ptr [bp + 0xa]
-    // push word ptr [bp + 0xc]
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    di = *(uint16_t*)(bp_reg + 6);
+    si = *(uint16_t*)(bp_reg + 8);
+    push(di); // Simulate stack push
+    push(si); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 0xc)); // Simulate stack push
     sub_4A0E();
+block_4693:
+    ax |= ax;
+
 }
 
 
@@ -2839,18 +2897,21 @@ void sub_46D0(void) {
     int dos_env_segment;
 
 block_46D0:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push si
-    // push di
-    di = word ptr [bp + 6];
-    si = word ptr [bp + 8];
-    // push di
-    // push si
-    // push word ptr [bp + 0xa]
-    // push word ptr [bp + 0xc]
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    di = *(uint16_t*)(bp_reg + 6);
+    si = *(uint16_t*)(bp_reg + 8);
+    push(di); // Simulate stack push
+    push(si); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 0xc)); // Simulate stack push
     sub_4A0E();
+block_46E9:
+    ax |= ax;
+
 }
 
 
@@ -2874,46 +2935,45 @@ void sub_4754(int result_ax) {
     int dos_env_segment;
 
 block_4754:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    // push di
-    // push ds
-    // lds si, ptr [bp + 0xe]
-    // push word ptr [si]
-    // push word ptr [si + 6]
-    // lds si, ptr [bp + 6]
-    ax = word ptr [si];
-    bx = word ptr [si + 2];
-    cx = word ptr [si + 4];
-    dx = word ptr [si + 6];
-    di = word ptr [si + 0xa];
-    si = word ptr [si + 8];
-    // pop ds
-    // pop es
-    // push bp
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    push(/* ds */); // Simulate stack push
+    // TODO: Translate: lds si, ptr [bp + 0xe]
+    push(*(uint16_t*)(si_reg)); // Simulate stack push
+    push(*(uint16_t*)(si_reg + 6)); // Simulate stack push
+    // TODO: Translate: lds si, ptr [bp + 6]
+    ax = *(uint16_t*)(si_reg);
+    bx = *(uint16_t*)(si_reg + 2);
+    cx = *(uint16_t*)(si_reg + 4);
+    dx = *(uint16_t*)(si_reg + 6);
+    di = *(uint16_t*)(si_reg + 0xa);
+    si = *(uint16_t*)(si_reg + 8);
+    /* ds */ = pop(); // Simulate stack pop
+    /* es */ = pop(); // Simulate stack pop
+    push(bp); // Simulate stack push
     // DOS API call
-    // pop bp
-    // pushf 
-    // pushf 
-    // push si
-    // push ds
-    // push es
-    // lds si, ptr [bp + 0xe]
-    // pop word ptr [si]
-    // pop word ptr [si + 6]
-    // lds si, ptr [bp + 0xa]
-    // pop word ptr [si + 8]
-    // pop word ptr [si + 0xe]
-    // pop word ptr [si + 0xc]
-    word ptr [si + 0xc] &= 1;
-    word ptr [si + 0xa] = di;
-    word ptr [si + 6] = dx;
-    word ptr [si + 4] = cx;
-    word ptr [si + 2] = bx;
-    word ptr [si] = ax;
-    // pop ds
-    // je 0x47b0
+    bp = pop(); // Simulate stack pop
+    // TODO: Translate: pushf 
+    // TODO: Translate: pushf 
+    push(si); // Simulate stack push
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    // TODO: Translate: lds si, ptr [bp + 0xe]
+    *(uint16_t*)(si_reg) = pop(); // Simulate stack pop
+    *(uint16_t*)(si_reg + 6) = pop(); // Simulate stack pop
+    // TODO: Translate: lds si, ptr [bp + 0xa]
+    *(uint16_t*)(si_reg + 8) = pop(); // Simulate stack pop
+    *(uint16_t*)(si_reg + 0xe) = pop(); // Simulate stack pop
+    *(uint16_t*)(si_reg + 0xc) = pop(); // Simulate stack pop
+    *(uint16_t*)(si_reg + 0xc) &= 1;
+    *(uint16_t*)(si_reg + 0xa) = di;
+    *(uint16_t*)(si_reg + 6) = dx;
+    *(uint16_t*)(si_reg + 4) = cx;
+    *(uint16_t*)(si_reg + 2) = bx;
+    *(uint16_t*)(si_reg) = ax;
+    /* ds */ = pop(); // Simulate stack pop
 }
 
 
@@ -2937,17 +2997,16 @@ void sub_47B4(int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_47B4:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push ds
-    // lds dx, ptr [bp + 0xa]
+    push(/* ds */); // Simulate stack push
+    // TODO: Translate: lds dx, ptr [bp + 0xa]
     ah = 0x44;
-    al = byte ptr [bp + 8];
-    bx = word ptr [bp + 6];
-    cx = word ptr [bp + 0xe];
+    al = *(uint8_t*)(bp_reg + 8);
+    bx = *(uint16_t*)(bp_reg + 6);
+    cx = *(uint16_t*)(bp_reg + 0xe);
     // DOS API call
-    // pop ds
-    // jb 0x47d7
+    /* ds */ = pop(); // Simulate stack pop
 }
 
 
@@ -2971,18 +3030,21 @@ void sub_47EF(void) {
     int dos_env_segment;
 
 block_47EF:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 4;
-    // push si
-    // push di
-    si = word ptr [bp + 8];
-    di = word ptr [bp + 0xc];
-    // push word ptr [bp + 6]
-    // push si
-    // push word ptr [bp + 0xa]
-    // push di
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    si = *(uint16_t*)(bp_reg + 8);
+    di = *(uint16_t*)(bp_reg + 0xc);
+    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
+    push(si); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
+    push(di); // Simulate stack push
     sub_4A0E();
+block_4808:
+    ax |= ax;
+
 }
 
 
@@ -3006,7 +3068,6 @@ void sub_488C(void) {
     int dos_env_segment;
 
 block_488C:
-    // jmp word ptr [0x76b0]
 }
 
 
@@ -3030,7 +3091,6 @@ void sub_4890(void) {
     int dos_env_segment;
 
 block_4890:
-    // jmp word ptr [0x76b2]
 }
 
 
@@ -3054,7 +3114,6 @@ void sub_4894(void) {
     int dos_env_segment;
 
 block_4894:
-    // jmp word ptr [0x76b4]
 }
 
 
@@ -3078,7 +3137,6 @@ void sub_4898(void) {
     int dos_env_segment;
 
 block_4898:
-    // jmp word ptr [0x76b6]
 }
 
 
@@ -3102,32 +3160,31 @@ void sub_489C(int result_ax, int count_cx) {
     int dos_env_segment;
 
 block_489C:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    ax = word ptr [bp + 4];
-    ax >>= 1;
+    ax = *(uint16_t*)(bp_reg + 4);
+    ax >>= 1; // Unsigned shift right
     cx = ax;
-    al = byte ptr [0x7654];
+    al = *(uint8_t*)(0x7654);
     ah = 0;
-    // push ax
+    push(ax); // Simulate stack push
     ax = cx;
-    dx ^= dx;
-    // pop bx
-    ax = ax / bx; dx = ax % bx;
+    dx = 0;
+    bx = pop(); // Simulate stack pop
+    ax = ax / bx; dx = ax % bx; // Unsigned divide
     bl = al;
     ah = 0;
-    dl = byte ptr [0x7654];
+    dl = *(uint8_t*)(0x7654);
     dh = 0;
-    // imul dx
+    ax = al * dx; // Signed multiply
     dl = cl;
     dl -= al;
-    byte ptr [bp - 1] = dl;
+    *(uint8_t*)(bp_reg - 1) = dl;
     ah = bl;
-    al = byte ptr [bp - 1];
+    al = *(uint8_t*)(bp_reg - 1);
     sp = bp;
-    // pop bp
-    // ret 4
+    bp = pop(); // Simulate stack pop
     return;
 }
 
@@ -3152,13 +3209,12 @@ void sub_48D4(int base_bx, int data_dx) {
     int dos_env_segment;
 
 block_48D4:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // les bx, ptr [bp + 8]
+    // TODO: Translate: les bx, ptr [bp + 8]
     dx = word ptr es:[bx];
-    // les bx, ptr [bp + 4]
-    // cmp dx, word ptr es:[bx]
-    // je 0x48f2
+    // TODO: Translate: les bx, ptr [bp + 4]
+    // Compare dx and word ptr es:[bx] (sets flags)
 }
 
 
@@ -3182,13 +3238,19 @@ void sub_4908(int result_ax) {
     int dos_env_segment;
 
 block_4908:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0xc;
-    // push si
-    // push di
-    di = word ptr [bp + 4];
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    di = *(uint16_t*)(bp_reg + 4);
     sub_4D38();
+block_4916:
+    *(uint16_t*)(bp_reg - 8) = ax;
+    *(uint16_t*)(bp_reg - 6) = ax;
+    ax = *(uint16_t*)(bp_reg + 0xc);
+    // Compare ax and *(uint16_t*)(0x7659) (sets flags)
+
 }
 
 
@@ -3212,13 +3274,12 @@ void sub_49D2(int data_dx) {
     int dos_env_segment;
 
 block_49D2:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    dx = word ptr [bp + 4];
-    al = byte ptr [0x7655];
+    dx = *(uint16_t*)(bp_reg + 4);
+    al = *(uint8_t*)(0x7655);
     ah = 0;
     ax |= ax;
-    // jne 0x49fa
 }
 
 
@@ -3242,21 +3303,20 @@ void sub_4A0E(int result_ax, int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_4A0E:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    // push di
-    bx = word ptr [bp + 0xa];
-    si = word ptr [bp + 8];
-    di = word ptr [bp + 6];
-    al = byte ptr [0x7654];
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    bx = *(uint16_t*)(bp_reg + 0xa);
+    si = *(uint16_t*)(bp_reg + 8);
+    di = *(uint16_t*)(bp_reg + 6);
+    al = *(uint8_t*)(0x7654);
     ah = 0;
     cx = ax;
-    al = byte ptr [0x7653];
+    al = *(uint8_t*)(0x7653);
     ah = 0;
     dx = ax;
-    // cmp bx, cx
-    // ja 0x4a5b
+    // Compare bx and cx (sets flags)
 }
 
 
@@ -3280,12 +3340,12 @@ void sub_4A63(int base_bx, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_4A63:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    dx = word ptr [bp + 6];
-    ch = byte ptr [0x7650];
+    dx = *(uint16_t*)(bp_reg + 6);
+    ch = *(uint8_t*)(0x7650);
     cl = 0x20;
-    // jmp 0x4a7c
+    goto block_4A7C;
 }
 
 
@@ -3309,13 +3369,12 @@ void sub_4A85(void) {
     int dos_env_segment;
 
 block_4A85:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0xa0;
-    al = byte ptr [0x7655];
+    al = *(uint8_t*)(0x7655);
     ah = 0;
     ax |= ax;
-    // je 0x4a98
 }
 
 
@@ -3340,7 +3399,6 @@ int sub_4C86(void) {
 
 block_4C86:
     ax |= ax;
-    // je 0x4c91
 }
 
 
@@ -3364,13 +3422,12 @@ void sub_4D1C(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_4D1C:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     ah = 0x4a;
-    bx = word ptr [bp + 8];
-    es = word ptr [bp + 6];
+    bx = *(uint16_t*)(bp_reg + 8);
+    /* es */ = *(uint16_t*)(bp_reg + 6);
     // DOS API call
-    // jb 0x4d30
 }
 
 
@@ -3397,6 +3454,10 @@ block_4D38:
     ah = 3;
     bh = 0;
     sub_3F2F();
+block_4D3F:
+    ax = dx;
+    return;
+
 }
 
 
@@ -3420,16 +3481,16 @@ void sub_4D9B(void) {
     int dos_env_segment;
 
 block_4D9B:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    // push di
-    // push es
-    // push bp
-    // les si, ptr [bp + 6]
-    // cld 
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(bp); // Simulate stack push
+    // TODO: Translate: les si, ptr [bp + 6]
+    // TODO: Translate: cld 
     ax -= ax;
-    // cdq 
+    // TODO: Translate: cdq 
     cx = 0xa;
     bh = 0;
     di = 0x7233;
@@ -3456,16 +3517,15 @@ void sub_4E21(int count_cx) {
     int dos_env_segment;
 
 block_4E21:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push ds
-    cx = word ptr [bp + 0xc];
+    push(/* ds */); // Simulate stack push
+    cx = *(uint16_t*)(bp_reg + 0xc);
     ah = 0x43;
-    al = byte ptr [bp + 0xa];
-    // lds dx, ptr [bp + 6]
+    al = *(uint8_t*)(bp_reg + 0xa);
+    // TODO: Translate: lds dx, ptr [bp + 6]
     // DOS API call
-    // pop ds
-    // jb 0x4e38
+    /* ds */ = pop(); // Simulate stack pop
 }
 
 
@@ -3489,11 +3549,10 @@ void sub_4E3E(int result_ax, int base_bx, int data_dx) {
     int dos_env_segment;
 
 block_4E3E:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    dx = word ptr [bp + 6];
-    // cmp dx, word ptr [0x74d0]
-    // jb 0x4e53
+    dx = *(uint16_t*)(bp_reg + 6);
+    // Compare dx and *(uint16_t*)(0x74d0) (sets flags)
 }
 
 
@@ -3517,12 +3576,11 @@ void sub_4E66(int base_bx) {
     int dos_env_segment;
 
 block_4E66:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     ah = 0x3e;
-    bx = word ptr [bp + 6];
+    bx = *(uint16_t*)(bp_reg + 6);
     // DOS API call
-    // jb 0x4e7e
 }
 
 
@@ -3546,12 +3604,11 @@ void sub_4E84(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_4E84:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 4;
-    ax = word ptr [bp + 6];
-    // cmp ax, word ptr [0x74d0]
-    // jb 0x4e99
+    ax = *(uint16_t*)(bp_reg + 6);
+    // Compare ax and *(uint16_t*)(0x74d0) (sets flags)
 }
 
 
@@ -3575,13 +3632,12 @@ void sub_4EFB(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_4EFB:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
+    push(si); // Simulate stack push
     si = 0xffff;
-    ax = word ptr [bp + 6];
-    ax |= word ptr [bp + 8];
-    // jne 0x4f0d
+    ax = *(uint16_t*)(bp_reg + 6);
+    ax |= *(uint16_t*)(bp_reg + 8);
 }
 
 
@@ -3605,12 +3661,11 @@ void sub_4FB3(int result_ax) {
     int dos_env_segment;
 
 block_4FB3:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    ax = word ptr [bp + 6];
-    ax |= word ptr [bp + 8];
-    // jne 0x4fc7
+    push(si); // Simulate stack push
+    ax = *(uint16_t*)(bp_reg + 6);
+    ax |= *(uint16_t*)(bp_reg + 8);
 }
 
 
@@ -3634,16 +3689,16 @@ void sub_50E0(void) {
     int dos_env_segment;
 
 block_50E0:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 4;
-    // push si
-    // push di
-    di ^= di;
-    si = word ptr [0x74d0];
-    word ptr [bp - 2] = ds;
-    word ptr [bp - 4] = 0x7340;
-    // jmp 0x5113
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    di = 0;
+    si = *(uint16_t*)(0x74d0);
+    *(uint16_t*)(bp_reg - 2) = /* ds */;
+    *(uint16_t*)(bp_reg - 4) = 0x7340;
+    goto block_5113;
 }
 
 
@@ -3668,17 +3723,16 @@ void sub_5122(int base_bx) {
     int dos_env_segment;
 
 block_5122:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    // push di
-    di ^= di;
-    // les bx, ptr [bp + 0xc]
-    word ptr [bp + 0xc]++;
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    di = 0;
+    // TODO: Translate: les bx, ptr [bp + 0xc]
+    *(uint16_t*)(bp_reg + 0xc)++;
     cl = byte ptr es:[bx];
     al = cl;
-    // cmp al, 0x72
-    // jne 0x5140
+    // Compare al and 0x72 (sets flags)
 }
 
 
@@ -3702,18 +3756,23 @@ void sub_51DE(int result_ax) {
     int dos_env_segment;
 
 block_51DE:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 4;
-    // push word ptr [bp + 8]
-    // push word ptr [bp + 6]
-    // push ss
-    // lea ax, [bp - 2]
-    // push ax
-    // push ss
-    // lea ax, [bp - 4]
-    // push ax
+    push(*(uint16_t*)(bp_reg + 8)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
+    push(/* ss */); // Simulate stack push
+    ax = &(uint16_t*)(bp_reg - 2); // Calculate address
+    push(ax); // Simulate stack push
+    push(/* ss */); // Simulate stack push
+    ax = &(uint16_t*)(bp_reg - 4); // Calculate address
+    push(ax); // Simulate stack push
     sub_5122();
+block_51F7:
+    // TODO: Translate: les bx, ptr [bp + 0xe]
+    word ptr es:[bx + 2] = ax;
+    ax |= ax;
+
 }
 
 
@@ -3737,11 +3796,11 @@ void sub_52AF(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_52AF:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 4;
-    word ptr [bp - 2] = ds;
-    word ptr [bp - 4] = 0x7340;
+    *(uint16_t*)(bp_reg - 2) = /* ds */;
+    *(uint16_t*)(bp_reg - 4) = 0x7340;
 }
 
 
@@ -3765,11 +3824,11 @@ void sub_534A(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_534A:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    // push di
-    // jmp 0x542c
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    goto block_542C;
 }
 
 
@@ -3793,13 +3852,12 @@ void sub_54CC(int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_54CC:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 4;
-    // push si
-    // les bx, ptr [bp + 4]
-    // cmp word ptr es:[bx], 0
-    // jge 0x54e8
+    push(si); // Simulate stack push
+    // TODO: Translate: les bx, ptr [bp + 4]
+    // Compare word ptr es:[bx] and 0 (sets flags)
 }
 
 
@@ -3823,15 +3881,20 @@ void sub_554E(int count_cx) {
     int dos_env_segment;
 
 block_554E:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    si = word ptr [bp + 0xe];
-    // push word ptr [bp + 8]
-    // push word ptr [bp + 6]
-    // nop 
-    // push cs
+    push(si); // Simulate stack push
+    si = *(uint16_t*)(bp_reg + 0xe);
+    push(*(uint16_t*)(bp_reg + 8)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
+    // TODO: Translate: nop 
+    push(/* cs */); // Simulate stack push
     sub_4FB3();
+block_5560:
+    cx = pop(); // Simulate stack pop
+    cx = pop(); // Simulate stack pop
+    ax |= ax;
+
 }
 
 
@@ -3855,14 +3918,14 @@ void sub_5739(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_5739:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 4;
-    // push si
+    push(si); // Simulate stack push
     si = 0x14;
-    word ptr [bp - 2] = ds;
-    word ptr [bp - 4] = 0x7340;
-    // jmp 0x576b
+    *(uint16_t*)(bp_reg - 2) = /* ds */;
+    *(uint16_t*)(bp_reg - 4) = 0x7340;
+    goto block_576B;
 }
 
 
@@ -3886,11 +3949,10 @@ void sub_5777(int result_ax, int base_bx, int data_dx) {
     int dos_env_segment;
 
 block_5777:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // les bx, ptr [bp + 4]
-    // test word ptr es:[bx + 2], 0x200
-    // je 0x5788
+    // TODO: Translate: les bx, ptr [bp + 4]
+    // Test word ptr es:[bx + 2] & 0x200 (sets flags)
 }
 
 
@@ -3914,14 +3976,20 @@ void sub_57EF(int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_57EF:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // les bx, ptr [bp + 6]
+    // TODO: Translate: les bx, ptr [bp + 6]
     word ptr es:[bx]++;
-    // push word ptr [bp + 8]
-    // push bx
-    // push cs
+    push(*(uint16_t*)(bp_reg + 8)); // Simulate stack push
+    push(bx); // Simulate stack push
+    push(/* cs */); // Simulate stack push
     sub_5807();
+block_5800:
+    cx = pop(); // Simulate stack pop
+    cx = pop(); // Simulate stack pop
+    bp = pop(); // Simulate stack pop
+    return;
+
 }
 
 
@@ -3945,12 +4013,11 @@ void sub_5807(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_5807:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    ax = word ptr [bp + 6];
-    ax |= word ptr [bp + 8];
-    // jne 0x5819
+    push(si); // Simulate stack push
+    ax = *(uint16_t*)(bp_reg + 6);
+    ax |= *(uint16_t*)(bp_reg + 8);
 }
 
 
@@ -3974,18 +4041,17 @@ void sub_59FF(int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_59FF:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    // push di
-    dx = ds;
-    // les di, ptr [bp + 6]
-    // lds si, ptr [bp + 0xa]
-    cx = word ptr [bp + 0xe];
-    cx >>= 1;
-    // cld 
-    // rep movsw word ptr es:[di], word ptr [si]
-    // jae 0x5a17
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    dx = /* ds */;
+    // TODO: Translate: les di, ptr [bp + 6]
+    // TODO: Translate: lds si, ptr [bp + 0xa]
+    cx = *(uint16_t*)(bp_reg + 0xe);
+    cx >>= 1; // Unsigned shift right
+    // TODO: Translate: cld 
+    // TODO: Translate: rep movsw word ptr es:[di], word ptr [si]
 }
 
 
@@ -4009,15 +4075,14 @@ void sub_5A23(int count_cx) {
     int dos_env_segment;
 
 block_5A23:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push ds
-    cx = word ptr [bp + 4];
+    push(/* ds */); // Simulate stack push
+    cx = *(uint16_t*)(bp_reg + 4);
     ah = 0x3c;
-    // lds dx, ptr [bp + 6]
+    // TODO: Translate: lds dx, ptr [bp + 6]
     // DOS API call
-    // pop ds
-    // jb 0x5a36
+    /* ds */ = pop(); // Simulate stack pop
 }
 
 
@@ -4041,15 +4106,14 @@ void sub_5A3E(int base_bx) {
     int dos_env_segment;
 
 block_5A3E:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    bx = word ptr [bp + 4];
+    bx = *(uint16_t*)(bp_reg + 4);
     cx -= cx;
     dx -= dx;
     ah = 0x40;
     // DOS API call
-    // pop bp
-    // ret 2
+    bp = pop(); // Simulate stack pop
     return;
 }
 
@@ -4074,15 +4138,14 @@ void sub_5A50(int result_ax) {
     int dos_env_segment;
 
 block_5A50:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 4;
-    // push si
-    // push di
-    si = word ptr [bp + 0xa];
-    di = word ptr [bp + 0xc];
-    // test si, 0xc000
-    // jne 0x5a6c
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    si = *(uint16_t*)(bp_reg + 0xa);
+    di = *(uint16_t*)(bp_reg + 0xc);
+    // Test si & 0xc000 (sets flags)
 }
 
 
@@ -4106,13 +4169,12 @@ void sub_5BBF(int count_cx) {
     int dos_env_segment;
 
 block_5BBF:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
     al = 1;
-    cx = word ptr [bp + 0xa];
-    // test cx, 2
-    // jne 0x5bda
+    cx = *(uint16_t*)(bp_reg + 0xa);
+    // Test cx & 2 (sets flags)
 }
 
 
@@ -4136,18 +4198,23 @@ void sub_5C29(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_5C29:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // les bx, ptr [bp + 8]
+    // TODO: Translate: les bx, ptr [bp + 8]
     word ptr es:[bx]--;
-    // push word ptr [bp + 0xa]
-    // push bx
-    al = byte ptr [bp + 6];
-    // cwde 
-    // push ax
-    // nop 
-    // push cs
+    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
+    push(bx); // Simulate stack push
+    al = *(uint8_t*)(bp_reg + 6);
+    // TODO: Translate: cwde 
+    push(ax); // Simulate stack push
+    // TODO: Translate: nop 
+    push(/* cs */); // Simulate stack push
     sub_5C45();
+block_5C40:
+    sp += 6;
+    bp = pop(); // Simulate stack pop
+    return;
+
 }
 
 
@@ -4171,14 +4238,13 @@ void sub_5C45(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_5C45:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    al = byte ptr [bp + 6];
-    byte ptr [0x8792] = al;
-    // les bx, ptr [bp + 8]
-    // cmp word ptr es:[bx], -1
-    // jge 0x5cac
+    push(si); // Simulate stack push
+    al = *(uint8_t*)(bp_reg + 6);
+    *(uint8_t*)(0x8792) = al;
+    // TODO: Translate: les bx, ptr [bp + 8]
+    // Compare word ptr es:[bx] and -1 (sets flags)
 }
 
 
@@ -4202,16 +4268,15 @@ void sub_5DEE(int base_bx) {
     int dos_env_segment;
 
 block_5DEE:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push si
-    // push di
-    di = word ptr [bp + 8];
-    word ptr [bp - 2] = di;
-    // les bx, ptr [bp + 4]
-    // test word ptr es:[bx + 2], 8
-    // je 0x5e35
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    di = *(uint16_t*)(bp_reg + 8);
+    *(uint16_t*)(bp_reg - 2) = di;
+    // TODO: Translate: les bx, ptr [bp + 4]
+    // Test word ptr es:[bx + 2] & 8 (sets flags)
 }
 
 
@@ -4235,14 +4300,13 @@ void sub_5FF1(int result_ax) {
     int dos_env_segment;
 
 block_5FF1:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 4;
-    // push si
-    // push di
-    ax = word ptr [bp + 6];
-    // cmp ax, word ptr [0x74d0]
-    // jb 0x600c
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    ax = *(uint16_t*)(bp_reg + 6);
+    // Compare ax and *(uint16_t*)(0x74d0) (sets flags)
 }
 
 
@@ -4267,16 +4331,15 @@ void sub_60C5(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_60C5:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    // push di
-    di = word ptr [bp + 0xe];
-    si = word ptr [bp + 0x10];
-    // les bx, ptr [bp + 6]
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    di = *(uint16_t*)(bp_reg + 0xe);
+    si = *(uint16_t*)(bp_reg + 0x10);
+    // TODO: Translate: les bx, ptr [bp + 6]
     ax = word ptr es:[bx + 0x12];
-    // cmp ax, word ptr [bp + 6]
-    // jne 0x60e7
+    // Compare ax and *(uint16_t*)(bp_reg + 6) (sets flags)
 }
 
 
@@ -4300,13 +4363,12 @@ void sub_61E2(int result_ax) {
     int dos_env_segment;
 
 block_61E2:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    si = word ptr [bp + 4];
-    ax = word ptr [bp + 0xa];
-    ax |= word ptr [bp + 0xc];
-    // je 0x6236
+    push(si); // Simulate stack push
+    si = *(uint16_t*)(bp_reg + 4);
+    ax = *(uint16_t*)(bp_reg + 0xa);
+    ax |= *(uint16_t*)(bp_reg + 0xc);
 }
 
 
@@ -4330,12 +4392,11 @@ void sub_623B(int base_bx) {
     int dos_env_segment;
 
 block_623B:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // les bx, ptr [bp + 4]
-    // cmp byte ptr es:[bx - 1], 0x2e
-    // jne 0x624e
+    // TODO: Translate: les bx, ptr [bp + 4]
+    // Compare byte ptr es:[bx - 1] and 0x2e (sets flags)
 }
 
 
@@ -4359,15 +4420,14 @@ void sub_629B(int result_ax) {
     int dos_env_segment;
 
 block_629B:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0x58;
-    // push si
-    // push di
-    di ^= di;
-    ax = word ptr [bp + 0xa];
-    ax |= word ptr [bp + 0xc];
-    // je 0x62b4
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    di = 0;
+    ax = *(uint16_t*)(bp_reg + 0xa);
+    ax |= *(uint16_t*)(bp_reg + 0xc);
 }
 
 
@@ -4391,30 +4451,29 @@ void sub_65B8(int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_65B8:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    // push di
-    // cld 
-    // push ds
-    // les di, ptr [bp + 6]
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    // TODO: Translate: cld 
+    push(/* ds */); // Simulate stack push
+    // TODO: Translate: les di, ptr [bp + 6]
     dx = di;
-    al ^= al;
+    al = 0;
     cx = 0xffff;
-    // repne scasb al, byte ptr es:[di]
-    // push es
-    // lea si, [di - 1]
-    // les di, ptr [bp + 0xa]
+    // TODO: Translate: repne scasb al, byte ptr es:[di]
+    push(/* es */); // Simulate stack push
+    si = &(uint16_t*)(di_reg - 1); // Calculate address
+    // TODO: Translate: les di, ptr [bp + 0xa]
     cx = 0xffff;
-    // repne scasb al, byte ptr es:[di]
-    // not cx
+    // TODO: Translate: repne scasb al, byte ptr es:[di]
+    // TODO: Translate: not cx
     di -= cx;
-    // push es
-    // pop ds
-    // pop es
-    // xchg di, si
-    // test si, 1
-    // je 0x65e8
+    push(/* es */); // Simulate stack push
+    /* ds */ = pop(); // Simulate stack pop
+    /* es */ = pop(); // Simulate stack pop
+    // TODO: Translate: xchg di, si
+    // Test si & 1 (sets flags)
 }
 
 
@@ -4438,29 +4497,28 @@ void sub_65F7(int count_cx) {
     int dos_env_segment;
 
 block_65F7:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    // push di
-    // cld 
-    // les di, ptr [bp + 0xa]
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    // TODO: Translate: cld 
+    // TODO: Translate: les di, ptr [bp + 0xa]
     si = di;
-    al ^= al;
+    al = 0;
     cx = 0xffff;
-    // repne scasb al, byte ptr es:[di]
-    // not cx
-    // push ds
-    ax = es;
-    ds = ax;
-    // les di, ptr [bp + 6]
-    // rep movsb byte ptr es:[di], byte ptr [si]
-    // pop ds
-    dx = word ptr [bp + 8];
-    ax = word ptr [bp + 6];
-    // pop di
-    // pop si
-    // pop bp
-    // retf 
+    // TODO: Translate: repne scasb al, byte ptr es:[di]
+    // TODO: Translate: not cx
+    push(/* ds */); // Simulate stack push
+    ax = /* es */;
+    /* ds */ = ax;
+    // TODO: Translate: les di, ptr [bp + 6]
+    // TODO: Translate: rep movsb byte ptr es:[di], byte ptr [si]
+    /* ds */ = pop(); // Simulate stack pop
+    dx = *(uint16_t*)(bp_reg + 8);
+    ax = *(uint16_t*)(bp_reg + 6);
+    di = pop(); // Simulate stack pop
+    si = pop(); // Simulate stack pop
+    bp = pop(); // Simulate stack pop
     return;
 }
 
@@ -4485,13 +4543,12 @@ void sub_6661(int result_ax) {
     int dos_env_segment;
 
 block_6661:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push di
-    // les di, ptr [bp + 6]
-    ax ^= ax;
-    // cmp ax, word ptr [bp + 8]
-    // jne 0x6673
+    push(di); // Simulate stack push
+    // TODO: Translate: les di, ptr [bp + 6]
+    ax = 0;
+    // Compare ax and *(uint16_t*)(bp_reg + 8) (sets flags)
 }
 
 
@@ -4515,33 +4572,32 @@ void sub_6680(int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_6680:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push si
-    // push di
-    // cld 
-    // les di, ptr [bp + 0xa]
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    // TODO: Translate: cld 
+    // TODO: Translate: les di, ptr [bp + 0xa]
     si = di;
-    al ^= al;
-    bx = word ptr [bp + 0xe];
+    al = 0;
+    bx = *(uint16_t*)(bp_reg + 0xe);
     cx = bx;
-    // repne scasb al, byte ptr es:[di]
+    // TODO: Translate: repne scasb al, byte ptr es:[di]
     bx -= cx;
-    // push ds
-    di = es;
-    ds = di;
-    // les di, ptr [bp + 6]
-    // xchg bx, cx
-    // rep movsb byte ptr es:[di], byte ptr [si]
+    push(/* ds */); // Simulate stack push
+    di = /* es */;
+    /* ds */ = di;
+    // TODO: Translate: les di, ptr [bp + 6]
+    // TODO: Translate: xchg bx, cx
+    // TODO: Translate: rep movsb byte ptr es:[di], byte ptr [si]
     cx = bx;
-    // rep stosb byte ptr es:[di], al
-    // pop ds
-    dx = word ptr [bp + 8];
-    ax = word ptr [bp + 6];
-    // pop di
-    // pop si
-    // pop bp
-    // retf 
+    // TODO: Translate: rep stosb byte ptr es:[di], al
+    /* ds */ = pop(); // Simulate stack pop
+    dx = *(uint16_t*)(bp_reg + 8);
+    ax = *(uint16_t*)(bp_reg + 6);
+    di = pop(); // Simulate stack pop
+    si = pop(); // Simulate stack pop
+    bp = pop(); // Simulate stack pop
     return;
 }
 
@@ -4566,14 +4622,13 @@ void sub_679C(int result_ax) {
     int dos_env_segment;
 
 block_679C:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0x8e;
-    // push si
-    // push di
-    di = word ptr [bp + 6];
-    // cmp di, word ptr [0x74d0]
-    // jb 0x67b8
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    di = *(uint16_t*)(bp_reg + 6);
+    // Compare di and *(uint16_t*)(0x74d0) (sets flags)
 }
 
 
@@ -4597,12 +4652,11 @@ void sub_68ED(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_68ED:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    bx = word ptr [bp + 6];
+    bx = *(uint16_t*)(bp_reg + 6);
     bx <<= 1;
-    // test word ptr [bx + 0x74d2], 1
-    // je 0x6903
+    // Test *(uint16_t*)(bx_reg + 0x74d2) & 1 (sets flags)
 }
 
 
@@ -4626,16 +4680,16 @@ void sub_70A0(int result_ax) {
     int dos_env_segment;
 
 block_70A0:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    ax = word ptr [bp + 6];
+    /* ds */ = ax;
+    ax = *(uint16_t*)(bp_reg + 6);
 }
 
 
@@ -4659,18 +4713,17 @@ void sub_715E(int result_ax) {
     int dos_env_segment;
 
 block_715E:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 4;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // pushf 
-    // cmp word ptr [0x54d2], -1
-    // jne 0x7187
+    /* ds */ = ax;
+    // TODO: Translate: pushf 
+    // Compare *(uint16_t*)(0x54d2) and -1 (sets flags)
 }
 
 
@@ -4694,17 +4747,20 @@ void sub_7229(int result_ax) {
     int dos_env_segment;
 
 block_7229:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // push cs
+    /* ds */ = ax;
+    push(/* cs */); // Simulate stack push
     sub_715E();
+block_723C:
+    // Compare *(uint16_t*)(bp_reg + 8) and dx (sets flags)
+
 }
 
 
@@ -4728,10 +4784,10 @@ void sub_731C(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_731C:
-    // push di
-    // push bx
+    push(di); // Simulate stack push
+    push(bx); // Simulate stack push
     di = 0xffff;
-    bx ^= bx;
+    bx = 0;
 }
 
 
@@ -4755,23 +4811,22 @@ void sub_7353(int result_ax) {
     int dos_env_segment;
 
 block_7353:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    cl = byte ptr [bp + 0xa];
-    dh = byte ptr [bp + 8];
-    dl = byte ptr [bp + 6];
+    /* ds */ = ax;
+    cl = *(uint8_t*)(bp_reg + 0xa);
+    dh = *(uint8_t*)(bp_reg + 8);
+    dl = *(uint8_t*)(bp_reg + 6);
     cl &= 0x3f;
     dx &= 0x3f3f;
-    ax = word ptr [bp + 0xc];
-    // cmp ax, 4
-    // je 0x7386
+    ax = *(uint16_t*)(bp_reg + 0xc);
+    // Compare ax and 4 (sets flags)
 }
 
 
@@ -4795,36 +4850,35 @@ void sub_7426(int result_ax) {
     int dos_env_segment;
 
 block_7426:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // lds si, ptr [bp + 0xa]
-    // les di, ptr [bp + 6]
-    // lodsb al, byte ptr [si]
-    ah ^= ah;
+    /* ds */ = ax;
+    // TODO: Translate: lds si, ptr [bp + 0xa]
+    // TODO: Translate: les di, ptr [bp + 6]
+    // TODO: Translate: lodsb al, byte ptr [si]
+    ah = 0;
     bx = ax;
     bx <<= 1;
     bx += ax;
     ax = 0x1ab5;
-    ds = ax;
+    /* ds */ = ax;
     si = 0x3adc;
     si += bx;
     cx = 3;
-    // rep movsb byte ptr es:[di], byte ptr [si]
-    // lds si, ptr [bp + 0xa]
-    bl = byte ptr [si + 1];
+    // TODO: Translate: rep movsb byte ptr es:[di], byte ptr [si]
+    // TODO: Translate: lds si, ptr [bp + 0xa]
+    bl = *(uint8_t*)(si_reg + 1);
     bl &= 3;
     ax = 0x1ab5;
-    ds = ax;
+    /* ds */ = ax;
     si = 0x3ab8;
-    // cmp bl, 0
-    // je 0x747c
+    // Compare bl and 0 (sets flags)
 }
 
 
@@ -4848,20 +4902,19 @@ void sub_74D9(int result_ax) {
     int dos_env_segment;
 
 block_74D9:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // lds si, ptr [bp + 0xa]
-    // les di, ptr [bp + 6]
-    cx = word ptr [bp + 0xe];
+    /* ds */ = ax;
+    // TODO: Translate: lds si, ptr [bp + 0xa]
+    // TODO: Translate: les di, ptr [bp + 6]
+    cx = *(uint16_t*)(bp_reg + 0xe);
     cx |= cx;
-    // jne 0x74fc
 }
 
 
@@ -4885,18 +4938,17 @@ void sub_756A(int result_ax) {
     int dos_env_segment;
 
 block_756A:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 8;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // lds si, ptr [bp + 0xa]
-    // cmp word ptr [bp + 0xe], 0
-    // jne 0x758a
+    /* ds */ = ax;
+    // TODO: Translate: lds si, ptr [bp + 0xa]
+    // Compare *(uint16_t*)(bp_reg + 0xe) and 0 (sets flags)
 }
 
 
@@ -4920,25 +4972,24 @@ void sub_7678(int result_ax) {
     int dos_env_segment;
 
 block_7678:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 6;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    byte ptr [bp - 6] = 0;
-    byte ptr [bp - 5] = 8;
-    byte ptr [bp - 4] = 1;
-    byte ptr [bp - 3] = 9;
-    // lds si, ptr [bp + 0xa]
-    // les di, ptr [bp + 6]
-    cx = word ptr [bp + 0xe];
-    bx ^= bx;
+    /* ds */ = ax;
+    *(uint8_t*)(bp_reg - 6) = 0;
+    *(uint8_t*)(bp_reg - 5) = 8;
+    *(uint8_t*)(bp_reg - 4) = 1;
+    *(uint8_t*)(bp_reg - 3) = 9;
+    // TODO: Translate: lds si, ptr [bp + 0xa]
+    // TODO: Translate: les di, ptr [bp + 6]
+    cx = *(uint16_t*)(bp_reg + 0xe);
+    bx = 0;
     cx |= cx;
-    // jne 0x76ad
 }
 
 
@@ -4962,17 +5013,17 @@ void sub_770A(int result_ax) {
     int dos_env_segment;
 
 block_770A:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // lds si, ptr [bp + 0xc]
-    // les di, ptr [bp + 6]
+    /* ds */ = ax;
+    // TODO: Translate: lds si, ptr [bp + 0xc]
+    // TODO: Translate: les di, ptr [bp + 6]
     dh = 0x1e;
     dl = 0x3b;
     ch = 0xb;
@@ -4999,21 +5050,20 @@ void sub_7A56(int result_ax) {
     int dos_env_segment;
 
 block_7A56:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    word ptr [bp - 2] = 0xffe8;
-    // les di, ptr [bp + 0x10]
-    ax = word ptr [bp + 0xa];
-    // push ax
-    // lcall 0x98e, 0x12a
-    // jae 0x7a80
+    /* ds */ = ax;
+    *(uint16_t*)(bp_reg - 2) = 0xffe8;
+    // TODO: Translate: les di, ptr [bp + 0x10]
+    ax = *(uint16_t*)(bp_reg + 0xa);
+    push(ax); // Simulate stack push
+    // TODO: Translate: lcall 0x98e, 0x12a
 }
 
 
@@ -5037,17 +5087,16 @@ void sub_8346(int result_ax) {
     int dos_env_segment;
 
 block_8346:
-    // in al, dx
+    // TODO: Translate: in al, dx
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // push word ptr [bp + 6]
-    // lcall 0x98e, 0x12a
-    // jae 0x8364
+    /* ds */ = ax;
+    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
+    // TODO: Translate: lcall 0x98e, 0x12a
 }
 
 
@@ -5071,25 +5120,24 @@ void sub_85ED(int result_ax) {
     int dos_env_segment;
 
 block_85ED:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 4;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // lds si, ptr [bp + 6]
-    // push dx
+    /* ds */ = ax;
+    // TODO: Translate: lds si, ptr [bp + 6]
+    push(dx); // Simulate stack push
     dx = 0x40;
-    es = dx;
-    // pop dx
+    /* es */ = dx;
+    dx = pop(); // Simulate stack pop
     dx = word ptr es:[0x63];
     dx += 6;
-    word ptr [bp - 4] = dx;
-    // cmp word ptr [bp + 0xa], 0
-    // jne 0x861a
+    *(uint16_t*)(bp_reg - 4) = dx;
+    // Compare *(uint16_t*)(bp_reg + 0xa) and 0 (sets flags)
 }
 
 
@@ -5113,18 +5161,17 @@ void sub_8791(int result_ax) {
     int dos_env_segment;
 
 block_8791:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0x18;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // les di, ptr [bp + 6]
-    // cmp word ptr [bp + 0xe], 0
-    // jne 0x87ac
+    /* ds */ = ax;
+    // TODO: Translate: les di, ptr [bp + 6]
+    // Compare *(uint16_t*)(bp_reg + 0xe) and 0 (sets flags)
 }
 
 
@@ -5148,131 +5195,130 @@ void sub_893A(int result_ax) {
     int dos_env_segment;
 
 block_893A:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0x80;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    byte ptr [bp - 0x36] = 0x78;
-    byte ptr [bp - 0x35] = 0x7e;
-    byte ptr [bp - 0x34] = 0x28;
-    byte ptr [bp - 0x33] = 0x28;
-    byte ptr [bp - 0x32] = 0x28;
-    byte ptr [bp - 0x31] = 0x28;
-    byte ptr [bp - 0x30] = 0x18;
-    byte ptr [bp - 0x2f] = 8;
-    byte ptr [bp - 0x2e] = 0x18;
-    byte ptr [bp - 0x2d] = 7;
-    byte ptr [bp - 0x2c] = 8;
-    byte ptr [bp - 0x2b] = 8;
-    byte ptr [bp - 0x2a] = 8;
-    byte ptr [bp - 0x29] = 8;
-    byte ptr [bp - 0x28] = 8;
-    byte ptr [bp - 0x27] = 8;
-    byte ptr [bp - 0x26] = 8;
-    byte ptr [bp - 0x25] = 8;
-    byte ptr [bp - 0x24] = 8;
-    byte ptr [bp - 0x23] = 8;
-    byte ptr [bp - 0x22] = 8;
-    byte ptr [bp - 0x21] = 8;
-    byte ptr [bp - 0x20] = 8;
-    byte ptr [bp - 0x1f] = 8;
-    byte ptr [bp - 0x1e] = 8;
-    byte ptr [bp - 0x1d] = 8;
-    byte ptr [bp - 0x1c] = 8;
-    byte ptr [bp - 0x1b] = 8;
-    byte ptr [bp - 0x1a] = 8;
-    byte ptr [bp - 0x19] = 8;
-    byte ptr [bp - 0x18] = 8;
-    byte ptr [bp - 0x17] = 8;
-    byte ptr [bp - 0x16] = 8;
-    byte ptr [bp - 0x15] = 8;
-    byte ptr [bp - 0x14] = 8;
-    byte ptr [bp - 0x13] = 8;
-    byte ptr [bp - 0x12] = 8;
-    byte ptr [bp - 0x11] = 8;
-    byte ptr [bp - 0x10] = 8;
-    byte ptr [bp - 0xf] = 8;
-    byte ptr [bp - 0xe] = 8;
-    byte ptr [bp - 0x60] = 0x78;
-    byte ptr [bp - 0x5f] = 0x78;
-    byte ptr [bp - 0x5e] = 0x38;
-    byte ptr [bp - 0x5d] = 0x38;
-    byte ptr [bp - 0x5c] = 0x98;
-    byte ptr [bp - 0x5b] = 0x38;
-    byte ptr [bp - 0x5a] = 0x18;
-    byte ptr [bp - 0x59] = 0x18;
-    byte ptr [bp - 0x58] = 0x18;
-    byte ptr [bp - 0x57] = 0xa0;
-    byte ptr [bp - 0x56] = 0x18;
-    byte ptr [bp - 0x55] = 0x18;
-    byte ptr [bp - 0x54] = 0x18;
-    byte ptr [bp - 0x53] = 0x18;
-    byte ptr [bp - 0x52] = 0x18;
-    byte ptr [bp - 0x51] = 0x98;
-    byte ptr [bp - 0x50] = 0x18;
-    byte ptr [bp - 0x4f] = 0x18;
-    byte ptr [bp - 0x4e] = 0x18;
-    byte ptr [bp - 0x4d] = 0x18;
-    byte ptr [bp - 0x4c] = 0x18;
-    byte ptr [bp - 0x4b] = 0x18;
-    byte ptr [bp - 0x4a] = 0x18;
-    byte ptr [bp - 0x49] = 0x18;
-    byte ptr [bp - 0x48] = 0x18;
-    byte ptr [bp - 0x47] = 0x18;
-    byte ptr [bp - 0x46] = 0x18;
-    byte ptr [bp - 0x45] = 0x18;
-    byte ptr [bp - 0x44] = 0x18;
-    byte ptr [bp - 0x43] = 0x18;
-    byte ptr [bp - 0x42] = 0x18;
-    byte ptr [bp - 0x41] = 0x18;
-    byte ptr [bp - 0x40] = 0x18;
-    byte ptr [bp - 0x3f] = 0x18;
-    byte ptr [bp - 0x3e] = 0x18;
-    byte ptr [bp - 0x3d] = 0x18;
-    byte ptr [bp - 0x3c] = 0x18;
-    byte ptr [bp - 0x3b] = 0x18;
-    byte ptr [bp - 0x3a] = 0x18;
-    byte ptr [bp - 0x39] = 0x18;
-    byte ptr [bp - 0x38] = 0x18;
-    byte ptr [bp - 0x80] = 0x88;
-    byte ptr [bp - 0x7f] = 0x88;
-    byte ptr [bp - 0x7e] = 0x88;
-    byte ptr [bp - 0x7d] = 0x88;
-    byte ptr [bp - 0x7c] = 0x40;
-    byte ptr [bp - 0x7b] = 0x40;
-    byte ptr [bp - 0x7a] = 0x40;
-    byte ptr [bp - 0x79] = 0x40;
-    byte ptr [bp - 0x78] = 0x20;
-    byte ptr [bp - 0x77] = 0x20;
-    byte ptr [bp - 0x76] = 0x20;
-    byte ptr [bp - 0x75] = 0x20;
-    byte ptr [bp - 0x74] = 0x10;
-    byte ptr [bp - 0x73] = 0x10;
-    byte ptr [bp - 0x72] = 0x10;
-    byte ptr [bp - 0x71] = 0x10;
-    byte ptr [bp - 0x70] = 8;
-    byte ptr [bp - 0x6f] = 0x40;
-    byte ptr [bp - 0x6e] = 0x40;
-    byte ptr [bp - 0x6d] = 0x20;
-    byte ptr [bp - 0x6c] = 0x10;
-    byte ptr [bp - 0x6b] = 4;
-    byte ptr [bp - 0x6a] = 4;
-    byte ptr [bp - 0x69] = 4;
-    byte ptr [bp - 0x68] = 4;
-    byte ptr [bp - 0x67] = 4;
-    byte ptr [bp - 0x66] = 0xfc;
-    byte ptr [bp - 0x65] = 0xfc;
-    byte ptr [bp - 0x64] = 0xfc;
-    byte ptr [bp - 0x63] = 0xfc;
-    byte ptr [bp - 0x62] = 0xfc;
-    si = word ptr [bp + 6];
-    // cmp si, 0x28
-    // jbe 0x8b19
+    /* ds */ = ax;
+    *(uint8_t*)(bp_reg - 0x36) = 0x78;
+    *(uint8_t*)(bp_reg - 0x35) = 0x7e;
+    *(uint8_t*)(bp_reg - 0x34) = 0x28;
+    *(uint8_t*)(bp_reg - 0x33) = 0x28;
+    *(uint8_t*)(bp_reg - 0x32) = 0x28;
+    *(uint8_t*)(bp_reg - 0x31) = 0x28;
+    *(uint8_t*)(bp_reg - 0x30) = 0x18;
+    *(uint8_t*)(bp_reg - 0x2f) = 8;
+    *(uint8_t*)(bp_reg - 0x2e) = 0x18;
+    *(uint8_t*)(bp_reg - 0x2d) = 7;
+    *(uint8_t*)(bp_reg - 0x2c) = 8;
+    *(uint8_t*)(bp_reg - 0x2b) = 8;
+    *(uint8_t*)(bp_reg - 0x2a) = 8;
+    *(uint8_t*)(bp_reg - 0x29) = 8;
+    *(uint8_t*)(bp_reg - 0x28) = 8;
+    *(uint8_t*)(bp_reg - 0x27) = 8;
+    *(uint8_t*)(bp_reg - 0x26) = 8;
+    *(uint8_t*)(bp_reg - 0x25) = 8;
+    *(uint8_t*)(bp_reg - 0x24) = 8;
+    *(uint8_t*)(bp_reg - 0x23) = 8;
+    *(uint8_t*)(bp_reg - 0x22) = 8;
+    *(uint8_t*)(bp_reg - 0x21) = 8;
+    *(uint8_t*)(bp_reg - 0x20) = 8;
+    *(uint8_t*)(bp_reg - 0x1f) = 8;
+    *(uint8_t*)(bp_reg - 0x1e) = 8;
+    *(uint8_t*)(bp_reg - 0x1d) = 8;
+    *(uint8_t*)(bp_reg - 0x1c) = 8;
+    *(uint8_t*)(bp_reg - 0x1b) = 8;
+    *(uint8_t*)(bp_reg - 0x1a) = 8;
+    *(uint8_t*)(bp_reg - 0x19) = 8;
+    *(uint8_t*)(bp_reg - 0x18) = 8;
+    *(uint8_t*)(bp_reg - 0x17) = 8;
+    *(uint8_t*)(bp_reg - 0x16) = 8;
+    *(uint8_t*)(bp_reg - 0x15) = 8;
+    *(uint8_t*)(bp_reg - 0x14) = 8;
+    *(uint8_t*)(bp_reg - 0x13) = 8;
+    *(uint8_t*)(bp_reg - 0x12) = 8;
+    *(uint8_t*)(bp_reg - 0x11) = 8;
+    *(uint8_t*)(bp_reg - 0x10) = 8;
+    *(uint8_t*)(bp_reg - 0xf) = 8;
+    *(uint8_t*)(bp_reg - 0xe) = 8;
+    *(uint8_t*)(bp_reg - 0x60) = 0x78;
+    *(uint8_t*)(bp_reg - 0x5f) = 0x78;
+    *(uint8_t*)(bp_reg - 0x5e) = 0x38;
+    *(uint8_t*)(bp_reg - 0x5d) = 0x38;
+    *(uint8_t*)(bp_reg - 0x5c) = 0x98;
+    *(uint8_t*)(bp_reg - 0x5b) = 0x38;
+    *(uint8_t*)(bp_reg - 0x5a) = 0x18;
+    *(uint8_t*)(bp_reg - 0x59) = 0x18;
+    *(uint8_t*)(bp_reg - 0x58) = 0x18;
+    *(uint8_t*)(bp_reg - 0x57) = 0xa0;
+    *(uint8_t*)(bp_reg - 0x56) = 0x18;
+    *(uint8_t*)(bp_reg - 0x55) = 0x18;
+    *(uint8_t*)(bp_reg - 0x54) = 0x18;
+    *(uint8_t*)(bp_reg - 0x53) = 0x18;
+    *(uint8_t*)(bp_reg - 0x52) = 0x18;
+    *(uint8_t*)(bp_reg - 0x51) = 0x98;
+    *(uint8_t*)(bp_reg - 0x50) = 0x18;
+    *(uint8_t*)(bp_reg - 0x4f) = 0x18;
+    *(uint8_t*)(bp_reg - 0x4e) = 0x18;
+    *(uint8_t*)(bp_reg - 0x4d) = 0x18;
+    *(uint8_t*)(bp_reg - 0x4c) = 0x18;
+    *(uint8_t*)(bp_reg - 0x4b) = 0x18;
+    *(uint8_t*)(bp_reg - 0x4a) = 0x18;
+    *(uint8_t*)(bp_reg - 0x49) = 0x18;
+    *(uint8_t*)(bp_reg - 0x48) = 0x18;
+    *(uint8_t*)(bp_reg - 0x47) = 0x18;
+    *(uint8_t*)(bp_reg - 0x46) = 0x18;
+    *(uint8_t*)(bp_reg - 0x45) = 0x18;
+    *(uint8_t*)(bp_reg - 0x44) = 0x18;
+    *(uint8_t*)(bp_reg - 0x43) = 0x18;
+    *(uint8_t*)(bp_reg - 0x42) = 0x18;
+    *(uint8_t*)(bp_reg - 0x41) = 0x18;
+    *(uint8_t*)(bp_reg - 0x40) = 0x18;
+    *(uint8_t*)(bp_reg - 0x3f) = 0x18;
+    *(uint8_t*)(bp_reg - 0x3e) = 0x18;
+    *(uint8_t*)(bp_reg - 0x3d) = 0x18;
+    *(uint8_t*)(bp_reg - 0x3c) = 0x18;
+    *(uint8_t*)(bp_reg - 0x3b) = 0x18;
+    *(uint8_t*)(bp_reg - 0x3a) = 0x18;
+    *(uint8_t*)(bp_reg - 0x39) = 0x18;
+    *(uint8_t*)(bp_reg - 0x38) = 0x18;
+    *(uint8_t*)(bp_reg - 0x80) = 0x88;
+    *(uint8_t*)(bp_reg - 0x7f) = 0x88;
+    *(uint8_t*)(bp_reg - 0x7e) = 0x88;
+    *(uint8_t*)(bp_reg - 0x7d) = 0x88;
+    *(uint8_t*)(bp_reg - 0x7c) = 0x40;
+    *(uint8_t*)(bp_reg - 0x7b) = 0x40;
+    *(uint8_t*)(bp_reg - 0x7a) = 0x40;
+    *(uint8_t*)(bp_reg - 0x79) = 0x40;
+    *(uint8_t*)(bp_reg - 0x78) = 0x20;
+    *(uint8_t*)(bp_reg - 0x77) = 0x20;
+    *(uint8_t*)(bp_reg - 0x76) = 0x20;
+    *(uint8_t*)(bp_reg - 0x75) = 0x20;
+    *(uint8_t*)(bp_reg - 0x74) = 0x10;
+    *(uint8_t*)(bp_reg - 0x73) = 0x10;
+    *(uint8_t*)(bp_reg - 0x72) = 0x10;
+    *(uint8_t*)(bp_reg - 0x71) = 0x10;
+    *(uint8_t*)(bp_reg - 0x70) = 8;
+    *(uint8_t*)(bp_reg - 0x6f) = 0x40;
+    *(uint8_t*)(bp_reg - 0x6e) = 0x40;
+    *(uint8_t*)(bp_reg - 0x6d) = 0x20;
+    *(uint8_t*)(bp_reg - 0x6c) = 0x10;
+    *(uint8_t*)(bp_reg - 0x6b) = 4;
+    *(uint8_t*)(bp_reg - 0x6a) = 4;
+    *(uint8_t*)(bp_reg - 0x69) = 4;
+    *(uint8_t*)(bp_reg - 0x68) = 4;
+    *(uint8_t*)(bp_reg - 0x67) = 4;
+    *(uint8_t*)(bp_reg - 0x66) = 0xfc;
+    *(uint8_t*)(bp_reg - 0x65) = 0xfc;
+    *(uint8_t*)(bp_reg - 0x64) = 0xfc;
+    *(uint8_t*)(bp_reg - 0x63) = 0xfc;
+    *(uint8_t*)(bp_reg - 0x62) = 0xfc;
+    si = *(uint16_t*)(bp_reg + 6);
+    // Compare si and 0x28 (sets flags)
 }
 
 
@@ -5296,46 +5342,45 @@ void sub_901A(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_901A:
-    ax ^= ax;
-    // push ax
-    // lcall 0x98e, 0x12a
+    ax = 0;
+    push(ax); // Simulate stack push
+    // TODO: Translate: lcall 0x98e, 0x12a
     bx = ax;
-    word ptr [bx + 0x30] = 0x312;
+    *(uint16_t*)(bx_reg + 0x30) = 0x312;
     bx += 0x36;
-    word ptr [bx + 0x30] = 0x312;
+    *(uint16_t*)(bx_reg + 0x30) = 0x312;
     bx += 0x36;
-    word ptr [bx + 0x30] = 0x43c;
+    *(uint16_t*)(bx_reg + 0x30) = 0x43c;
     bx += 0x36;
-    word ptr [bx + 0x30] = 0x43c;
+    *(uint16_t*)(bx_reg + 0x30) = 0x43c;
     bx += 0x36;
-    word ptr [bx + 0x30] = 0x43c;
+    *(uint16_t*)(bx_reg + 0x30) = 0x43c;
     bx += 0x36;
-    word ptr [bx + 0x30] = 0x43c;
+    *(uint16_t*)(bx_reg + 0x30) = 0x43c;
     bx += 0x36;
-    word ptr [bx + 0x30] = 0x43c;
+    *(uint16_t*)(bx_reg + 0x30) = 0x43c;
     bx += 0x36;
-    word ptr [bx + 0x30] = 0x43c;
+    *(uint16_t*)(bx_reg + 0x30) = 0x43c;
     bx += 0x36;
-    word ptr [bx + 0x30] = 0x5ab;
+    *(uint16_t*)(bx_reg + 0x30) = 0x5ab;
     bx += 0x36;
-    word ptr [bx + 0x30] = 0x637;
+    *(uint16_t*)(bx_reg + 0x30) = 0x637;
     bx += 0x36;
-    word ptr [bx + 0x30] = 0x76e;
+    *(uint16_t*)(bx_reg + 0x30) = 0x76e;
     bx += 0x36;
-    word ptr [bx + 0x30] = 0x43c;
+    *(uint16_t*)(bx_reg + 0x30) = 0x43c;
     bx += 0x36;
-    word ptr [bx + 0x30] = 0x76e;
+    *(uint16_t*)(bx_reg + 0x30) = 0x76e;
     bx += 0x36;
-    word ptr [bx + 0x30] = 0x76e;
+    *(uint16_t*)(bx_reg + 0x30) = 0x76e;
     bx += 0x36;
-    word ptr [bx + 0x30] = 0x43c;
+    *(uint16_t*)(bx_reg + 0x30) = 0x43c;
     bx += 0x36;
-    word ptr [bx + 0x30] = 0x76e;
+    *(uint16_t*)(bx_reg + 0x30) = 0x76e;
     bx += 0x36;
-    word ptr [bx + 0x30] = 0x76e;
+    *(uint16_t*)(bx_reg + 0x30) = 0x76e;
     bx += 0x36;
-    byte ptr [0x55f3] = 1;
-    // retf 
+    *(uint8_t*)(0x55f3) = 1;
     return;
 }
 
@@ -5360,46 +5405,45 @@ void sub_987E(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_987E:
-    ax ^= ax;
-    // push ax
-    // lcall 0x98e, 0x12a
+    ax = 0;
+    push(ax); // Simulate stack push
+    // TODO: Translate: lcall 0x98e, 0x12a
     bx = ax;
-    word ptr [bx + 0x2c] = 0x1e6;
+    *(uint16_t*)(bx_reg + 0x2c) = 0x1e6;
     bx += 0x36;
-    word ptr [bx + 0x2c] = 0x1e6;
+    *(uint16_t*)(bx_reg + 0x2c) = 0x1e6;
     bx += 0x36;
-    word ptr [bx + 0x2c] = 0x251;
+    *(uint16_t*)(bx_reg + 0x2c) = 0x251;
     bx += 0x36;
-    word ptr [bx + 0x2c] = 0x251;
+    *(uint16_t*)(bx_reg + 0x2c) = 0x251;
     bx += 0x36;
-    word ptr [bx + 0x2c] = 0x251;
+    *(uint16_t*)(bx_reg + 0x2c) = 0x251;
     bx += 0x36;
-    word ptr [bx + 0x2c] = 0x251;
+    *(uint16_t*)(bx_reg + 0x2c) = 0x251;
     bx += 0x36;
-    word ptr [bx + 0x2c] = 0x251;
+    *(uint16_t*)(bx_reg + 0x2c) = 0x251;
     bx += 0x36;
-    word ptr [bx + 0x2c] = 0x251;
+    *(uint16_t*)(bx_reg + 0x2c) = 0x251;
     bx += 0x36;
-    word ptr [bx + 0x2c] = 0x2dd;
+    *(uint16_t*)(bx_reg + 0x2c) = 0x2dd;
     bx += 0x36;
-    word ptr [bx + 0x2c] = 0x31e;
+    *(uint16_t*)(bx_reg + 0x2c) = 0x31e;
     bx += 0x36;
-    word ptr [bx + 0x2c] = 0x38e;
+    *(uint16_t*)(bx_reg + 0x2c) = 0x38e;
     bx += 0x36;
-    word ptr [bx + 0x2c] = 0x251;
+    *(uint16_t*)(bx_reg + 0x2c) = 0x251;
     bx += 0x36;
-    word ptr [bx + 0x2c] = 0x38e;
+    *(uint16_t*)(bx_reg + 0x2c) = 0x38e;
     bx += 0x36;
-    word ptr [bx + 0x2c] = 0x38e;
+    *(uint16_t*)(bx_reg + 0x2c) = 0x38e;
     bx += 0x36;
-    word ptr [bx + 0x2c] = 0x251;
+    *(uint16_t*)(bx_reg + 0x2c) = 0x251;
     bx += 0x36;
-    word ptr [bx + 0x2c] = 0x38e;
+    *(uint16_t*)(bx_reg + 0x2c) = 0x38e;
     bx += 0x36;
-    word ptr [bx + 0x2c] = 0x38e;
+    *(uint16_t*)(bx_reg + 0x2c) = 0x38e;
     bx += 0x36;
-    byte ptr [0x55f1] = 1;
-    // retf 
+    *(uint8_t*)(0x55f1) = 1;
     return;
 }
 
@@ -5424,18 +5468,17 @@ void sub_9EBD(int result_ax) {
     int dos_env_segment;
 
 block_9EBD:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 4;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // les di, ptr [bp + 8]
-    // cmp byte ptr es:[di], 1
-    // je 0x9ee3
+    /* ds */ = ax;
+    // TODO: Translate: les di, ptr [bp + 8]
+    // Compare byte ptr es:[di] and 1 (sets flags)
 }
 
 
@@ -5459,18 +5502,17 @@ void sub_9F7D(int result_ax) {
     int dos_env_segment;
 
 block_9F7D:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0x116;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // lds si, ptr [bp + 0x10]
-    // cmp byte ptr [si], 0
-    // je 0x9faa
+    /* ds */ = ax;
+    // TODO: Translate: lds si, ptr [bp + 0x10]
+    // Compare *(uint8_t*)(si_reg) and 0 (sets flags)
 }
 
 
@@ -5494,46 +5536,45 @@ void sub_A70D(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_A70D:
-    ax ^= ax;
-    // push ax
-    // lcall 0x98e, 0x12a
+    ax = 0;
+    push(ax); // Simulate stack push
+    // TODO: Translate: lcall 0x98e, 0x12a
     bx = ax;
-    word ptr [bx + 0x2a] = 0x1b5;
+    *(uint16_t*)(bx_reg + 0x2a) = 0x1b5;
     bx += 0x36;
-    word ptr [bx + 0x2a] = 0x1b5;
+    *(uint16_t*)(bx_reg + 0x2a) = 0x1b5;
     bx += 0x36;
-    word ptr [bx + 0x2a] = 0x318;
+    *(uint16_t*)(bx_reg + 0x2a) = 0x318;
     bx += 0x36;
-    word ptr [bx + 0x2a] = 0x318;
+    *(uint16_t*)(bx_reg + 0x2a) = 0x318;
     bx += 0x36;
-    word ptr [bx + 0x2a] = 0x318;
+    *(uint16_t*)(bx_reg + 0x2a) = 0x318;
     bx += 0x36;
-    word ptr [bx + 0x2a] = 0x318;
+    *(uint16_t*)(bx_reg + 0x2a) = 0x318;
     bx += 0x36;
-    word ptr [bx + 0x2a] = 0x318;
+    *(uint16_t*)(bx_reg + 0x2a) = 0x318;
     bx += 0x36;
-    word ptr [bx + 0x2a] = 0x318;
+    *(uint16_t*)(bx_reg + 0x2a) = 0x318;
     bx += 0x36;
-    word ptr [bx + 0x2a] = 0x4ba;
+    *(uint16_t*)(bx_reg + 0x2a) = 0x4ba;
     bx += 0x36;
-    word ptr [bx + 0x2a] = 0x548;
+    *(uint16_t*)(bx_reg + 0x2a) = 0x548;
     bx += 0x36;
-    word ptr [bx + 0x2a] = 0x6e4;
+    *(uint16_t*)(bx_reg + 0x2a) = 0x6e4;
     bx += 0x36;
-    word ptr [bx + 0x2a] = 0x318;
+    *(uint16_t*)(bx_reg + 0x2a) = 0x318;
     bx += 0x36;
-    word ptr [bx + 0x2a] = 0x6e4;
+    *(uint16_t*)(bx_reg + 0x2a) = 0x6e4;
     bx += 0x36;
-    word ptr [bx + 0x2a] = 0x6e4;
+    *(uint16_t*)(bx_reg + 0x2a) = 0x6e4;
     bx += 0x36;
-    word ptr [bx + 0x2a] = 0x318;
+    *(uint16_t*)(bx_reg + 0x2a) = 0x318;
     bx += 0x36;
-    word ptr [bx + 0x2a] = 0x6e4;
+    *(uint16_t*)(bx_reg + 0x2a) = 0x6e4;
     bx += 0x36;
-    word ptr [bx + 0x2a] = 0x6e4;
+    *(uint16_t*)(bx_reg + 0x2a) = 0x6e4;
     bx += 0x36;
-    byte ptr [0x55f0] = 1;
-    // retf 
+    *(uint8_t*)(0x55f0) = 1;
     return;
 }
 
@@ -5558,21 +5599,20 @@ void sub_AE16(int result_ax) {
     int dos_env_segment;
 
 block_AE16:
-    // in al, dx
+    // TODO: Translate: in al, dx
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    word ptr [bp - 2] = 0xffd9;
-    // les di, ptr [bp + 6]
+    /* ds */ = ax;
+    *(uint16_t*)(bp_reg - 2) = 0xffd9;
+    // TODO: Translate: les di, ptr [bp + 6]
     ah = 0x4f;
     al = 0;
     // Video BIOS call
-    // cmp ax, 0x4f
-    // jne 0xae58
+    // Compare ax and 0x4f (sets flags)
 }
 
 
@@ -5596,21 +5636,20 @@ void sub_AE65(int result_ax) {
     int dos_env_segment;
 
 block_AE65:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 6;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // push ss
-    // lea ax, [bp - 6]
-    // push ax
-    // lcall 0xae3, 0
-    // cmp byte ptr [bp - 6], 5
-    // je 0xae87
+    /* ds */ = ax;
+    push(/* ss */); // Simulate stack push
+    ax = &(uint16_t*)(bp_reg - 6); // Calculate address
+    push(ax); // Simulate stack push
+    // TODO: Translate: lcall 0xae3, 0
+    // Compare *(uint8_t*)(bp_reg - 6) and 5 (sets flags)
 }
 
 
@@ -5634,25 +5673,24 @@ void sub_AFB5(int result_ax) {
     int dos_env_segment;
 
 block_AFB5:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    ax = word ptr [0x43b9];
-    word ptr [bp - 2] = ax;
-    ax = word ptr [bp - 2];
-    // pop di
-    // pop si
-    // pop es
-    // pop ds
+    /* ds */ = ax;
+    ax = *(uint16_t*)(0x43b9);
+    *(uint16_t*)(bp_reg - 2) = ax;
+    ax = *(uint16_t*)(bp_reg - 2);
+    di = pop(); // Simulate stack pop
+    si = pop(); // Simulate stack pop
+    /* es */ = pop(); // Simulate stack pop
+    /* ds */ = pop(); // Simulate stack pop
     sp = bp;
-    // pop bp
-    // retf 
+    bp = pop(); // Simulate stack pop
     return;
 }
 
@@ -5677,20 +5715,19 @@ void sub_B00C(int result_ax) {
     int dos_env_segment;
 
 block_B00C:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    word ptr [bp - 2] = 0;
-    // les di, ptr [bp + 6]
-    ax = word ptr [bp + 0xa];
-    // cmp ax, 1
-    // jne 0xb034
+    /* ds */ = ax;
+    *(uint16_t*)(bp_reg - 2) = 0;
+    // TODO: Translate: les di, ptr [bp + 6]
+    ax = *(uint16_t*)(bp_reg + 0xa);
+    // Compare ax and 1 (sets flags)
 }
 
 
@@ -5714,32 +5751,31 @@ void sub_B316(int result_ax) {
     int dos_env_segment;
 
 block_B316:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // les di, ptr [bp + 0xa]
-    ax = word ptr [0x54c3];
+    /* ds */ = ax;
+    // TODO: Translate: les di, ptr [bp + 0xa]
+    ax = *(uint16_t*)(0x54c3);
     word ptr es:[di + 2] = ax;
-    ax = word ptr [0x54c1];
+    ax = *(uint16_t*)(0x54c1);
     word ptr es:[di] = ax;
-    // les di, ptr [bp + 6]
-    ax = word ptr [0x54bf];
+    // TODO: Translate: les di, ptr [bp + 6]
+    ax = *(uint16_t*)(0x54bf);
     word ptr es:[di] = ax;
-    word ptr [bp - 2] = 0;
-    ax = word ptr [bp - 2];
-    // pop di
-    // pop si
-    // pop es
-    // pop ds
+    *(uint16_t*)(bp_reg - 2) = 0;
+    ax = *(uint16_t*)(bp_reg - 2);
+    di = pop(); // Simulate stack pop
+    si = pop(); // Simulate stack pop
+    /* es */ = pop(); // Simulate stack pop
+    /* ds */ = pop(); // Simulate stack pop
     sp = bp;
-    // pop bp
-    // retf 8
+    bp = pop(); // Simulate stack pop
     return;
 }
 
@@ -5764,20 +5800,19 @@ void sub_B350(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_B350:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 8;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // push bx
-    // push cx
-    // push dx
-    // cmp word ptr [0x54c6], -1
-    // jne 0xb371
+    /* ds */ = ax;
+    push(bx); // Simulate stack push
+    push(cx); // Simulate stack push
+    push(dx); // Simulate stack push
+    // Compare *(uint16_t*)(0x54c6) and -1 (sets flags)
 }
 
 
@@ -5801,17 +5836,16 @@ void sub_B4EC(int result_ax) {
     int dos_env_segment;
 
 block_B4EC:
-    // in al, dx
+    // TODO: Translate: in al, dx
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    ax = word ptr [bp + 8];
-    // cmp ax, 0x24
-    // jb 0xb508
+    /* ds */ = ax;
+    ax = *(uint16_t*)(bp_reg + 8);
+    // Compare ax and 0x24 (sets flags)
 }
 
 
@@ -5835,18 +5869,20 @@ void sub_B586(int result_ax) {
     int dos_env_segment;
 
 block_B586:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // push word ptr [bp + 6]
-    // push cs
+    /* ds */ = ax;
+    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
+    push(/* cs */); // Simulate stack push
     sub_B5BF();
+block_B59C:
+
 }
 
 
@@ -5870,18 +5906,17 @@ void sub_B5BF(int result_ax) {
     int dos_env_segment;
 
 block_B5BF:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    ax = word ptr [bp + 6];
-    // cmp ax, 0x28
-    // jbe 0xb5de
+    /* ds */ = ax;
+    ax = *(uint16_t*)(bp_reg + 6);
+    // Compare ax and 0x28 (sets flags)
 }
 
 
@@ -5905,18 +5940,17 @@ void sub_B60A(int result_ax) {
     int dos_env_segment;
 
 block_B60A:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    ax = word ptr [bp + 6];
-    // cmp ax, 0x28
-    // jbe 0xb629
+    /* ds */ = ax;
+    ax = *(uint16_t*)(bp_reg + 6);
+    // Compare ax and 0x28 (sets flags)
 }
 
 
@@ -5940,17 +5974,16 @@ void sub_B66A(int result_ax) {
     int dos_env_segment;
 
 block_B66A:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // cmp word ptr [0x43b9], 7
-    // jne 0xb691
+    /* ds */ = ax;
+    // Compare *(uint16_t*)(0x43b9) and 7 (sets flags)
 }
 
 
@@ -5974,18 +6007,17 @@ void sub_B6A8(int result_ax) {
     int dos_env_segment;
 
 block_B6A8:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    ax = word ptr [bp + 6];
+    /* ds */ = ax;
+    ax = *(uint16_t*)(bp_reg + 6);
     ah |= ah;
-    // je 0xb6e0
 }
 
 
@@ -6009,9 +6041,8 @@ void sub_B995(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_B995:
-    // push ax
-    // cmp al, 2
-    // je 0xb9a7
+    push(ax); // Simulate stack push
+    // Compare al and 2 (sets flags)
 }
 
 
@@ -6035,22 +6066,21 @@ void sub_BFC3(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_BFC3:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // push bx
-    // push cx
-    // push dx
-    word ptr [bp - 2] = 0;
-    ax = word ptr [0x43b9];
-    // cmp ax, 1
-    // jne 0xbff8
+    /* ds */ = ax;
+    push(bx); // Simulate stack push
+    push(cx); // Simulate stack push
+    push(dx); // Simulate stack push
+    *(uint16_t*)(bp_reg - 2) = 0;
+    ax = *(uint16_t*)(0x43b9);
+    // Compare ax and 1 (sets flags)
 }
 
 
@@ -6074,46 +6104,45 @@ void sub_C3B3(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_C3B3:
-    ax ^= ax;
-    // push ax
-    // lcall 0x98e, 0x12a
+    ax = 0;
+    push(ax); // Simulate stack push
+    // TODO: Translate: lcall 0x98e, 0x12a
     bx = ax;
-    word ptr [bx + 0x2e] = 0x32b;
+    *(uint16_t*)(bx_reg + 0x2e) = 0x32b;
     bx += 0x36;
-    word ptr [bx + 0x2e] = 0x32b;
+    *(uint16_t*)(bx_reg + 0x2e) = 0x32b;
     bx += 0x36;
-    word ptr [bx + 0x2e] = 0x478;
+    *(uint16_t*)(bx_reg + 0x2e) = 0x478;
     bx += 0x36;
-    word ptr [bx + 0x2e] = 0x478;
+    *(uint16_t*)(bx_reg + 0x2e) = 0x478;
     bx += 0x36;
-    word ptr [bx + 0x2e] = 0x478;
+    *(uint16_t*)(bx_reg + 0x2e) = 0x478;
     bx += 0x36;
-    word ptr [bx + 0x2e] = 0x478;
+    *(uint16_t*)(bx_reg + 0x2e) = 0x478;
     bx += 0x36;
-    word ptr [bx + 0x2e] = 0x478;
+    *(uint16_t*)(bx_reg + 0x2e) = 0x478;
     bx += 0x36;
-    word ptr [bx + 0x2e] = 0x478;
+    *(uint16_t*)(bx_reg + 0x2e) = 0x478;
     bx += 0x36;
-    word ptr [bx + 0x2e] = 0x639;
+    *(uint16_t*)(bx_reg + 0x2e) = 0x639;
     bx += 0x36;
-    word ptr [bx + 0x2e] = 0x6ce;
+    *(uint16_t*)(bx_reg + 0x2e) = 0x6ce;
     bx += 0x36;
-    word ptr [bx + 0x2e] = 0x829;
+    *(uint16_t*)(bx_reg + 0x2e) = 0x829;
     bx += 0x36;
-    word ptr [bx + 0x2e] = 0x478;
+    *(uint16_t*)(bx_reg + 0x2e) = 0x478;
     bx += 0x36;
-    word ptr [bx + 0x2e] = 0x829;
+    *(uint16_t*)(bx_reg + 0x2e) = 0x829;
     bx += 0x36;
-    word ptr [bx + 0x2e] = 0x829;
+    *(uint16_t*)(bx_reg + 0x2e) = 0x829;
     bx += 0x36;
-    word ptr [bx + 0x2e] = 0x478;
+    *(uint16_t*)(bx_reg + 0x2e) = 0x478;
     bx += 0x36;
-    word ptr [bx + 0x2e] = 0x829;
+    *(uint16_t*)(bx_reg + 0x2e) = 0x829;
     bx += 0x36;
-    word ptr [bx + 0x2e] = 0x829;
+    *(uint16_t*)(bx_reg + 0x2e) = 0x829;
     bx += 0x36;
-    byte ptr [0x55f2] = 1;
-    // retf 
+    *(uint8_t*)(0x55f2) = 1;
     return;
 }
 
@@ -6138,13 +6167,12 @@ void sub_CA9B(int count_cx) {
     int dos_env_segment;
 
 block_CA9B:
-    al ^= al;
-    // push bp
+    al = 0;
+    push(bp); // Simulate stack push
     ah = 0x1a;
     // Video BIOS call
-    // pop bp
-    // cmp al, 0x1a
-    // je 0xcaaa
+    bp = pop(); // Simulate stack pop
+    // Compare al and 0x1a (sets flags)
 }
 
 
@@ -6169,12 +6197,11 @@ void sub_CB80(void) {
 
 block_CB80:
     bl = 0x10;
-    // push bp
+    push(bp); // Simulate stack push
     ah = 0x12;
     // Video BIOS call
-    // pop bp
-    // cmp bl, 0x10
-    // je 0xcbce
+    bp = pop(); // Simulate stack pop
+    // Compare bl and 0x10 (sets flags)
 }
 
 
@@ -6199,8 +6226,10 @@ void sub_CBCF(int data_dx) {
 
 block_CBCF:
     dx = 0x3d4;
-    // push cs
+    push(/* cs */); // Simulate stack push
     sub_CC23();
+block_CBD6:
+
 }
 
 
@@ -6225,8 +6254,10 @@ void sub_CBE1(int count_cx, int data_dx) {
 
 block_CBE1:
     dx = 0x3b4;
-    // push cs
+    push(/* cs */); // Simulate stack push
     sub_CC23();
+block_CBE8:
+
 }
 
 
@@ -6251,19 +6282,17 @@ void sub_CC23(int count_cx) {
 
 block_CC23:
     al = 0xf;
-    // out dx, al
+    // TODO: Translate: out dx, al
     dx++;
-    // in al, dx
+    // TODO: Translate: in al, dx
     ah = al;
     al = 0x66;
-    // out dx, al
+    // TODO: Translate: out dx, al
     cx = 0x100;
-    // loop 0xcc30
-    // in al, dx
-    // xchg al, ah
-    // out dx, al
-    // cmp ah, 0x66
-    // je 0xcc3e
+    // TODO: Translate: in al, dx
+    // TODO: Translate: xchg al, ah
+    // TODO: Translate: out dx, al
+    // Compare ah and 0x66 (sets flags)
 }
 
 
@@ -6287,8 +6316,7 @@ void sub_CC40(void) {
     int dos_env_segment;
 
 block_CC40:
-    // cmp byte ptr es:[di + 2], 0
-    // je 0xcc79
+    // Compare byte ptr es:[di + 2] and 0 (sets flags)
 }
 
 
@@ -6312,8 +6340,7 @@ void sub_CC7A(int result_ax) {
     int dos_env_segment;
 
 block_CC7A:
-    // cmp byte ptr es:[di], 0
-    // jne 0xcc85
+    // Compare byte ptr es:[di] and 0 (sets flags)
 }
 
 
@@ -6337,19 +6364,18 @@ void sub_D552(int result_ax) {
     int dos_env_segment;
 
 block_D552:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
+    /* ds */ = ax;
     ax = 0x4300;
-    // Interrupt 0x2f
-    // cmp al, 0x80
-    // je 0xd571
+    interrupt(0x2f); // Call interrupt 0x2f
+    // Compare al and 0x80 (sets flags)
 }
 
 
@@ -6374,72 +6400,71 @@ void sub_DA6E(int base_bx) {
 
 block_DA6E:
     bx = 0x6d99;
-    word ptr [bx + 0xa] = 0x275;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x275;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x335;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x335;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x4cd;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x4cd;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x4cd;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x4cd;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x576;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x576;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x4cd;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x4cd;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x576;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x576;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x4cd;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x4cd;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x61a;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x61a;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x3e9;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x3e9;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x677;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x677;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x4cd;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x4cd;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x677;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x677;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x677;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x677;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x4cd;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x4cd;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x677;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x677;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x677;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x677;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
     bx = 0x6e87;
-    word ptr [bx + 0xa] = 0x703;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x703;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x703;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x703;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x703;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x703;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    word ptr [bx + 0xa] = 0x703;
-    word ptr [bx + 0xc] = 0xbd7;
+    *(uint16_t*)(bx_reg + 0xa) = 0x703;
+    *(uint16_t*)(bx_reg + 0xc) = 0xbd7;
     bx += 0xe;
-    byte ptr [0x6d35] = 1;
-    // retf 
+    *(uint8_t*)(0x6d35) = 1;
     return;
 }
 
@@ -6464,27 +6489,26 @@ void sub_DE14(int data_dx) {
     int dos_env_segment;
 
 block_DE14:
-    // push si
+    push(si); // Simulate stack push
     cl = bl;
-    // push dx
-    dx = word ptr [bp - 8];
-    ax = al * dx;
-    // pop dx
-    bx >>= 1;
-    bx >>= 1;
-    bx >>= 1;
+    push(dx); // Simulate stack push
+    dx = *(uint16_t*)(bp_reg - 8);
+    ax = al * dx; // Assuming 8-bit multiply
+    dx = pop(); // Simulate stack pop
+    bx >>= 1; // Unsigned shift right
+    bx >>= 1; // Unsigned shift right
+    bx >>= 1; // Unsigned shift right
     bx += ax;
     si = 0x6cda;
-    bx += word ptr [si + 0xa];
-    // push dx
+    bx += *(uint16_t*)(si_reg + 0xa);
+    push(dx); // Simulate stack push
     dx = 0xa000;
-    es = dx;
-    // pop dx
+    /* es */ = dx;
+    dx = pop(); // Simulate stack pop
     cl &= 7;
     cl ^= 7;
     ah = 1;
-    // pop si
-    // retf 
+    si = pop(); // Simulate stack pop
     return;
 }
 
@@ -6509,15 +6533,14 @@ void sub_DFD5(int data_dx) {
     int dos_env_segment;
 
 block_DFD5:
-    dx = word ptr [bp - 8];
-    ax = al * dx;
+    dx = *(uint16_t*)(bp_reg - 8);
+    ax = al * dx; // Assuming 8-bit multiply
     bx += ax;
-    // adc dx, 0
-    // push dx
+    // TODO: Translate: adc dx, 0
+    push(dx); // Simulate stack push
     dx = 0xa000;
-    es = dx;
-    // pop dx
-    // retf 
+    /* es */ = dx;
+    dx = pop(); // Simulate stack pop
     return;
 }
 
@@ -6542,15 +6565,14 @@ void sub_E3A5(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_E3A5:
-    // push ds
-    // push si
-    // push ax
+    push(/* ds */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(ax); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
+    /* ds */ = ax;
     si = 0x6cda;
-    // pop ax
-    // cmp ax, word ptr [si + 0x1a]
-    // jl 0xe3c8
+    ax = pop(); // Simulate stack pop
+    // Compare ax and *(uint16_t*)(si_reg + 0x1a) (sets flags)
 }
 
 
@@ -6574,16 +6596,16 @@ void sub_E3CC(int result_ax) {
     int dos_env_segment;
 
 block_E3CC:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 6;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    word ptr [bp - 6] = 0;
+    /* ds */ = ax;
+    *(uint16_t*)(bp_reg - 6) = 0;
     si = 0x6cda;
 }
 
@@ -6608,16 +6630,16 @@ void sub_E4E0(int result_ax) {
     int dos_env_segment;
 
 block_E4E0:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 6;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    word ptr [bp - 6] = 0;
+    /* ds */ = ax;
+    *(uint16_t*)(bp_reg - 6) = 0;
     si = 0x6cda;
 }
 
@@ -6642,11 +6664,10 @@ void sub_E58D(int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_E58D:
-    ax ^= ax;
-    cx = word ptr [bp + 0xc];
-    dx = word ptr [bp + 0xa];
-    // cmp cx, word ptr [si + 0x1a]
-    // jge 0xe59c
+    ax = 0;
+    cx = *(uint16_t*)(bp_reg + 0xc);
+    dx = *(uint16_t*)(bp_reg + 0xa);
+    // Compare cx and *(uint16_t*)(si_reg + 0x1a) (sets flags)
 }
 
 
@@ -6670,10 +6691,9 @@ void sub_E9D0(int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_E9D0:
-    // push bx
-    // push cx
-    // cmp bx, 0
-    // jne 0xe9da
+    push(bx); // Simulate stack push
+    push(cx); // Simulate stack push
+    // Compare bx and 0 (sets flags)
 }
 
 
@@ -6697,11 +6717,10 @@ void sub_ECFD(int result_ax, int data_dx) {
     int dos_env_segment;
 
 block_ECFD:
-    // push ax
+    push(ax); // Simulate stack push
     ax = dx;
-    ax = al * cx;
+    ax = al * cx; // Assuming 8-bit multiply
     dx |= dx;
-    // je 0xed0a
 }
 
 
@@ -6725,13 +6744,12 @@ void sub_ED11(int base_bx, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_ED11:
-    // push si
-    // push bx
-    // push cx
-    // push dx
-    // neg cx
-    // cmp bx, 0
-    // jl 0xed26
+    push(si); // Simulate stack push
+    push(bx); // Simulate stack push
+    push(cx); // Simulate stack push
+    push(dx); // Simulate stack push
+    // TODO: Translate: neg cx
+    // Compare bx and 0 (sets flags)
 }
 
 
@@ -6757,28 +6775,27 @@ void sub_ED84(int result_ax) {
     int dos_env_segment;
 
 block_ED84:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0x20;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // cld 
-    ax = word ptr [0x54c1];
-    word ptr [bp - 0xc] = ax;
+    /* ds */ = ax;
+    // TODO: Translate: cld 
+    ax = *(uint16_t*)(0x54c1);
+    *(uint16_t*)(bp_reg - 0xc) = ax;
     di = ax;
-    ax = word ptr [0x54c3];
-    word ptr [bp - 0xa] = ax;
-    es = ax;
-    ax = word ptr [0x54bf];
-    word ptr [bp - 0xe] = ax;
-    ax >>= 1;
-    ax >>= 1;
+    ax = *(uint16_t*)(0x54c3);
+    *(uint16_t*)(bp_reg - 0xa) = ax;
+    /* es */ = ax;
+    ax = *(uint16_t*)(0x54bf);
+    *(uint16_t*)(bp_reg - 0xe) = ax;
+    ax >>= 1; // Unsigned shift right
+    ax >>= 1; // Unsigned shift right
     ax -= 4;
-    // jge 0xedbb
 }
 
 
@@ -6802,8 +6819,7 @@ void sub_EFFC(int result_ax) {
     int dos_env_segment;
 
 block_EFFC:
-    // cmp ax, 0x168
-    // jl 0xf004
+    // Compare ax and 0x168 (sets flags)
 }
 
 
@@ -6827,8 +6843,7 @@ void sub_F03C(int result_ax) {
     int dos_env_segment;
 
 block_F03C:
-    // cmp ax, 0x168
-    // jl 0xf044
+    // Compare ax and 0x168 (sets flags)
 }
 
 
@@ -6852,18 +6867,17 @@ void sub_F100(int result_ax) {
     int dos_env_segment;
 
 block_F100:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0x32;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
+    /* ds */ = ax;
     si = 0x6cda;
-    // cmp word ptr [si + 0x3c], 1
-    // jne 0xf144
+    // Compare *(uint16_t*)(si_reg + 0x3c) and 1 (sets flags)
 }
 
 
@@ -6887,10 +6901,9 @@ void sub_F40D(int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_F40D:
-    // push bx
-    // push cx
-    // cmp word ptr [bp + 6], 2
-    // jge 0xf418
+    push(bx); // Simulate stack push
+    push(cx); // Simulate stack push
+    // Compare *(uint16_t*)(bp_reg + 6) and 2 (sets flags)
 }
 
 
@@ -6914,11 +6927,10 @@ void sub_F5DB(int result_ax, int data_dx) {
     int dos_env_segment;
 
 block_F5DB:
-    // push ax
+    push(ax); // Simulate stack push
     ax = dx;
-    ax = al * cx;
+    ax = al * cx; // Assuming 8-bit multiply
     dx |= dx;
-    // je 0xf5e8
 }
 
 
@@ -6942,18 +6954,17 @@ void sub_F768(int result_ax) {
     int dos_env_segment;
 
 block_F768:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0x4e;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // cld 
-    // cmp byte ptr [0x6d33], 1
-    // je 0xf783
+    /* ds */ = ax;
+    // TODO: Translate: cld 
+    // Compare *(uint8_t*)(0x6d33) and 1 (sets flags)
 }
 
 
@@ -6978,72 +6989,71 @@ void sub_F8C1(int base_bx) {
 
 block_F8C1:
     bx = 0x6d99;
-    word ptr [bx + 4] = 0x7b9;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0x7b9;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0x968;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0x968;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0xcea;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0xcea;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0xcea;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0xcea;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0xe74;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0xe74;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0xcea;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0xcea;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0xe74;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0xe74;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0xcea;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0xcea;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0xff1;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0xff1;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0xb0f;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0xb0f;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0x10e1;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0x10e1;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0xcea;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0xcea;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0x10e1;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0x10e1;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0x10e1;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0x10e1;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0xcea;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0xcea;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0x10e1;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0x10e1;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0x10e1;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0x10e1;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
     bx = 0x6e87;
-    word ptr [bx + 4] = 0x129e;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0x129e;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0x129e;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0x129e;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0x129e;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0x129e;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    word ptr [bx + 4] = 0x129e;
-    word ptr [bx + 6] = 0xd9f;
+    *(uint16_t*)(bx_reg + 4) = 0x129e;
+    *(uint16_t*)(bx_reg + 6) = 0xd9f;
     bx += 0xe;
-    byte ptr [0x6d33] = 1;
-    // retf 
+    *(uint8_t*)(0x6d33) = 1;
     return;
 }
 
@@ -7068,27 +7078,26 @@ void sub_102B1(int data_dx) {
     int dos_env_segment;
 
 block_102B1:
-    // push si
+    push(si); // Simulate stack push
     cl = bl;
-    // push dx
-    dx = word ptr [bp - 0x20];
-    ax = al * dx;
-    // pop dx
-    bx >>= 1;
-    bx >>= 1;
-    bx >>= 1;
+    push(dx); // Simulate stack push
+    dx = *(uint16_t*)(bp_reg - 0x20);
+    ax = al * dx; // Assuming 8-bit multiply
+    dx = pop(); // Simulate stack pop
+    bx >>= 1; // Unsigned shift right
+    bx >>= 1; // Unsigned shift right
+    bx >>= 1; // Unsigned shift right
     bx += ax;
     si = 0x6cda;
-    bx += word ptr [si + 0xa];
-    // push dx
+    bx += *(uint16_t*)(si_reg + 0xa);
+    push(dx); // Simulate stack push
     dx = 0xa000;
-    es = dx;
-    // pop dx
+    /* es */ = dx;
+    dx = pop(); // Simulate stack pop
     cl &= 7;
     cl ^= 7;
     ah = 1;
-    // pop si
-    // retf 
+    si = pop(); // Simulate stack pop
     return;
 }
 
@@ -7113,15 +7122,14 @@ void sub_106BF(int data_dx) {
     int dos_env_segment;
 
 block_106BF:
-    dx = word ptr [bp - 0x20];
-    ax = al * dx;
+    dx = *(uint16_t*)(bp_reg - 0x20);
+    ax = al * dx; // Assuming 8-bit multiply
     bx += ax;
-    // adc dx, 0
-    // push dx
+    // TODO: Translate: adc dx, 0
+    push(dx); // Simulate stack push
     dx = 0xa000;
-    es = dx;
-    // pop dx
-    // retf 
+    /* es */ = dx;
+    dx = pop(); // Simulate stack pop
     return;
 }
 
@@ -7149,92 +7157,91 @@ void sub_10BCD(int result_ax) {
     int dos_env_segment;
 
 block_10BCD:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 4;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
+    /* ds */ = ax;
     ax = 0;
-    // push ax
-    // push ds
+    push(ax); // Simulate stack push
+    push(/* ds */); // Simulate stack push
     ax = 0x5d68;
-    // push ax
-    // push ds
+    push(ax); // Simulate stack push
+    push(/* ds */); // Simulate stack push
     ax = 0x5fe8;
-    // push ax
-    ax = word ptr [0x43b1];
-    // push ax
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(0x43b1);
+    push(ax); // Simulate stack push
     ax = 0x10;
-    // push ax
-    // push ax
-    // lcall 0x5e5, 6
+    push(ax); // Simulate stack push
+    push(ax); // Simulate stack push
+    // TODO: Translate: lcall 0x5e5, 6
     ax = 0;
-    // push ax
-    // push ds
+    push(ax); // Simulate stack push
+    push(/* ds */); // Simulate stack push
     ax = 0x5ce8;
-    // push ax
-    // push ds
+    push(ax); // Simulate stack push
+    push(/* ds */); // Simulate stack push
     ax = 0x5ee8;
-    // push ax
-    ax = word ptr [0x43b1];
-    // push ax
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(0x43b1);
+    push(ax); // Simulate stack push
     ax = 0x10;
-    // push ax
-    // push ax
-    // lcall 0x5e5, 6
+    push(ax); // Simulate stack push
+    push(ax); // Simulate stack push
+    // TODO: Translate: lcall 0x5e5, 6
     ax = 0;
-    // push ax
-    // push ds
+    push(ax); // Simulate stack push
+    push(/* ds */); // Simulate stack push
     ax = 0x5de8;
-    // push ax
-    // push ds
+    push(ax); // Simulate stack push
+    push(/* ds */); // Simulate stack push
     ax = 0x60e8;
-    // push ax
-    ax = word ptr [0x43b1];
-    // push ax
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(0x43b1);
+    push(ax); // Simulate stack push
     ax = 0x10;
-    // push ax
-    // push ax
-    // lcall 0x5e5, 6
+    push(ax); // Simulate stack push
+    push(ax); // Simulate stack push
+    // TODO: Translate: lcall 0x5e5, 6
     ax = 0;
-    // push ax
-    // push ds
+    push(ax); // Simulate stack push
+    push(/* ds */); // Simulate stack push
     ax = 0x5e68;
-    // push ax
-    // push ds
+    push(ax); // Simulate stack push
+    push(/* ds */); // Simulate stack push
     ax = 0x61e8;
-    // push ax
-    ax = word ptr [0x43b1];
-    // push ax
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(0x43b1);
+    push(ax); // Simulate stack push
     ax = 0x20;
-    // push ax
-    // push ax
-    // lcall 0x5e5, 6
+    push(ax); // Simulate stack push
+    push(ax); // Simulate stack push
+    // TODO: Translate: lcall 0x5e5, 6
     si = 0x5d68;
-    al = byte ptr [si + 0x12];
-    bl = byte ptr [si + 0x13];
-    ax = al * bl;
-    // push ax
+    al = *(uint8_t*)(si_reg + 0x12);
+    bl = *(uint8_t*)(si_reg + 0x13);
+    ax = al * bl; // Assuming 8-bit multiply
+    push(ax); // Simulate stack push
     si = 0x67fe;
-    ax = word ptr [0x5c7c];
+    ax = *(uint16_t*)(0x5c7c);
     bx = 0x44;
-    ax = al * bx;
+    ax = al * bx; // Assuming 8-bit multiply
     si += ax;
-    ax = word ptr [si];
-    word ptr [0x5c6c] = ax;
-    ax = word ptr [si + 2];
-    word ptr [0x5c6e] = ax;
+    ax = *(uint16_t*)(si_reg);
+    *(uint16_t*)(0x5c6c) = ax;
+    ax = *(uint16_t*)(si_reg + 2);
+    *(uint16_t*)(0x5c6e) = ax;
     si += 4;
     ax = 0x1ab5;
-    es = ax;
+    /* es */ = ax;
     di = 0x5ee8;
-    // pop ax
-    // cmp ax, 1
-    // jbe 0x10c91
+    ax = pop(); // Simulate stack pop
+    // Compare ax and 1 (sets flags)
 }
 
 
@@ -7260,92 +7267,91 @@ void sub_10DC0(int result_ax, int base_bx) {
 block_10DC0:
     ax = si;
     bx = di;
-    // push ax
-    // push bx
-    ax += word ptr [0x5c8a];
-    bx += word ptr [0x5c8c];
-    // push ax
-    // push bx
-    // push word ptr [0x43b7]
-    // push ds
+    push(ax); // Simulate stack push
+    push(bx); // Simulate stack push
+    ax += *(uint16_t*)(0x5c8a);
+    bx += *(uint16_t*)(0x5c8c);
+    push(ax); // Simulate stack push
+    push(bx); // Simulate stack push
+    push(*(uint16_t*)(0x43b7)); // Simulate stack push
+    push(/* ds */); // Simulate stack push
     ax = 0x5de8;
-    // push ax
-    ax ^= ax;
-    // push ax
-    // push ax
-    // lcall 0x71a, 0xc
-    // push ds
+    push(ax); // Simulate stack push
+    ax = 0;
+    push(ax); // Simulate stack push
+    push(ax); // Simulate stack push
+    // TODO: Translate: lcall 0x71a, 0xc
+    push(/* ds */); // Simulate stack push
     ax = 0x5de8;
-    // push ax
-    bx ^= bx;
-    // push bx
-    // push bx
-    ax = word ptr [0x5c8a];
-    // push ax
-    ax = word ptr [0x5c8c];
-    // push ax
-    // push ds
+    push(ax); // Simulate stack push
+    bx = 0;
+    push(bx); // Simulate stack push
+    push(bx); // Simulate stack push
+    ax = *(uint16_t*)(0x5c8a);
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(0x5c8c);
+    push(ax); // Simulate stack push
+    push(/* ds */); // Simulate stack push
     ax = 0x5e68;
-    // push ax
-    // push bx
-    // push bx
-    // push bx
-    // lcall 0xb44, 0xc
-    // push ds
+    push(ax); // Simulate stack push
+    push(bx); // Simulate stack push
+    push(bx); // Simulate stack push
+    push(bx); // Simulate stack push
+    // TODO: Translate: lcall 0xb44, 0xc
+    push(/* ds */); // Simulate stack push
     ax = 0x5ce8;
-    // push ax
-    bx ^= bx;
-    // push bx
-    // push bx
-    ax = word ptr [0x5c8a];
-    // push ax
-    ax = word ptr [0x5c8c];
-    // push ax
-    // push ds
+    push(ax); // Simulate stack push
+    bx = 0;
+    push(bx); // Simulate stack push
+    push(bx); // Simulate stack push
+    ax = *(uint16_t*)(0x5c8a);
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(0x5c8c);
+    push(ax); // Simulate stack push
+    push(/* ds */); // Simulate stack push
     ax = 0x5e68;
-    // push ax
-    // push bx
-    // push bx
+    push(ax); // Simulate stack push
+    push(bx); // Simulate stack push
+    push(bx); // Simulate stack push
     ax = 1;
-    // push ax
-    // lcall 0xb44, 0xc
-    // push ds
+    push(ax); // Simulate stack push
+    // TODO: Translate: lcall 0xb44, 0xc
+    push(/* ds */); // Simulate stack push
     ax = 0x5d68;
-    // push ax
-    bx ^= bx;
-    // push bx
-    // push bx
-    ax = word ptr [0x5c8a];
-    // push ax
-    ax = word ptr [0x5c8c];
-    // push ax
-    // push ds
+    push(ax); // Simulate stack push
+    bx = 0;
+    push(bx); // Simulate stack push
+    push(bx); // Simulate stack push
+    ax = *(uint16_t*)(0x5c8a);
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(0x5c8c);
+    push(ax); // Simulate stack push
+    push(/* ds */); // Simulate stack push
     ax = 0x5e68;
-    // push ax
-    // push bx
-    // push bx
+    push(ax); // Simulate stack push
+    push(bx); // Simulate stack push
+    push(bx); // Simulate stack push
     ax = 2;
-    // push ax
-    // lcall 0xb44, 0xc
-    // push ds
+    push(ax); // Simulate stack push
+    // TODO: Translate: lcall 0xb44, 0xc
+    push(/* ds */); // Simulate stack push
     ax = 0x5e68;
-    // push ax
-    bx ^= bx;
-    // push bx
-    // push bx
+    push(ax); // Simulate stack push
+    bx = 0;
+    push(bx); // Simulate stack push
+    push(bx); // Simulate stack push
     ax = si;
     bx = di;
-    // push ax
-    // push bx
-    ax += word ptr [0x5c8a];
-    bx += word ptr [0x5c8c];
-    // push ax
-    // push bx
-    // push word ptr [0x43b7]
-    // lcall 0xa52, 0xe
-    word ptr [0x5c86] = si;
-    word ptr [0x5c88] = di;
-    // ret 
+    push(ax); // Simulate stack push
+    push(bx); // Simulate stack push
+    ax += *(uint16_t*)(0x5c8a);
+    bx += *(uint16_t*)(0x5c8c);
+    push(ax); // Simulate stack push
+    push(bx); // Simulate stack push
+    push(*(uint16_t*)(0x43b7)); // Simulate stack push
+    // TODO: Translate: lcall 0xa52, 0xe
+    *(uint16_t*)(0x5c86) = si;
+    *(uint16_t*)(0x5c88) = di;
     return;
 }
 
@@ -7370,23 +7376,22 @@ void sub_10E6D(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_10E6D:
-    // push ds
+    push(/* ds */); // Simulate stack push
     ax = 0x5de8;
-    // push ax
-    ax ^= ax;
-    // push ax
-    // push ax
-    ax = word ptr [0x5c86];
-    bx = word ptr [0x5c88];
-    // push ax
-    // push bx
-    ax += word ptr [0x5c8a];
-    bx += word ptr [0x5c8c];
-    // push ax
-    // push bx
-    // push word ptr [0x43b7]
-    // lcall 0xa52, 0xe
-    // ret 
+    push(ax); // Simulate stack push
+    ax = 0;
+    push(ax); // Simulate stack push
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(0x5c86);
+    bx = *(uint16_t*)(0x5c88);
+    push(ax); // Simulate stack push
+    push(bx); // Simulate stack push
+    ax += *(uint16_t*)(0x5c8a);
+    bx += *(uint16_t*)(0x5c8c);
+    push(ax); // Simulate stack push
+    push(bx); // Simulate stack push
+    push(*(uint16_t*)(0x43b7)); // Simulate stack push
+    // TODO: Translate: lcall 0xa52, 0xe
     return;
 }
 
@@ -7411,8 +7416,7 @@ void sub_10E93(void) {
     int dos_env_segment;
 
 block_10E93:
-    // cmp si, word ptr [0x5cca]
-    // jge 0x10e9f
+    // Compare si and *(uint16_t*)(0x5cca) (sets flags)
 }
 
 
@@ -7447,10 +7451,9 @@ void sub_10ECE(int result_ax) {
     int dos_env_segment;
 
 block_10ECE:
-    si -= word ptr [0x5c6c];
-    di -= word ptr [0x5c6e];
-    // cmp word ptr [0x5c74], 0
-    // je 0x10ee3
+    si -= *(uint16_t*)(0x5c6c);
+    di -= *(uint16_t*)(0x5c6e);
+    // Compare *(uint16_t*)(0x5c74) and 0 (sets flags)
 }
 
 
@@ -7492,33 +7495,32 @@ void sub_110C1(int result_ax) {
     int dos_env_segment;
 
 block_110C1:
-    ax ^= ax;
-    word ptr [0x5c70] = 0;
-    word ptr [0x5c80] = 0xffff;
-    word ptr [0x5c74] = 0xffff;
-    word ptr [0x5ca2] = ax;
-    word ptr [0x5ca8] = ax;
-    word ptr [0x5cae] = ax;
-    word ptr [0x5cb4] = ax;
-    word ptr [0x5cba] = ax;
-    word ptr [0x5cc0] = ax;
-    word ptr [0x5c82] = ax;
-    word ptr [0x5c84] = ax;
-    word ptr [0x5c8a] = 0xf;
-    word ptr [0x5c8c] = 0xf;
-    word ptr [0x5cd4] = ax;
-    word ptr [0x5cd2] = ax;
+    ax = 0;
+    *(uint16_t*)(0x5c70) = 0;
+    *(uint16_t*)(0x5c80) = 0xffff;
+    *(uint16_t*)(0x5c74) = 0xffff;
+    *(uint16_t*)(0x5ca2) = ax;
+    *(uint16_t*)(0x5ca8) = ax;
+    *(uint16_t*)(0x5cae) = ax;
+    *(uint16_t*)(0x5cb4) = ax;
+    *(uint16_t*)(0x5cba) = ax;
+    *(uint16_t*)(0x5cc0) = ax;
+    *(uint16_t*)(0x5c82) = ax;
+    *(uint16_t*)(0x5c84) = ax;
+    *(uint16_t*)(0x5c8a) = 0xf;
+    *(uint16_t*)(0x5c8c) = 0xf;
+    *(uint16_t*)(0x5cd4) = ax;
+    *(uint16_t*)(0x5cd2) = ax;
     si = 0x5d68;
-    word ptr [0x5cca] = ax;
-    word ptr [0x5ccc] = ax;
-    ax = word ptr [si + 0xe];
+    *(uint16_t*)(0x5cca) = ax;
+    *(uint16_t*)(0x5ccc) = ax;
+    ax = *(uint16_t*)(si_reg + 0xe);
     ax--;
-    word ptr [0x5cce] = ax;
-    ax = word ptr [si + 0x10];
+    *(uint16_t*)(0x5cce) = ax;
+    ax = *(uint16_t*)(si_reg + 0x10);
     ax--;
-    word ptr [0x5cd0] = ax;
-    // cmp word ptr [0x5ce6], 0
-    // jne 0x11127
+    *(uint16_t*)(0x5cd0) = ax;
+    // Compare *(uint16_t*)(0x5ce6) and 0 (sets flags)
 }
 
 
@@ -7543,17 +7545,16 @@ void sub_11249(int result_ax) {
     int dos_env_segment;
 
 block_11249:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // cmp word ptr [0x5ce6], 0
-    // jne 0x11273
+    /* ds */ = ax;
+    // Compare *(uint16_t*)(0x5ce6) and 0 (sets flags)
 }
 
 
@@ -7577,17 +7578,16 @@ void sub_114B2(int result_ax) {
     int dos_env_segment;
 
 block_114B2:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // cmp word ptr [0x5ce6], 0
-    // jne 0x114cf
+    /* ds */ = ax;
+    // Compare *(uint16_t*)(0x5ce6) and 0 (sets flags)
 }
 
 
@@ -7611,17 +7611,16 @@ void sub_114F8(int result_ax) {
     int dos_env_segment;
 
 block_114F8:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // cmp word ptr [0x5ce6], 1
-    // je 0x1151b
+    /* ds */ = ax;
+    // Compare *(uint16_t*)(0x5ce6) and 1 (sets flags)
 }
 
 
@@ -7647,18 +7646,17 @@ void sub_11576(int result_ax) {
     int dos_env_segment;
 
 block_11576:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    ax = word ptr [bp + 8];
-    // cmp ax, 0
-    // jl 0x11592
+    /* ds */ = ax;
+    ax = *(uint16_t*)(bp_reg + 8);
+    // Compare ax and 0 (sets flags)
 }
 
 
@@ -7682,9 +7680,8 @@ void sub_117C2(int result_ax, int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_117C2:
-    // push word ptr [0x43b1]
-    // lcall 0x98e, 0x12a
-    // jb 0x1183b
+    push(*(uint16_t*)(0x43b1)); // Simulate stack push
+    // TODO: Translate: lcall 0x98e, 0x12a
 }
 
 
@@ -7708,9 +7705,8 @@ void sub_1183C(int result_ax) {
     int dos_env_segment;
 
 block_1183C:
-    ax = word ptr [0x43b3];
-    // cmp ax, 0xe
-    // je 0x11856
+    ax = *(uint16_t*)(0x43b3);
+    // Compare ax and 0xe (sets flags)
 }
 
 
@@ -7734,9 +7730,8 @@ void sub_1193C(int result_ax) {
     int dos_env_segment;
 
 block_1193C:
-    ax = word ptr [0x43b3];
-    // cmp ax, 0xe
-    // je 0x11956
+    ax = *(uint16_t*)(0x43b3);
+    // Compare ax and 0xe (sets flags)
 }
 
 
@@ -7762,8 +7757,7 @@ void sub_11A23(int result_ax) {
 block_11A23:
     ax = 0x1a00;
     // Video BIOS call
-    // cmp al, 0x1a
-    // jne 0x11a40
+    // Compare al and 0x1a (sets flags)
 }
 
 
@@ -7787,9 +7781,8 @@ void sub_11A48(void) {
     int dos_env_segment;
 
 block_11A48:
-    ax ^= ax;
-    // cmp si, word ptr [0x5cd6]
-    // jl 0x11a63
+    ax = 0;
+    // Compare si and *(uint16_t*)(0x5cd6) (sets flags)
 }
 
 
@@ -7813,30 +7806,29 @@ void sub_11A68(int result_ax) {
     int dos_env_segment;
 
 block_11A68:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0x28;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // cld 
-    ax = word ptr [0x54bf];
+    /* ds */ = ax;
+    // TODO: Translate: cld 
+    ax = *(uint16_t*)(0x54bf);
     ax -= 0xc;
-    word ptr [bp - 0x22] = ax;
+    *(uint16_t*)(bp_reg - 0x22) = ax;
     si = 0x6cda;
-    bx = word ptr [si + 0x3c];
-    word ptr [bp - 4] = bx;
-    ax = word ptr [si + 0x30];
-    word ptr [bp - 0x1a] = ax;
+    bx = *(uint16_t*)(si_reg + 0x3c);
+    *(uint16_t*)(bp_reg - 4) = bx;
+    ax = *(uint16_t*)(si_reg + 0x30);
+    *(uint16_t*)(bp_reg - 0x1a) = ax;
     bx |= ax;
-    ax = word ptr [si + 0x32];
-    word ptr [bp - 0x1c] = ax;
+    ax = *(uint16_t*)(si_reg + 0x32);
+    *(uint16_t*)(bp_reg - 0x1c) = ax;
     bx |= ax;
     bx |= bx;
-    // jne 0x11acf
 }
 
 
@@ -7860,19 +7852,19 @@ void sub_11D00(int result_ax) {
     int dos_env_segment;
 
 block_11D00:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0xe;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // les di, ptr [0x54c1]
-    word ptr [bp - 6] = 0;
-    ax = word ptr [bp + 6];
-    word ptr [bp - 4] = ax;
+    /* ds */ = ax;
+    // TODO: Translate: les di, ptr [0x54c1]
+    *(uint16_t*)(bp_reg - 6) = 0;
+    ax = *(uint16_t*)(bp_reg + 6);
+    *(uint16_t*)(bp_reg - 4) = ax;
 }
 
 
@@ -7896,19 +7888,18 @@ void sub_11DD9(int result_ax) {
     int dos_env_segment;
 
 block_11DD9:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
+    /* ds */ = ax;
     si = 0x6cda;
-    ax = word ptr [bp + 0xa];
-    // cmp ax, word ptr [bp + 6]
-    // jle 0x11df9
+    ax = *(uint16_t*)(bp_reg + 0xa);
+    // Compare ax and *(uint16_t*)(bp_reg + 6) (sets flags)
 }
 
 
@@ -7932,45 +7923,48 @@ void sub_11E61(int result_ax) {
     int dos_env_segment;
 
 block_11E61:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0x1e;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
+    /* ds */ = ax;
     si = 0x6cda;
-    ax = word ptr [si + 0xc];
-    word ptr [bp - 4] = ax;
-    ax = word ptr [si + 0x24];
-    word ptr [si + 0xc] = ax;
-    ax = word ptr [si + 0x28];
-    word ptr [bp - 6] = ax;
-    word ptr [si + 0x28] = 0xffff;
-    ax = word ptr [si + 0x2a];
-    word ptr [bp - 8] = ax;
-    word ptr [si + 0x2a] = 1;
-    ax = word ptr [si + 0x3c];
-    word ptr [bp - 0xa] = ax;
-    ax = word ptr [si + 0x30];
-    word ptr [bp - 0xc] = ax;
-    ax = word ptr [si + 0x32];
-    word ptr [bp - 0xe] = ax;
-    // les di, ptr [0x54c1]
-    // lea ax, [bp + 8]
-    // push ss
-    // push ax
-    // push word ptr [bp + 6]
-    // lea ax, [bp - 0x14]
-    // push ss
-    // push ax
-    // lea ax, [bp - 0x16]
-    // push ss
-    // push ax
-    // push cs
+    ax = *(uint16_t*)(si_reg + 0xc);
+    *(uint16_t*)(bp_reg - 4) = ax;
+    ax = *(uint16_t*)(si_reg + 0x24);
+    *(uint16_t*)(si_reg + 0xc) = ax;
+    ax = *(uint16_t*)(si_reg + 0x28);
+    *(uint16_t*)(bp_reg - 6) = ax;
+    *(uint16_t*)(si_reg + 0x28) = 0xffff;
+    ax = *(uint16_t*)(si_reg + 0x2a);
+    *(uint16_t*)(bp_reg - 8) = ax;
+    *(uint16_t*)(si_reg + 0x2a) = 1;
+    ax = *(uint16_t*)(si_reg + 0x3c);
+    *(uint16_t*)(bp_reg - 0xa) = ax;
+    ax = *(uint16_t*)(si_reg + 0x30);
+    *(uint16_t*)(bp_reg - 0xc) = ax;
+    ax = *(uint16_t*)(si_reg + 0x32);
+    *(uint16_t*)(bp_reg - 0xe) = ax;
+    // TODO: Translate: les di, ptr [0x54c1]
+    ax = &(uint16_t*)(bp_reg + 8); // Calculate address
+    push(/* ss */); // Simulate stack push
+    push(ax); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
+    ax = &(uint16_t*)(bp_reg - 0x14); // Calculate address
+    push(/* ss */); // Simulate stack push
+    push(ax); // Simulate stack push
+    ax = &(uint16_t*)(bp_reg - 0x16); // Calculate address
+    push(/* ss */); // Simulate stack push
+    push(ax); // Simulate stack push
+    push(/* cs */); // Simulate stack push
     sub_11A68();
+block_11EC1:
+    // Compare ax and 0 (sets flags)
+
 }
 
 
@@ -7994,18 +7988,17 @@ void sub_12166(int result_ax) {
     int dos_env_segment;
 
 block_12166:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0xc;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
+    /* ds */ = ax;
     si = 0x6cda;
-    // cmp word ptr [si + 0x3c], 1
-    // jne 0x121aa
+    // Compare *(uint16_t*)(si_reg + 0x3c) and 1 (sets flags)
 }
 
 
@@ -8029,17 +8022,16 @@ void sub_12524(int result_ax) {
     int dos_env_segment;
 
 block_12524:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // test word ptr [0x6ab2], 0xffff
-    // jne 0x12542
+    /* ds */ = ax;
+    // Test *(uint16_t*)(0x6ab2) & 0xffff (sets flags)
 }
 
 
@@ -8063,20 +8055,19 @@ void sub_12580(int result_ax) {
     int dos_env_segment;
 
 block_12580:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // pushf 
-    // cli 
-    cx = word ptr [0x6ab2];
-    // cmp cx, word ptr [0x6ab0]
-    // jb 0x125a7
+    /* ds */ = ax;
+    // TODO: Translate: pushf 
+    // TODO: Translate: cli 
+    cx = *(uint16_t*)(0x6ab2);
+    // Compare cx and *(uint16_t*)(0x6ab0) (sets flags)
 }
 
 
@@ -8101,42 +8092,41 @@ void sub_14286(int base_bx) {
 
 block_14286:
     bx = 0x6ec0;
-    word ptr [bx] = 0x166;
+    *(uint16_t*)(bx_reg) = 0x166;
     bx += 2;
-    word ptr [bx] = 0x166;
+    *(uint16_t*)(bx_reg) = 0x166;
     bx += 2;
-    word ptr [bx] = 0x27b;
+    *(uint16_t*)(bx_reg) = 0x27b;
     bx += 2;
-    word ptr [bx] = 0x27b;
+    *(uint16_t*)(bx_reg) = 0x27b;
     bx += 2;
-    word ptr [bx] = 0x27b;
+    *(uint16_t*)(bx_reg) = 0x27b;
     bx += 2;
-    word ptr [bx] = 0x27b;
+    *(uint16_t*)(bx_reg) = 0x27b;
     bx += 2;
-    word ptr [bx] = 0x27b;
+    *(uint16_t*)(bx_reg) = 0x27b;
     bx += 2;
-    word ptr [bx] = 0x27b;
+    *(uint16_t*)(bx_reg) = 0x27b;
     bx += 2;
-    word ptr [bx] = 0x402;
+    *(uint16_t*)(bx_reg) = 0x402;
     bx += 2;
-    word ptr [bx] = 0x4b1;
+    *(uint16_t*)(bx_reg) = 0x4b1;
     bx += 2;
-    word ptr [bx] = 0x5c6;
+    *(uint16_t*)(bx_reg) = 0x5c6;
     bx += 2;
-    word ptr [bx] = 0x27b;
+    *(uint16_t*)(bx_reg) = 0x27b;
     bx += 2;
-    word ptr [bx] = 0x5c6;
+    *(uint16_t*)(bx_reg) = 0x5c6;
     bx += 2;
-    word ptr [bx] = 0x5c6;
+    *(uint16_t*)(bx_reg) = 0x5c6;
     bx += 2;
-    word ptr [bx] = 0x27b;
+    *(uint16_t*)(bx_reg) = 0x27b;
     bx += 2;
-    word ptr [bx] = 0x5c6;
+    *(uint16_t*)(bx_reg) = 0x5c6;
     bx += 2;
-    word ptr [bx] = 0x5c6;
+    *(uint16_t*)(bx_reg) = 0x5c6;
     bx += 2;
-    byte ptr [0x6f01] = 1;
-    // retf 
+    *(uint8_t*)(0x6f01) = 1;
     return;
 }
 
@@ -8161,17 +8151,16 @@ void sub_1485A(int result_ax) {
     int dos_env_segment;
 
 block_1485A:
-    // in al, dx
+    // TODO: Translate: in al, dx
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // lds si, ptr [bp + 6]
-    // cmp byte ptr [si], 0xa
-    // je 0x14878
+    /* ds */ = ax;
+    // TODO: Translate: lds si, ptr [bp + 6]
+    // Compare *(uint8_t*)(si_reg) and 0xa (sets flags)
 }
 
 
@@ -8195,19 +8184,18 @@ void sub_14D0E(int result_ax) {
     int dos_env_segment;
 
 block_14D0E:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 6;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    ax = word ptr [bp + 0xe];
-    // push ax
-    // lcall 0x98e, 0x12a
-    // jae 0x14d30
+    /* ds */ = ax;
+    ax = *(uint16_t*)(bp_reg + 0xe);
+    push(ax); // Simulate stack push
+    // TODO: Translate: lcall 0x98e, 0x12a
 }
 
 
@@ -8231,19 +8219,18 @@ void sub_14E1F(int result_ax) {
     int dos_env_segment;
 
 block_14E1F:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    ax = word ptr [bp + 0xe];
-    // push ax
-    // lcall 0x98e, 0x12a
-    // jae 0x14e41
+    /* ds */ = ax;
+    ax = *(uint16_t*)(bp_reg + 0xe);
+    push(ax); // Simulate stack push
+    // TODO: Translate: lcall 0x98e, 0x12a
 }
 
 
@@ -8267,29 +8254,28 @@ void sub_15048(int result_ax) {
     int dos_env_segment;
 
 block_15048:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0x10;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    ax = word ptr [bp + 0x10];
-    // push ax
-    ax = word ptr [bp + 0xe];
-    // push ax
-    ax = word ptr [bp + 0xc];
-    // push ax
-    ax = word ptr [bp + 0xa];
-    // push ax
-    // push ds
+    /* ds */ = ax;
+    ax = *(uint16_t*)(bp_reg + 0x10);
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(bp_reg + 0xe);
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(bp_reg + 0xc);
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(bp_reg + 0xa);
+    push(ax); // Simulate stack push
+    push(/* ds */); // Simulate stack push
     si = 0x43bf;
-    // push si
-    // lcall 0x80c, 0x56c
+    push(si); // Simulate stack push
+    // TODO: Translate: lcall 0x80c, 0x56c
     ax |= ax;
-    // jge 0x1507b
 }
 
 
@@ -8313,29 +8299,28 @@ void sub_15454(int result_ax) {
     int dos_env_segment;
 
 block_15454:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 4;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    ax = word ptr [bp + 0xc];
-    // push ax
-    ax = word ptr [bp + 0xa];
-    // push ax
-    ax = word ptr [bp + 8];
-    // push ax
-    ax = word ptr [bp + 6];
-    // push ax
-    // push ds
+    /* ds */ = ax;
+    ax = *(uint16_t*)(bp_reg + 0xc);
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(bp_reg + 0xa);
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(bp_reg + 8);
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(bp_reg + 6);
+    push(ax); // Simulate stack push
+    push(/* ds */); // Simulate stack push
     si = 0x43bf;
-    // push si
-    // lcall 0x80c, 0x56c
+    push(si); // Simulate stack push
+    // TODO: Translate: lcall 0x80c, 0x56c
     ax |= ax;
-    // jge 0x15486
 }
 
 
@@ -8359,25 +8344,28 @@ void sub_154D0(int result_ax) {
     int dos_env_segment;
 
 block_154D0:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    ax = word ptr [bp + 0x10];
-    // push ax
-    ax = word ptr [bp + 0xe];
-    // push ax
-    ax = word ptr [bp + 0xc];
-    // push ax
-    ax = word ptr [bp + 0xa];
-    // push ax
-    // push cs
+    /* ds */ = ax;
+    ax = *(uint16_t*)(bp_reg + 0x10);
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(bp_reg + 0xe);
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(bp_reg + 0xc);
+    push(ax); // Simulate stack push
+    ax = *(uint16_t*)(bp_reg + 0xa);
+    push(ax); // Simulate stack push
+    push(/* cs */); // Simulate stack push
     sub_15454();
+block_154F3:
+    // Compare ax and 0 (sets flags)
+
 }
 
 
@@ -8401,19 +8389,18 @@ void sub_156C6(int result_ax) {
     int dos_env_segment;
 
 block_156C6:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 4;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // les di, ptr [bp + 0x10]
-    ax = word ptr [bp + 8];
-    // cmp ax, word ptr [bp + 6]
-    // jne 0x156e3
+    /* ds */ = ax;
+    // TODO: Translate: les di, ptr [bp + 0x10]
+    ax = *(uint16_t*)(bp_reg + 8);
+    // Compare ax and *(uint16_t*)(bp_reg + 6) (sets flags)
 }
 
 
@@ -8437,19 +8424,18 @@ void sub_15798(int result_ax) {
     int dos_env_segment;
 
 block_15798:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // lds si, ptr [bp + 0xa]
-    // les di, ptr [bp + 6]
-    // cmp word ptr [si], 0xca00
-    // jne 0x157ba
+    /* ds */ = ax;
+    // TODO: Translate: lds si, ptr [bp + 0xa]
+    // TODO: Translate: les di, ptr [bp + 6]
+    // Compare *(uint16_t*)(si_reg) and 0xca00 (sets flags)
 }
 
 
@@ -8473,22 +8459,21 @@ void sub_15AB6(int result_ax) {
     int dos_env_segment;
 
 block_15AB6:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // lds si, ptr [bp + 0x12]
-    // les di, ptr [bp + 0xe]
-    cx = word ptr [bp + 0xc];
-    dx = word ptr [bp + 6];
-    // cld 
-    // cmp word ptr [bp + 0xa], 1
-    // je 0x15ae1
+    /* ds */ = ax;
+    // TODO: Translate: lds si, ptr [bp + 0x12]
+    // TODO: Translate: les di, ptr [bp + 0xe]
+    cx = *(uint16_t*)(bp_reg + 0xc);
+    dx = *(uint16_t*)(bp_reg + 6);
+    // TODO: Translate: cld 
+    // Compare *(uint16_t*)(bp_reg + 0xa) and 1 (sets flags)
 }
 
 
@@ -8513,16 +8498,15 @@ void sub_15E6E(int base_bx) {
 
 block_15E6E:
     bx = 0x6f04;
-    word ptr [bx] = 0x34c;
+    *(uint16_t*)(bx_reg) = 0x34c;
     bx += 2;
-    word ptr [bx] = 0x34c;
+    *(uint16_t*)(bx_reg) = 0x34c;
     bx += 2;
-    word ptr [bx] = 0x38b;
+    *(uint16_t*)(bx_reg) = 0x38b;
     bx += 2;
-    word ptr [bx] = 0x55b;
+    *(uint16_t*)(bx_reg) = 0x55b;
     bx += 2;
-    byte ptr [0x6f51] = 1;
-    // retf 
+    *(uint8_t*)(0x6f51) = 1;
     return;
 }
 
@@ -8548,42 +8532,41 @@ void sub_16504(int base_bx) {
 
 block_16504:
     bx = 0x6f0c;
-    word ptr [bx] = 0x3b4;
+    *(uint16_t*)(bx_reg) = 0x3b4;
     bx += 2;
-    word ptr [bx] = 0x3b4;
+    *(uint16_t*)(bx_reg) = 0x3b4;
     bx += 2;
-    word ptr [bx] = 0x57d;
+    *(uint16_t*)(bx_reg) = 0x57d;
     bx += 2;
-    word ptr [bx] = 0x57d;
+    *(uint16_t*)(bx_reg) = 0x57d;
     bx += 2;
-    word ptr [bx] = 0x57d;
+    *(uint16_t*)(bx_reg) = 0x57d;
     bx += 2;
-    word ptr [bx] = 0x57d;
+    *(uint16_t*)(bx_reg) = 0x57d;
     bx += 2;
-    word ptr [bx] = 0x57d;
+    *(uint16_t*)(bx_reg) = 0x57d;
     bx += 2;
-    word ptr [bx] = 0x57d;
+    *(uint16_t*)(bx_reg) = 0x57d;
     bx += 2;
-    word ptr [bx] = 0x78d;
+    *(uint16_t*)(bx_reg) = 0x78d;
     bx += 2;
-    word ptr [bx] = 0x83b;
+    *(uint16_t*)(bx_reg) = 0x83b;
     bx += 2;
-    word ptr [bx] = 0xa10;
+    *(uint16_t*)(bx_reg) = 0xa10;
     bx += 2;
-    word ptr [bx] = 0x57d;
+    *(uint16_t*)(bx_reg) = 0x57d;
     bx += 2;
-    word ptr [bx] = 0xa10;
+    *(uint16_t*)(bx_reg) = 0xa10;
     bx += 2;
-    word ptr [bx] = 0xa10;
+    *(uint16_t*)(bx_reg) = 0xa10;
     bx += 2;
-    word ptr [bx] = 0x57d;
+    *(uint16_t*)(bx_reg) = 0x57d;
     bx += 2;
-    word ptr [bx] = 0xa10;
+    *(uint16_t*)(bx_reg) = 0xa10;
     bx += 2;
-    word ptr [bx] = 0xa10;
+    *(uint16_t*)(bx_reg) = 0xa10;
     bx += 2;
-    byte ptr [0x6f50] = 1;
-    // retf 
+    *(uint8_t*)(0x6f50) = 1;
     return;
 }
 
@@ -8608,25 +8591,24 @@ void sub_177DA(int result_ax) {
     int dos_env_segment;
 
 block_177DA:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 4;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // push word ptr [bp + 0xc]
-    // push word ptr [bp + 0xa]
-    // push word ptr [bp + 8]
-    // push word ptr [bp + 6]
-    // push ds
+    /* ds */ = ax;
+    push(*(uint16_t*)(bp_reg + 0xc)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 8)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
+    push(/* ds */); // Simulate stack push
     si = 0x43bf;
-    // push si
-    // lcall 0x80c, 0x56c
+    push(si); // Simulate stack push
+    // TODO: Translate: lcall 0x80c, 0x56c
     ax |= ax;
-    // jge 0x17808
 }
 
 
@@ -8650,8 +8632,7 @@ void sub_17F32(int result_ax) {
     int dos_env_segment;
 
 block_17F32:
-    // cmp word ptr [bp - 0x48], 0
-    // je 0x17f3b
+    // Compare *(uint16_t*)(bp_reg - 0x48) and 0 (sets flags)
 }
 
 
@@ -8675,8 +8656,7 @@ void sub_1867D(int result_ax) {
     int dos_env_segment;
 
 block_1867D:
-    // cmp word ptr [bp - 0x48], 0
-    // je 0x18686
+    // Compare *(uint16_t*)(bp_reg - 0x48) and 0 (sets flags)
 }
 
 
@@ -8700,8 +8680,7 @@ void sub_18B44(int result_ax) {
     int dos_env_segment;
 
 block_18B44:
-    // cmp word ptr [bp - 0x48], 0
-    // je 0x18b4d
+    // Compare *(uint16_t*)(bp_reg - 0x48) and 0 (sets flags)
 }
 
 
@@ -8725,8 +8704,7 @@ void sub_19038(int result_ax) {
     int dos_env_segment;
 
 block_19038:
-    // cmp word ptr [bp - 0x48], 0
-    // je 0x19041
+    // Compare *(uint16_t*)(bp_reg - 0x48) and 0 (sets flags)
 }
 
 
@@ -8750,17 +8728,16 @@ void sub_19831(int result_ax) {
     int dos_env_segment;
 
 block_19831:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0xa2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // cmp byte ptr [0x712c], 1
-    // je 0x1984d
+    /* ds */ = ax;
+    // Compare *(uint8_t*)(0x712c) and 1 (sets flags)
 }
 
 
@@ -8784,9 +8761,8 @@ void sub_19B03(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_19B03:
-    bx = word ptr [bp - 0x46];
-    // cmp word ptr [bp - 0x48], 0
-    // je 0x19b0e
+    bx = *(uint16_t*)(bp_reg - 0x46);
+    // Compare *(uint16_t*)(bp_reg - 0x48) and 0 (sets flags)
 }
 
 
@@ -8810,8 +8786,7 @@ void sub_19D41(int result_ax) {
     int dos_env_segment;
 
 block_19D41:
-    // cmp word ptr [bp - 0x48], 0
-    // je 0x19d4a
+    // Compare *(uint16_t*)(bp_reg - 0x48) and 0 (sets flags)
 }
 
 
@@ -8835,8 +8810,7 @@ void sub_19F12(int result_ax) {
     int dos_env_segment;
 
 block_19F12:
-    // cmp word ptr [bp - 0x48], 0
-    // je 0x19f49
+    // Compare *(uint16_t*)(bp_reg - 0x48) and 0 (sets flags)
 }
 
 
@@ -8860,31 +8834,30 @@ void sub_1A25E(int result_ax) {
     int dos_env_segment;
 
 block_1A25E:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 2;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // les di, ptr [bp + 6]
-    // cld 
+    /* ds */ = ax;
+    // TODO: Translate: les di, ptr [bp + 6]
+    // TODO: Translate: cld 
     al = 0;
     cx = 0x80;
-    // repne scasb al, byte ptr es:[di]
-    di -= word ptr [bp + 6];
+    // TODO: Translate: repne scasb al, byte ptr es:[di]
+    di -= *(uint16_t*)(bp_reg + 6);
     di--;
-    word ptr [bp - 2] = di;
-    ax = word ptr [bp - 2];
-    // pop di
-    // pop si
-    // pop es
-    // pop ds
+    *(uint16_t*)(bp_reg - 2) = di;
+    ax = *(uint16_t*)(bp_reg - 2);
+    di = pop(); // Simulate stack pop
+    si = pop(); // Simulate stack pop
+    /* es */ = pop(); // Simulate stack pop
+    /* ds */ = pop(); // Simulate stack pop
     sp = bp;
-    // pop bp
-    // retf 4
+    bp = pop(); // Simulate stack pop
     return;
 }
 
@@ -8909,21 +8882,20 @@ void sub_1A2DE(int result_ax) {
     int dos_env_segment;
 
 block_1A2DE:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0x16;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // push ss
-    // lea ax, [bp - 0x16]
-    // push ax
-    // lcall 0x185d, 0x46
+    /* ds */ = ax;
+    push(/* ss */); // Simulate stack push
+    ax = &(uint16_t*)(bp_reg - 0x16); // Calculate address
+    push(ax); // Simulate stack push
+    // TODO: Translate: lcall 0x185d, 0x46
     ax |= ax;
-    // je 0x1a301
 }
 
 
@@ -8947,8 +8919,7 @@ void sub_1A78A(int result_ax, int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_1A78A:
-    // cmp word ptr [bp - 0x48], 0
-    // jne 0x1a7b2
+    // Compare *(uint16_t*)(bp_reg - 0x48) and 0 (sets flags)
 }
 
 
@@ -8972,25 +8943,24 @@ void sub_1A878(int result_ax) {
     int dos_env_segment;
 
 block_1A878:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0x90;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // push word ptr [bp + 0x14]
-    // push word ptr [bp + 0x12]
-    // push word ptr [bp + 0x10]
-    // push word ptr [bp + 0xe]
-    // push ds
+    /* ds */ = ax;
+    push(*(uint16_t*)(bp_reg + 0x14)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 0x12)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 0x10)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 0xe)); // Simulate stack push
+    push(/* ds */); // Simulate stack push
     si = 0x43bf;
-    // push si
-    // lcall 0x80c, 0x56c
+    push(si); // Simulate stack push
+    // TODO: Translate: lcall 0x80c, 0x56c
     ax |= ax;
-    // jge 0x1a8a8
 }
 
 
@@ -9014,27 +8984,30 @@ void sub_1A97C(int result_ax) {
     int dos_env_segment;
 
 block_1A97C:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 6;
-    // push ds
-    // push es
-    // push si
-    // push di
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    // push word ptr [bp + 0xc]
-    // push word ptr [bp + 0xa]
-    // push word ptr [bp + 8]
-    // push word ptr [bp + 6]
-    // push ss
-    // lea ax, [bp - 4]
-    // push ax
-    // push ss
-    // lea ax, [bp - 6]
-    // push ax
-    // push cs
+    /* ds */ = ax;
+    push(*(uint16_t*)(bp_reg + 0xc)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 0xa)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 8)); // Simulate stack push
+    push(*(uint16_t*)(bp_reg + 6)); // Simulate stack push
+    push(/* ss */); // Simulate stack push
+    ax = &(uint16_t*)(bp_reg - 4); // Calculate address
+    push(ax); // Simulate stack push
+    push(/* ss */); // Simulate stack push
+    ax = &(uint16_t*)(bp_reg - 6); // Calculate address
+    push(ax); // Simulate stack push
+    push(/* cs */); // Simulate stack push
     sub_1A878();
+block_1A9A5:
+    ax |= ax;
+
 }
 
 
@@ -9058,14 +9031,13 @@ void sub_1ABE3(int count_cx) {
     int dos_env_segment;
 
 block_1ABE3:
-    // lds si, ptr [bp + 0xe]
-    // les di, ptr [bp + 0xe]
-    cx = word ptr [bp - 0xe];
-    // cld 
+    // TODO: Translate: lds si, ptr [bp + 0xe]
+    // TODO: Translate: les di, ptr [bp + 0xe]
+    cx = *(uint16_t*)(bp_reg - 0xe);
+    // TODO: Translate: cld 
     al = 0x20;
-    // repne scasb al, byte ptr es:[di]
+    // TODO: Translate: repne scasb al, byte ptr es:[di]
     cx |= cx;
-    // je 0x1ac01
 }
 
 
@@ -9089,16 +9061,15 @@ void sub_1AD1A(void) {
     int dos_env_segment;
 
 block_1AD1A:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
     sp -= 0x14;
-    // push ds
-    ds = word ptr cs:[0xf];
-    // push si
-    // push di
-    // cld 
-    // cmp word ptr [0xa0], 0
-    // jne 0x1ad33
+    push(/* ds */); // Simulate stack push
+    /* ds */ = word ptr cs:[0xf];
+    push(si); // Simulate stack push
+    push(di); // Simulate stack push
+    // TODO: Translate: cld 
+    // Compare *(uint16_t*)(0xa0) and 0 (sets flags)
 }
 
 
@@ -9122,26 +9093,25 @@ void sub_1AE4A(int base_bx) {
     int dos_env_segment;
 
 block_1AE4A:
-    // push bp
+    push(bp); // Simulate stack push
     bp = sp;
-    // push ds
-    ds = word ptr cs:[0xf];
-    al = byte ptr [0xa1];
+    push(/* ds */); // Simulate stack push
+    /* ds */ = word ptr cs:[0xf];
+    al = *(uint8_t*)(0xa1);
     ah = 0x35;
     // DOS API call
-    // push es
-    // push bx
-    // push ds
-    al = byte ptr [0xa1];
-    dx = word ptr [2];
-    ds = word ptr [4];
+    push(/* es */); // Simulate stack push
+    push(bx); // Simulate stack push
+    push(/* ds */); // Simulate stack push
+    al = *(uint8_t*)(0xa1);
+    dx = *(uint16_t*)(2);
+    /* ds */ = *(uint16_t*)(4);
     ah = 0x25;
     // DOS API call
-    // pop ds
-    // pop word ptr [2]
-    // pop word ptr [4]
-    // cmp word ptr [0xb8], 0
-    // je 0x1ae8c
+    /* ds */ = pop(); // Simulate stack pop
+    *(uint16_t*)(2) = pop(); // Simulate stack pop
+    *(uint16_t*)(4) = pop(); // Simulate stack pop
+    // Compare *(uint16_t*)(0xb8) and 0 (sets flags)
 }
 
 
@@ -9165,11 +9135,15 @@ void sub_1AEBF(void) {
     int dos_env_segment;
 
 block_1AEBF:
-    // push ds
-    // lea di, [0x1c]
-    // push ds
-    // pop es
+    push(/* ds */); // Simulate stack push
+    di = &(uint16_t*)(0x1c); // Calculate address
+    push(/* ds */); // Simulate stack push
+    /* es */ = pop(); // Simulate stack pop
     sub_1AF6D();
+block_1AEC9:
+    /* ds */ = pop(); // Simulate stack pop
+    return;
+
 }
 
 
@@ -9196,8 +9170,7 @@ void sub_1AECB(int result_ax) {
 block_1AECB:
     ah = 0x30;
     // DOS API call
-    // cmp al, 3
-    // jb 0x1af0f
+    // Compare al and 3 (sets flags)
 }
 
 
@@ -9221,11 +9194,11 @@ void sub_1AF10(int result_ax, int count_cx) {
     int dos_env_segment;
 
 block_1AF10:
-    // push ds
+    push(/* ds */); // Simulate stack push
     ax = 0x1ab5;
-    ds = ax;
-    ds = word ptr [0x77];
-    si ^= si;
+    /* ds */ = ax;
+    /* ds */ = *(uint16_t*)(0x77);
+    si = 0;
 }
 
 
@@ -9249,10 +9222,9 @@ void sub_1AF6D(int result_ax, int count_cx) {
     int dos_env_segment;
 
 block_1AF6D:
-    // lds si, ptr [bp + 6]
-    ax = ds;
+    // TODO: Translate: lds si, ptr [bp + 6]
+    ax = /* ds */;
     ax |= si;
-    // je 0x1af84
 }
 
 
@@ -9276,14 +9248,13 @@ void sub_1AF95(int result_ax, int count_cx) {
     int dos_env_segment;
 
 block_1AF95:
-    // push ds
-    // lea dx, [bp - 0x14]
-    // push ss
-    // pop ds
+    push(/* ds */); // Simulate stack push
+    dx = &(uint16_t*)(bp_reg - 0x14); // Calculate address
+    push(/* ss */); // Simulate stack push
+    /* ds */ = pop(); // Simulate stack pop
     ah = 0x3f;
     // DOS API call
-    // pop ds
-    // jb 0x1afa4
+    /* ds */ = pop(); // Simulate stack pop
 }
 
 
@@ -9308,15 +9279,15 @@ void sub_1AFA5(int result_ax) {
 
 block_1AFA5:
     ax = 0x1ab5;
-    es = ax;
+    /* es */ = ax;
     ax = word ptr es:[0x7b];
     ax += 0x10;
     word ptr cs:[0x18] = ax;
     ax = 0x19b0;
-    es = ax;
-    bx ^= bx;
-    di ^= di;
-    // lea si, [0xc0]
+    /* es */ = ax;
+    bx = 0;
+    di = 0;
+    si = &(uint16_t*)(0xc0); // Calculate address
 }
 
 
@@ -9340,12 +9311,12 @@ void sub_1B025(int base_bx, int count_cx) {
     int dos_env_segment;
 
 block_1B025:
-    cx = word ptr [0xb2];
-    word ptr [0xbc] = cx;
+    cx = *(uint16_t*)(0xb2);
+    *(uint16_t*)(0xbc) = cx;
     bx = cx;
-    si = word ptr [0xb4];
-    di = word ptr [0xb6];
-    // push ds
+    si = *(uint16_t*)(0xb4);
+    di = *(uint16_t*)(0xb6);
+    push(/* ds */); // Simulate stack push
 }
 
 
@@ -9369,14 +9340,14 @@ void sub_1B0F2(int result_ax, int base_bx) {
     int dos_env_segment;
 
 block_1B0F2:
-    // push ax
-    bx = word ptr [0xb8];
+    push(ax); // Simulate stack push
+    bx = *(uint16_t*)(0xb8);
     ax = 0x4200;
     // DOS API call
-    // pop ax
-    // push ds
-    ds = ax;
-    // jmp 0x1b109
+    ax = pop(); // Simulate stack pop
+    push(/* ds */); // Simulate stack push
+    /* ds */ = ax;
+    goto block_1B109;
 }
 
 
@@ -9400,33 +9371,32 @@ void sub_1B12B(int result_ax, int data_dx) {
     int dos_env_segment;
 
 block_1B12B:
-    // push ds
-    // push es
+    push(/* ds */); // Simulate stack push
+    push(/* es */); // Simulate stack push
     ax = word ptr es:[8];
     si = ax;
     si &= 0xf;
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
-    ax >>= 1;
+    ax >>= 1; // Unsigned shift right
+    ax >>= 1; // Unsigned shift right
+    ax >>= 1; // Unsigned shift right
+    ax >>= 1; // Unsigned shift right
     dx = word ptr es:[0x10];
     ax += dx;
-    ds = ax;
-    es = dx;
-    cx >>= 1;
-    // cld 
-    // lodsw ax, word ptr [si]
+    /* ds */ = ax;
+    /* es */ = dx;
+    cx >>= 1; // Unsigned shift right
+    // TODO: Translate: cld 
+    // TODO: Translate: lodsw ax, word ptr [si]
     bx = ax;
     di = word ptr es:[bx];
-    // push ds
+    push(/* ds */); // Simulate stack push
     ax = 0x19b2;
-    ds = ax;
+    /* ds */ = ax;
     ax = di;
     di &= 0xfff8;
-    dx = word ptr [di];
+    dx = *(uint16_t*)(di_reg);
     word ptr es:[bx] = dx;
-    // test ax, 1
-    // je 0x1b16a
+    // Test ax & 1 (sets flags)
 }
 
 
@@ -9450,13 +9420,12 @@ void sub_1B170(int result_ax, int base_bx, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_1B170:
-    // push cx
-    ds = dx;
+    push(cx); // Simulate stack push
+    /* ds */ = dx;
     ah = byte ptr es:[bx - 1];
     al = ah;
     ax &= 0xf807;
-    // cmp ah, 0xb8
-    // jne 0x1b1cc
+    // Compare ah and 0xb8 (sets flags)
 }
 
 
@@ -9480,9 +9449,12 @@ void sub_1B264(int result_ax, int data_dx) {
     int dos_env_segment;
 
 block_1B264:
-    // push es
-    word ptr [0xba]++;
+    push(/* es */); // Simulate stack push
+    *(uint16_t*)(0xba)++;
     sub_1B4B7();
+block_1B26C:
+    goto block_1B29C;
+
 }
 
 
@@ -9506,9 +9478,8 @@ void sub_1B2AE(void) {
     int dos_env_segment;
 
 block_1B2AE:
-    word ptr [0xac]++;
-    // cmp word ptr es:[0x10], 0
-    // je 0x1b2c9
+    *(uint16_t*)(0xac)++;
+    // Compare word ptr es:[0x10] and 0 (sets flags)
 }
 
 
@@ -9533,6 +9504,9 @@ void sub_1B329(void) {
 
 block_1B329:
     sub_1B3BB();
+block_1B32C:
+    // Compare word ptr es:[0x18] and 0x4d0 (sets flags)
+
 }
 
 
@@ -9556,8 +9530,8 @@ void sub_1B341(int result_ax) {
     int dos_env_segment;
 
 block_1B341:
-    ax = word ptr [0xbc];
-    cx ^= cx;
+    ax = *(uint16_t*)(0xbc);
+    cx = 0;
 }
 
 
@@ -9581,8 +9555,7 @@ int sub_1B37C(int result_ax, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_1B37C:
-    // cmp word ptr es:[0xc], 0
-    // jne 0x1b385
+    // Compare word ptr es:[0xc] and 0 (sets flags)
 }
 
 
@@ -9609,16 +9582,14 @@ block_1B39D:
     bx = word ptr es:[0x10];
     cx = word ptr es:[0xc];
     di = 0x20;
-    // cld 
+    // TODO: Translate: cld 
     dx = word ptr es:[di + 2];
     al = 0xea;
-    // stosb byte ptr es:[di], al
+    // TODO: Translate: stosb byte ptr es:[di], al
     ax = dx;
-    // stosw word ptr es:[di], ax
+    // TODO: Translate: stosw word ptr es:[di], ax
     ax = bx;
-    // stosw word ptr es:[di], ax
-    // loop 0x1b3ab
-    // ret 
+    // TODO: Translate: stosw word ptr es:[di], ax
     return;
 }
 
@@ -9643,8 +9614,7 @@ void sub_1B3BB(int result_ax, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_1B3BB:
-    // cmp byte ptr es:[0x20], 0xcd
-    // je 0x1b3ed
+    // Compare byte ptr es:[0x20] and 0xcd (sets flags)
 }
 
 
@@ -9668,16 +9638,15 @@ void sub_1B3EE(int result_ax, int count_cx, int data_dx) {
     int dos_env_segment;
 
 block_1B3EE:
-    ax = word ptr [0xb0];
+    ax = *(uint16_t*)(0xb0);
     dx = word ptr es:[0x10];
     word ptr es:[0x10] = ax;
     cx = word ptr es:[8];
     cx++;
-    cx >>= 1;
-    si ^= si;
-    // cld 
-    // cmp ax, dx
-    // jb 0x1b40f
+    cx >>= 1; // Unsigned shift right
+    si = 0;
+    // TODO: Translate: cld 
+    // Compare ax and dx (sets flags)
 }
 
 
@@ -9702,6 +9671,11 @@ void sub_1B43F(int result_ax) {
 
 block_1B43F:
     sub_1B4AB();
+block_1B442:
+    *(uint16_t*)(0xb0) += ax;
+    push(/* ds */); // Simulate stack push
+    ax = 0x19b0;
+
 }
 
 
@@ -9726,6 +9700,9 @@ void sub_1B45D(void) {
 
 block_1B45D:
     sub_1B469();
+block_1B460:
+    bx |= bx;
+
 }
 
 
@@ -9749,10 +9726,10 @@ void sub_1B469(int count_cx) {
     int dos_env_segment;
 
 block_1B469:
-    bx ^= bx;
-    // push cx
-    // push bp
-    // jmp 0x1b473
+    bx = 0;
+    push(cx); // Simulate stack push
+    push(bp); // Simulate stack push
+    goto block_1B473;
 }
 
 
@@ -9776,9 +9753,8 @@ void sub_1B48F(int result_ax) {
     int dos_env_segment;
 
 block_1B48F:
-    ax = word ptr [0xbc];
+    ax = *(uint16_t*)(0xbc);
     ax |= ax;
-    // je 0x1b4a2
 }
 
 
@@ -9805,8 +9781,7 @@ block_1B4AB:
     ax = word ptr es:[8];
     ax += 0x11;
     cl = 4;
-    ax >>= cl;
-    // ret 
+    ax >>= cl; // Unsigned shift right
     return;
 }
 
@@ -9834,12 +9809,11 @@ block_1B4B7:
     cl = 4;
     ax = word ptr es:[8];
     ax += 0x11;
-    ax >>= cl;
+    ax >>= cl; // Unsigned shift right
     dx = word ptr es:[0xa];
     dx += 0xf;
-    dx >>= cl;
+    dx >>= cl; // Unsigned shift right
     dx += ax;
-    // ret 
     return;
 }
 
