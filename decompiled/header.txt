@@ -1,0 +1,15 @@
+MZ Header Information:
+signature: b'MZ'
+last_page_size: 368
+pages_in_file: 296
+relocations: 1635
+header_size_paragraphs: 448
+min_extra_paragraphs: 0
+max_extra_paragraphs: 65535
+ss: 9007
+sp: 128
+checksum: 0
+ip: 0
+cs: 0
+reloc_table_offset: 62
+overlay_number: 0

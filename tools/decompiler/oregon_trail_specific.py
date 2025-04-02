@@ -3,7 +3,7 @@ Oregon Trail specific data structures and constants for the decompiler.
 """
 
 import re
-from typing import Dict, List, Set, Optional, Tuple, Any
+from typing import List, Optional
 
 # Oregon Trail game states
 GAME_STATES = {
@@ -209,40 +209,33 @@ INPUT_ADDRESSES = {
 OREGON_TRAIL_PATTERNS = {
     # Travel routine
     r"mov\s+word\s+ptr\s+\[0x5c08\],\s*.+\s*add\s+word\s+ptr\s+\[0x5c08\],": "Update miles traveled",
-    
     # Health calculation
     r"mov\s+ax,\s*word\s+ptr\s+\[0x5c0e\].*sub\s+ax,": "Update player health",
-    
     # Food consumption
     r"mov\s+ax,\s*word\s+ptr\s+\[0x5c14\].*sub\s+ax,": "Consume food",
-    
     # Money transaction
     r"mov\s+ax,\s*word\s+ptr\s+\[0x5c16\].*sub\s+ax,": "Spend money",
-    
     # Random number generation
     r"mov\s+ax,\s*word\s+ptr\s+\[0x5c32\].*mul": "Generate random number",
-    
     # Weather change
     r"mov\s+word\s+ptr\s+\[0x5c0c\],": "Change weather condition",
-    
     # River crossing
     r"cmp\s+word\s+ptr\s+\[0x5c2a\],": "Check river depth",
-    
     # Event trigger
     r"mov\s+word\s+ptr\s+\[0x5c30\],": "Trigger game event",
-    
     # Landmark arrival
     r"inc\s+word\s+ptr\s+\[0x5c28\]": "Arrive at new landmark",
 }
 
+
 def identify_game_constant(value: int, context: str) -> Optional[str]:
     """
     Identify a game constant based on its value and context.
-    
+
     Args:
         value: The constant value
         context: The context in which the constant is used (e.g., "game_state", "weather", etc.)
-        
+
     Returns:
         A string describing the constant, or None if not recognized
     """
@@ -268,16 +261,17 @@ def identify_game_constant(value: int, context: str) -> Optional[str]:
         return MONTHS[value]
     elif context == "item" and value in ITEM_TYPES:
         return ITEM_TYPES[value]
-    
+
     return None
+
 
 def identify_memory_address(address: int) -> Optional[str]:
     """
     Identify a memory address based on known game memory locations.
-    
+
     Args:
         address: The memory address
-        
+
     Returns:
         A string describing the memory location, or None if not recognized
     """
@@ -289,180 +283,265 @@ def identify_memory_address(address: int) -> Optional[str]:
         return SOUND_ADDRESSES[address]
     elif address in INPUT_ADDRESSES:
         return INPUT_ADDRESSES[address]
-    
+
     # Check for array accesses
     for base_addr, name in MEMORY_ADDRESSES.items():
         if address >= base_addr and address < base_addr + 0x20:
             offset = address - base_addr
             return f"{name}[{offset}]"
-    
+
     return None
+
 
 def identify_game_pattern(code: str) -> Optional[str]:
     """
     Identify a game-specific code pattern.
-    
+
     Args:
         code: The code to analyze
-        
+
     Returns:
         A string describing the pattern, or None if not recognized
     """
     for pattern, description in OREGON_TRAIL_PATTERNS.items():
         if re.search(pattern, code, re.IGNORECASE):
             return description
-    
+
     return None
+
 
 def enhance_with_game_knowledge(pseudocode: str) -> str:
     """
     Enhance pseudocode with Oregon Trail specific knowledge.
-    
+
     Args:
         pseudocode: The pseudocode to enhance
-        
+
     Returns:
         Enhanced pseudocode with game-specific information
     """
     enhanced = pseudocode
-    
+
     # Replace memory addresses with meaningful names
     for addr, name in MEMORY_ADDRESSES.items():
         addr_str = f"0x{addr:X}"
-        enhanced = re.sub(r'\[' + addr_str + r'\]', f"[{name}]", enhanced)
-        enhanced = re.sub(r'\[' + addr_str.lower() + r'\]', f"[{name}]", enhanced)
-    
+        enhanced = re.sub(r"\[" + addr_str + r"\]", f"[{name}]", enhanced)
+        enhanced = re.sub(r"\[" + addr_str.lower() + r"\]", f"[{name}]", enhanced)
+
     # Replace graphics addresses
     for addr, name in GRAPHICS_ADDRESSES.items():
         addr_str = f"0x{addr:X}"
-        enhanced = re.sub(r'\[' + addr_str + r'\]', f"[{name}]", enhanced)
-        enhanced = re.sub(r'\[' + addr_str.lower() + r'\]', f"[{name}]", enhanced)
-    
+        enhanced = re.sub(r"\[" + addr_str + r"\]", f"[{name}]", enhanced)
+        enhanced = re.sub(r"\[" + addr_str.lower() + r"\]", f"[{name}]", enhanced)
+
     # Replace sound addresses
     for addr, name in SOUND_ADDRESSES.items():
         addr_str = f"0x{addr:X}"
-        enhanced = re.sub(r'\[' + addr_str + r'\]', f"[{name}]", enhanced)
-        enhanced = re.sub(r'\[' + addr_str.lower() + r'\]', f"[{name}]", enhanced)
-    
+        enhanced = re.sub(r"\[" + addr_str + r"\]", f"[{name}]", enhanced)
+        enhanced = re.sub(r"\[" + addr_str.lower() + r"\]", f"[{name}]", enhanced)
+
     # Replace input addresses
     for addr, name in INPUT_ADDRESSES.items():
         addr_str = f"0x{addr:X}"
-        enhanced = re.sub(r'\[' + addr_str + r'\]', f"[{name}]", enhanced)
-        enhanced = re.sub(r'\[' + addr_str.lower() + r'\]', f"[{name}]", enhanced)
-    
+        enhanced = re.sub(r"\[" + addr_str + r"\]", f"[{name}]", enhanced)
+        enhanced = re.sub(r"\[" + addr_str.lower() + r"\]", f"[{name}]", enhanced)
+
     # Replace game state constants
     for value, name in GAME_STATES.items():
-        enhanced = re.sub(r'cmp\s+word\s+ptr\s+\[game_state\],\s*' + str(value) + r'\b', f"cmp word ptr [game_state], {name} // {value}", enhanced)
-        enhanced = re.sub(r'mov\s+word\s+ptr\s+\[game_state\],\s*' + str(value) + r'\b', f"mov word ptr [game_state], {name} // {value}", enhanced)
-    
+        enhanced = re.sub(
+            r"cmp\s+word\s+ptr\s+\[game_state\],\s*" + str(value) + r"\b",
+            f"cmp word ptr [game_state], {name} // {value}",
+            enhanced,
+        )
+        enhanced = re.sub(
+            r"mov\s+word\s+ptr\s+\[game_state\],\s*" + str(value) + r"\b",
+            f"mov word ptr [game_state], {name} // {value}",
+            enhanced,
+        )
+
     # Replace profession constants
     for value, name in PROFESSIONS.items():
-        enhanced = re.sub(r'cmp\s+word\s+ptr\s+\[profession_type\],\s*' + str(value) + r'\b', f"cmp word ptr [profession_type], {name} // {value}", enhanced)
-        enhanced = re.sub(r'mov\s+word\s+ptr\s+\[profession_type\],\s*' + str(value) + r'\b', f"mov word ptr [profession_type], {name} // {value}", enhanced)
-    
+        enhanced = re.sub(
+            r"cmp\s+word\s+ptr\s+\[profession_type\],\s*" + str(value) + r"\b",
+            f"cmp word ptr [profession_type], {name} // {value}",
+            enhanced,
+        )
+        enhanced = re.sub(
+            r"mov\s+word\s+ptr\s+\[profession_type\],\s*" + str(value) + r"\b",
+            f"mov word ptr [profession_type], {name} // {value}",
+            enhanced,
+        )
+
     # Replace weather constants
     for value, name in WEATHER_CONDITIONS.items():
-        enhanced = re.sub(r'cmp\s+word\s+ptr\s+\[current_weather\],\s*' + str(value) + r'\b', f"cmp word ptr [current_weather], {name} // {value}", enhanced)
-        enhanced = re.sub(r'mov\s+word\s+ptr\s+\[current_weather\],\s*' + str(value) + r'\b', f"mov word ptr [current_weather], {name} // {value}", enhanced)
-    
+        enhanced = re.sub(
+            r"cmp\s+word\s+ptr\s+\[current_weather\],\s*" + str(value) + r"\b",
+            f"cmp word ptr [current_weather], {name} // {value}",
+            enhanced,
+        )
+        enhanced = re.sub(
+            r"mov\s+word\s+ptr\s+\[current_weather\],\s*" + str(value) + r"\b",
+            f"mov word ptr [current_weather], {name} // {value}",
+            enhanced,
+        )
+
     # Replace pace constants
     for value, name in PACE_SETTINGS.items():
-        enhanced = re.sub(r'cmp\s+word\s+ptr\s+\[current_pace\],\s*' + str(value) + r'\b', f"cmp word ptr [current_pace], {name} // {value}", enhanced)
-        enhanced = re.sub(r'mov\s+word\s+ptr\s+\[current_pace\],\s*' + str(value) + r'\b', f"mov word ptr [current_pace], {name} // {value}", enhanced)
-    
+        enhanced = re.sub(
+            r"cmp\s+word\s+ptr\s+\[current_pace\],\s*" + str(value) + r"\b",
+            f"cmp word ptr [current_pace], {name} // {value}",
+            enhanced,
+        )
+        enhanced = re.sub(
+            r"mov\s+word\s+ptr\s+\[current_pace\],\s*" + str(value) + r"\b",
+            f"mov word ptr [current_pace], {name} // {value}",
+            enhanced,
+        )
+
     # Replace ration constants
     for value, name in RATION_SETTINGS.items():
-        enhanced = re.sub(r'cmp\s+word\s+ptr\s+\[current_rations\],\s*' + str(value) + r'\b', f"cmp word ptr [current_rations], {name} // {value}", enhanced)
-        enhanced = re.sub(r'mov\s+word\s+ptr\s+\[current_rations\],\s*' + str(value) + r'\b', f"mov word ptr [current_rations], {name} // {value}", enhanced)
-    
+        enhanced = re.sub(
+            r"cmp\s+word\s+ptr\s+\[current_rations\],\s*" + str(value) + r"\b",
+            f"cmp word ptr [current_rations], {name} // {value}",
+            enhanced,
+        )
+        enhanced = re.sub(
+            r"mov\s+word\s+ptr\s+\[current_rations\],\s*" + str(value) + r"\b",
+            f"mov word ptr [current_rations], {name} // {value}",
+            enhanced,
+        )
+
     # Replace landmark constants
     for value, name in LANDMARKS.items():
-        enhanced = re.sub(r'cmp\s+word\s+ptr\s+\[current_landmark_index\],\s*' + str(value) + r'\b', f"cmp word ptr [current_landmark_index], {name} // {value}", enhanced)
-        enhanced = re.sub(r'mov\s+word\s+ptr\s+\[current_landmark_index\],\s*' + str(value) + r'\b', f"mov word ptr [current_landmark_index], {name} // {value}", enhanced)
-    
+        enhanced = re.sub(
+            r"cmp\s+word\s+ptr\s+\[current_landmark_index\],\s*" + str(value) + r"\b",
+            f"cmp word ptr [current_landmark_index], {name} // {value}",
+            enhanced,
+        )
+        enhanced = re.sub(
+            r"mov\s+word\s+ptr\s+\[current_landmark_index\],\s*" + str(value) + r"\b",
+            f"mov word ptr [current_landmark_index], {name} // {value}",
+            enhanced,
+        )
+
     # Replace event constants
     for value, name in EVENTS.items():
-        enhanced = re.sub(r'cmp\s+word\s+ptr\s+\[next_event_type\],\s*' + str(value) + r'\b', f"cmp word ptr [next_event_type], {name} // {value}", enhanced)
-        enhanced = re.sub(r'mov\s+word\s+ptr\s+\[next_event_type\],\s*' + str(value) + r'\b', f"mov word ptr [next_event_type], {name} // {value}", enhanced)
-    
+        enhanced = re.sub(
+            r"cmp\s+word\s+ptr\s+\[next_event_type\],\s*" + str(value) + r"\b",
+            f"cmp word ptr [next_event_type], {name} // {value}",
+            enhanced,
+        )
+        enhanced = re.sub(
+            r"mov\s+word\s+ptr\s+\[next_event_type\],\s*" + str(value) + r"\b",
+            f"mov word ptr [next_event_type], {name} // {value}",
+            enhanced,
+        )
+
     return enhanced
 
-def identify_game_function(function_name: str, instructions: List[str]) -> Optional[str]:
+
+def identify_game_function(
+    function_name: str, instructions: List[str]
+) -> Optional[str]:
     """
     Identify the purpose of a function based on game-specific knowledge.
-    
+
     Args:
         function_name: The name of the function
         instructions: The instructions in the function
-        
+
     Returns:
         A string describing the function's purpose, or None if not recognized
     """
     # Convert instructions to a single string for pattern matching
     code = "\n".join(instructions)
-    
+
     # Check for travel-related functions
-    if re.search(r'mov\s+word\s+ptr\s+\[0x5c08\]', code) and re.search(r'add\s+word\s+ptr\s+\[0x5c08\]', code):
+    if re.search(r"mov\s+word\s+ptr\s+\[0x5c08\]", code) and re.search(
+        r"add\s+word\s+ptr\s+\[0x5c08\]", code
+    ):
         return "Update travel distance"
-    
+
     # Check for health-related functions
-    if re.search(r'mov\s+word\s+ptr\s+\[0x5c0e\]', code) and re.search(r'sub\s+word\s+ptr\s+\[0x5c0e\]', code):
+    if re.search(r"mov\s+word\s+ptr\s+\[0x5c0e\]", code) and re.search(
+        r"sub\s+word\s+ptr\s+\[0x5c0e\]", code
+    ):
         return "Update player health"
-    
+
     # Check for food-related functions
-    if re.search(r'mov\s+word\s+ptr\s+\[0x5c14\]', code) and re.search(r'sub\s+word\s+ptr\s+\[0x5c14\]', code):
+    if re.search(r"mov\s+word\s+ptr\s+\[0x5c14\]", code) and re.search(
+        r"sub\s+word\s+ptr\s+\[0x5c14\]", code
+    ):
         return "Update food supplies"
-    
+
     # Check for money-related functions
-    if re.search(r'mov\s+word\s+ptr\s+\[0x5c16\]', code) and re.search(r'sub\s+word\s+ptr\s+\[0x5c16\]', code):
+    if re.search(r"mov\s+word\s+ptr\s+\[0x5c16\]", code) and re.search(
+        r"sub\s+word\s+ptr\s+\[0x5c16\]", code
+    ):
         return "Update money"
-    
+
     # Check for random number generation
-    if re.search(r'mov\s+ax,\s*word\s+ptr\s+\[0x5c32\]', code) and re.search(r'mul', code):
+    if re.search(r"mov\s+ax,\s*word\s+ptr\s+\[0x5c32\]", code) and re.search(
+        r"mul", code
+    ):
         return "Generate random number"
-    
+
     # Check for weather-related functions
-    if re.search(r'mov\s+word\s+ptr\s+\[0x5c0c\]', code):
+    if re.search(r"mov\s+word\s+ptr\s+\[0x5c0c\]", code):
         return "Update weather conditions"
-    
+
     # Check for river crossing functions
-    if re.search(r'cmp\s+word\s+ptr\s+\[0x5c2a\]', code) and re.search(r'cmp\s+word\s+ptr\s+\[0x5c2c\]', code):
+    if re.search(r"cmp\s+word\s+ptr\s+\[0x5c2a\]", code) and re.search(
+        r"cmp\s+word\s+ptr\s+\[0x5c2c\]", code
+    ):
         return "Handle river crossing"
-    
+
     # Check for event-related functions
-    if re.search(r'mov\s+word\s+ptr\s+\[0x5c30\]', code):
+    if re.search(r"mov\s+word\s+ptr\s+\[0x5c30\]", code):
         return "Handle game event"
-    
+
     # Check for landmark-related functions
-    if re.search(r'inc\s+word\s+ptr\s+\[0x5c28\]', code) or re.search(r'mov\s+word\s+ptr\s+\[0x5c28\]', code):
+    if re.search(r"inc\s+word\s+ptr\s+\[0x5c28\]", code) or re.search(
+        r"mov\s+word\s+ptr\s+\[0x5c28\]", code
+    ):
         return "Handle landmark arrival"
-    
+
     # Check for hunting-related functions
-    if re.search(r'mov\s+word\s+ptr\s+\[0x5c1c\]', code) and re.search(r'sub\s+word\s+ptr\s+\[0x5c1c\]', code):
+    if re.search(r"mov\s+word\s+ptr\s+\[0x5c1c\]", code) and re.search(
+        r"sub\s+word\s+ptr\s+\[0x5c1c\]", code
+    ):
         return "Handle hunting"
-    
+
     # Check for trading-related functions
-    if re.search(r'mov\s+word\s+ptr\s+\[0x5c16\]', code) and re.search(r'add\s+word\s+ptr\s+\[0x5c16\]', code):
+    if re.search(r"mov\s+word\s+ptr\s+\[0x5c16\]", code) and re.search(
+        r"add\s+word\s+ptr\s+\[0x5c16\]", code
+    ):
         return "Handle trading"
-    
+
     # Check for date/time-related functions
-    if re.search(r'inc\s+word\s+ptr\s+\[0x5c04\]', code) or re.search(r'mov\s+word\s+ptr\s+\[0x5c04\]', code):
+    if re.search(r"inc\s+word\s+ptr\s+\[0x5c04\]", code) or re.search(
+        r"mov\s+word\s+ptr\s+\[0x5c04\]", code
+    ):
         return "Update game date"
-    
+
     # Check for graphics-related functions
-    if re.search(r'mov\s+ax,\s*0x13', code) and re.search(r'int\s+0x10', code):
+    if re.search(r"mov\s+ax,\s*0x13", code) and re.search(r"int\s+0x10", code):
         return "Set graphics mode"
-    
+
     # Check for sound-related functions
-    if re.search(r'mov\s+word\s+ptr\s+\[0x6102\]', code) or re.search(r'mov\s+word\s+ptr\s+\[0x6104\]', code):
+    if re.search(r"mov\s+word\s+ptr\s+\[0x6102\]", code) or re.search(
+        r"mov\s+word\s+ptr\s+\[0x6104\]", code
+    ):
         return "Play sound or music"
-    
+
     # Check for input-related functions
-    if re.search(r'int\s+0x16', code) and re.search(r'mov\s+word\s+ptr\s+\[0x6200\]', code):
+    if re.search(r"int\s+0x16", code) and re.search(
+        r"mov\s+word\s+ptr\s+\[0x6200\]", code
+    ):
         return "Handle keyboard input"
-    
+
     # Check for save/load functions
-    if re.search(r'mov\s+ah,\s*0x3c', code) or re.search(r'mov\s+ah,\s*0x3d', code):
+    if re.search(r"mov\s+ah,\s*0x3c", code) or re.search(r"mov\s+ah,\s*0x3d", code):
         return "Save or load game"
-    
+
     return None

@@ -55,10 +55,10 @@ def main():
         decompiler = DOSDecompiler(args.file)
 
     decompiler.decompile()
-    
+
     # Save output
     os.makedirs(args.output, exist_ok=True)
-    
+
     # Save header information
     with open(os.path.join(args.output, "header.txt"), "w") as f:
         f.write(f"Filename: {decompiler.filename}\n")
@@ -67,19 +67,19 @@ def main():
         f.write("\nSegments:\n")
         for segment in decompiler.segments:
             f.write(f"  {segment}\n")
-    
+
     # Save disassembly
     with open(os.path.join(args.output, "disassembly.asm"), "w") as f:
         for segment in decompiler.segments:
             f.write(f"; Segment {segment.name}\n")
             for instr in segment.instructions:
                 f.write(f"{instr.address:08X}: {instr.mnemonic} {instr.operands}\n")
-    
+
     # Save strings
     with open(os.path.join(args.output, "strings.txt"), "w") as f:
         for addr, string in sorted(decompiler.strings.items()):
             f.write(f'{addr:08X}: "{string}"\n')
-    
+
     # Save code (pseudocode or C code)
     if args.c_code and isinstance(decompiler, EnhancedDOSDecompiler) and args.improved:
         # Generate C code
@@ -90,7 +90,7 @@ def main():
         # Generate pseudocode
         with open(os.path.join(args.output, "pseudocode.c"), "w") as f:
             f.write(decompiler.generate_pseudocode())
-    
+
     print(f"Output saved to {args.output}")
 
 

@@ -29,6 +29,6 @@ from .oregon_trail_specific import (
     identify_memory_address,
     identify_game_pattern,
     enhance_with_game_knowledge,
-    identify_game_function
+    identify_game_function,
 )
 from .c_code_generator import generate_c_code

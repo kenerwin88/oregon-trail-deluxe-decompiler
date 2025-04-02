@@ -16,14 +16,9 @@ from .variable_naming import rename_variables, apply_variable_renaming
 from .function_analysis import update_function_signature
 from .data_structures import update_function_with_data_structures
 from .comment_generator import add_comments_to_function
-from .oregon_trail_specific import (
-    identify_game_constant,
-    identify_memory_address,
-    identify_game_pattern,
-    enhance_with_game_knowledge,
-    identify_game_function
-)
+from .oregon_trail_specific import enhance_with_game_knowledge, identify_game_function
 from .c_code_generator import generate_c_code
+from .code_structure_analyzer import analyze_code_structure, CodeStructureAnalyzer
 
 
 class EnhancedDOSDecompiler(DOSDecompiler):
@@ -72,10 +67,13 @@ class EnhancedDOSDecompiler(DOSDecompiler):
 
                 # Calculate function complexity
                 func.calculate_complexity()
-                
+
                 # Identify game-specific function purpose
                 if not func.purpose:
-                    instructions_text = [f"{instr.mnemonic} {instr.operands}" for instr in func.instructions]
+                    instructions_text = [
+                        f"{instr.mnemonic} {instr.operands}"
+                        for instr in func.instructions
+                    ]
                     game_purpose = identify_game_function(func.name, instructions_text)
                     if game_purpose:
                         func.purpose = game_purpose
@@ -425,7 +423,7 @@ class EnhancedDOSDecompiler(DOSDecompiler):
             pseudocode.append("")
 
         print("Pseudocode generation completed")
-        
+
         # Apply Oregon Trail specific enhancements if improved decompiler is enabled
         if self.use_improved_decompiler:
             print("Applying Oregon Trail specific enhancements...")
@@ -434,19 +432,19 @@ class EnhancedDOSDecompiler(DOSDecompiler):
             return pseudocode_str
         else:
             return "\n".join(pseudocode)
-            
-    def generate_c_code(self):
-        """Generate readable C code from the disassembled functions"""
-        print("Generating C code...")
+
+    def analyze_code_structure(self):
+        """Analyze the code structure to identify higher-level patterns"""
+        print("Analyzing code structure...")
         
-        # Make sure all functions have been properly analyzed
+        # Make sure all functions have been properly analyzed first
         for function in self.functions:
             # Skip functions without instructions
             if not function.instructions:
                 continue
                 
             # Analyze function parameters and return values if not already done
-            if not hasattr(function, 'signature') or not function.signature:
+            if not hasattr(function, "signature") or not function.signature:
                 update_function_signature(function)
             
             # Analyze data structures if not already done
@@ -454,22 +452,75 @@ class EnhancedDOSDecompiler(DOSDecompiler):
             
             # Rename variables to more meaningful names if not already done
             if hasattr(function, "variables") and function.variables:
-                if not any(hasattr(var, 'is_renamed') and var.is_renamed for var in function.variables.values()):
+                if not any(
+                    hasattr(var, "is_renamed") and var.is_renamed
+                    for var in function.variables.values()
+                ):
                     rename_variables(function)
             
             # Add comments to function if not already done
             add_comments_to_function(function)
             
             # Identify game-specific function purpose if not already done
-            if not hasattr(function, 'purpose') or not function.purpose:
-                instructions_text = [f"{instr.mnemonic} {instr.operands}" for instr in function.instructions]
+            if not hasattr(function, "purpose") or not function.purpose:
+                instructions_text = [
+                    f"{instr.mnemonic} {instr.operands}"
+                    for instr in function.instructions
+                ]
                 game_purpose = identify_game_function(function.name, instructions_text)
                 if game_purpose:
                     function.purpose = game_purpose
         
+        # Analyze code structure
+        self.structure_analyzer = analyze_code_structure(self.functions)
+        
+        # Generate a report
+        report = self.structure_analyzer.generate_structure_report()
+        
+        print("Code structure analysis completed")
+        return report
+        
+    def generate_c_code(self):
+        """Generate readable C code from the disassembled functions"""
+        print("Generating C code...")
+
+        # Make sure all functions have been properly analyzed
+        for function in self.functions:
+            # Skip functions without instructions
+            if not function.instructions:
+                continue
+
+            # Analyze function parameters and return values if not already done
+            if not hasattr(function, "signature") or not function.signature:
+                update_function_signature(function)
+
+            # Analyze data structures if not already done
+            update_function_with_data_structures(function)
+
+            # Rename variables to more meaningful names if not already done
+            if hasattr(function, "variables") and function.variables:
+                if not any(
+                    hasattr(var, "is_renamed") and var.is_renamed
+                    for var in function.variables.values()
+                ):
+                    rename_variables(function)
+
+            # Add comments to function if not already done
+            add_comments_to_function(function)
+
+            # Identify game-specific function purpose if not already done
+            if not hasattr(function, "purpose") or not function.purpose:
+                instructions_text = [
+                    f"{instr.mnemonic} {instr.operands}"
+                    for instr in function.instructions
+                ]
+                game_purpose = identify_game_function(function.name, instructions_text)
+                if game_purpose:
+                    function.purpose = game_purpose
+
         # Generate C code
         c_code = generate_c_code(self.functions)
-        
+
         print("C code generation completed")
         return c_code
 
