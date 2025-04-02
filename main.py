@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 Main entry point for Oregon Trail decompiler tools.
-Provides command-line interface for extracting and converting game files.
+Provides command-line interface for extracting, converting, and decompiling
+the Oregon Trail game files.
 """
 
 import argparse
@@ -12,12 +13,11 @@ import importlib
 
 from tools.gxl_extractor import GXLExtractor, set_debug as set_gxl_debug
 from tools.convert import convert_all, set_debug as set_convert_debug
+from tools.decompiler.utils import setup_logging
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(levelname).1s %(module)s: %(message)s", force=True
-)
 logger = logging.getLogger(__name__)
+setup_logging(level=logging.INFO)
 
 
 def extract_gxl(args):
@@ -233,6 +233,10 @@ def decompile_executable(args):
         # Add resource directory if specified
         if args.resource_dir:
             sys_args.extend(["--resource-dir", args.resource_dir])
+            
+        # Add debug flag if specified
+        if args.debug:
+            sys_args.append("--debug")
         
         # Check if file exists
         if not os.path.exists(args.file):
@@ -256,7 +260,7 @@ def decompile_executable(args):
             logger.error(f"Error output: {result.stderr}")
         else:
             logger.info(f"Decompiler completed successfully")
-            logger.info(f"Output: {result.stdout}")
+            logger.info(f"Output directory: {os.path.abspath(args.output)}")
             
     except Exception as e:
         logger.error(f"Error running decompiler: {str(e)}")
@@ -267,7 +271,7 @@ def decompile_executable(args):
 def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(
-        description="Oregon Trail Decompiler Tools - Extracts and converts game assets to modern formats"
+        description="Oregon Trail Decompiler Tools - Extracts, converts, and decompiles game assets"
     )
     subparsers = parser.add_subparsers(dest="command", help="Command to execute")
 
@@ -343,6 +347,10 @@ def main():
     decompile_parser.add_argument(
         "--resource-dir",
         help="Directory containing game resource files for resource analysis"
+    )
+    decompile_parser.add_argument(
+        "--debug", "-d", action="store_true",
+        help="Enable debug logging"
     )
     
     # Add disable options (all powerful features are enabled by default)

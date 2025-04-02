@@ -1,166 +1,120 @@
 """
-Utility functions for the DOS decompiler.
+Utility functions for the Oregon Trail decompiler.
 """
 
+import logging
+import os
 import re
-from typing import Dict, List, Tuple
-
-from .models import Variable
 
 
-def replace_memory_references(operands: str, variables: Dict[str, Variable]) -> str:
+def setup_logging(level=logging.INFO):
     """
-    Replace memory references with variable names.
-
+    Set up logging with appropriate formatting.
+    
     Args:
-        operands: The instruction operands string
-        variables: Dictionary of variables (name -> Variable)
-
-    Returns:
-        The operands string with memory references replaced by variable names
+        level: Logging level to use
     """
-    if not variables:
-        return operands
-
-    result = operands
-
-    # Create a mapping of addresses to variable names
-    addr_to_var = {}
-    for var_name, var in variables.items():
-        if var.address is not None:
-            addr_to_var[var.address] = var_name
-
-    # Find all memory references in the operands
-    # Pattern: [0xXXXX] or word ptr [0xXXXX] or byte ptr [0xXXXX], etc.
-    mem_refs = re.finditer(
-        r"((?:word|byte|dword|qword)?\s*ptr\s*)?\[0x([0-9A-Fa-f]+)(?:\s*\+\s*([^\]]+))?\]",
-        result,
+    logging.basicConfig(
+        level=level,
+        format="%(levelname).1s %(module)s: %(message)s",
+        force=True
     )
+    return logging.getLogger(__name__)
 
-    # Replace each memory reference with the corresponding variable name
-    for match in mem_refs:
-        ptr_type = match.group(1) or ""
-        addr_hex = match.group(2)
-        offset = match.group(3)
 
+def ensure_directory(directory):
+    """
+    Make sure a directory exists, creating it if necessary.
+    
+    Args:
+        directory: The directory path to ensure exists
+    """
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    return directory
+
+
+def hex_string_to_int(hex_string):
+    """
+    Convert a hex string to an integer, handling various formats.
+    
+    Args:
+        hex_string: Hex string (e.g., "0x1234", "1234h", "1234")
+        
+    Returns:
+        Integer value
+    """
+    hex_string = hex_string.strip()
+    
+    if hex_string.startswith("0x"):
+        return int(hex_string[2:], 16)
+    elif hex_string.endswith("h"):
+        return int(hex_string[:-1], 16)
+    else:
         try:
-            addr = int(addr_hex, 16)
-            if addr in addr_to_var:
-                var_name = addr_to_var[addr]
-
-                if offset:
-                    # Memory reference with offset: [0xXXXX + offset]
-                    if ptr_type:
-                        # With ptr type: word ptr [0xXXXX + offset]
-                        old_ref = f"{ptr_type}[0x{addr_hex} + {offset}]"
-                        new_ref = f"{ptr_type}{var_name}[{offset}]"
-                    else:
-                        # Without ptr type: [0xXXXX + offset]
-                        old_ref = f"[0x{addr_hex} + {offset}]"
-                        new_ref = f"{var_name}[{offset}]"
-                else:
-                    # Simple memory reference: [0xXXXX]
-                    if ptr_type:
-                        # With ptr type: word ptr [0xXXXX]
-                        old_ref = f"{ptr_type}[0x{addr_hex}]"
-                        new_ref = f"{ptr_type}{var_name}"
-                    else:
-                        # Without ptr type: [0xXXXX]
-                        old_ref = f"[0x{addr_hex}]"
-                        new_ref = var_name
-
-                result = result.replace(old_ref, new_ref)
+            return int(hex_string, 16)
         except ValueError:
-            pass
+            try:
+                return int(hex_string)
+            except ValueError:
+                return None
 
+
+def replace_memory_references(code, address_map):
+    """
+    Replace memory addresses with symbolic names.
+    
+    Args:
+        code: The code to process
+        address_map: Dictionary mapping addresses to symbolic names
+        
+    Returns:
+        Code with memory references replaced
+    """
+    result = code
+    for addr, name in address_map.items():
+        addr_str = f"0x{addr:X}"
+        result = re.sub(r'\[' + addr_str + r'\]', f'[{name}]', result)
+        result = re.sub(r'\b' + addr_str + r'\b', name, result)
+    
     return result
 
 
-def infer_variable_type(var: Variable, instructions: List) -> Tuple[str, int]:
+def translate_condition(condition):
     """
-    Infer the type of a variable based on its usage.
-
+    Translate a condition mnemonic to a more readable form.
+    
     Args:
-        var: The variable to infer the type for
-        instructions: List of instructions that reference the variable
-
+        condition: The condition mnemonic (e.g., "jz", "jne")
+        
     Returns:
-        A tuple of (type, size)
+        Human-readable condition
     """
-    # Default type and size
-    var_type = "int"
-    var_size = 2
-
-    # Check if the variable is used with byte ptr, word ptr, or dword ptr
-    for instr in instructions:
-        if var.address is not None:
-            addr_hex = f"0x{var.address:X}"
-
-            if "byte ptr" in instr.operands and addr_hex in instr.operands:
-                var_type = "char"
-                var_size = 1
-                break
-            elif "word ptr" in instr.operands and addr_hex in instr.operands:
-                var_type = "int"
-                var_size = 2
-                break
-            elif "dword ptr" in instr.operands and addr_hex in instr.operands:
-                var_type = "long"
-                var_size = 4
-                break
-
-    # Check if the variable is used in string operations
-    for instr in instructions:
-        if instr.mnemonic in [
-            "movsb",
-            "movsw",
-            "movsd",
-            "stosb",
-            "stosw",
-            "stosd",
-            "lodsb",
-            "lodsw",
-            "lodsd",
-        ]:
-            if var.address is not None:
-                addr_hex = f"0x{var.address:X}"
-                if addr_hex in instr.operands:
-                    if instr.mnemonic in ["movsb", "stosb", "lodsb"]:
-                        var_type = "char[]"
-                        var_size = 1
-                    elif instr.mnemonic in ["movsw", "stosw", "lodsw"]:
-                        var_type = "int[]"
-                        var_size = 2
-                    elif instr.mnemonic in ["movsd", "stosd", "lodsd"]:
-                        var_type = "long[]"
-                        var_size = 4
-                    break
-
-    return var_type, var_size
-
-
-def translate_condition(mnemonic: str) -> str:
-    """
-    Translate a jump mnemonic to a C-like condition.
-
-    Args:
-        mnemonic: The jump mnemonic
-
-    Returns:
-        A C-like condition string
-    """
-    translations = {
-        "je": "a == b",
-        "jne": "a != b",
-        "jz": "a == 0",
-        "jnz": "a != 0",
-        "jg": "a > b",
-        "jge": "a >= b",
-        "jl": "a < b",
-        "jle": "a <= b",
-        "ja": "a > b (unsigned)",
-        "jae": "a >= b (unsigned)",
-        "jb": "a < b (unsigned)",
-        "jbe": "a <= b (unsigned)",
+    conditions = {
+        "jz": "if zero",
+        "je": "if equal",
+        "jnz": "if not zero",
+        "jne": "if not equal",
+        "jg": "if greater",
+        "jge": "if greater or equal",
+        "jl": "if less",
+        "jle": "if less or equal",
+        "ja": "if above",
+        "jae": "if above or equal",
+        "jb": "if below",
+        "jbe": "if below or equal",
+        "jc": "if carry",
+        "jnc": "if not carry",
+        "jo": "if overflow",
+        "jno": "if not overflow",
+        "js": "if sign",
+        "jns": "if not sign",
+        "jcxz": "if CX is zero",
+        "loop": "loop",
+        "loope": "loop if equal",
+        "loopz": "loop if zero",
+        "loopne": "loop if not equal",
+        "loopnz": "loop if not zero"
     }
-    return translations.get(mnemonic, f"condition_{mnemonic}")
+    
+    return conditions.get(condition.lower(), condition)
