@@ -1,9 +1,16 @@
 """
 Comprehensive C code generator for the Oregon Trail decompiler.
-This module transforms the analyzed functions into readable C code.
+This module transforms the analyzed functions into readable C code with
+game-specific knowledge integration.
 """
 
 from .control_flow import get_block_from_cfg
+from .oregon_trail_specific import (
+    enhance_c_code_with_game_knowledge,
+    enhance_function_signature,
+    identify_game_data_structures,
+    enhance_instruction_with_game_knowledge
+)
 
 def generate_c_code(functions, strings=None):
     """
@@ -16,6 +23,18 @@ def generate_c_code(functions, strings=None):
     Returns:
         Generated C code as a string
     """
+    # First, enhance functions with game-specific knowledge
+    for func in functions:
+        # Try to identify and enhance function signatures
+        enhance_function_signature(func)
+        
+        # Identify game-specific data structures
+        if hasattr(func, "instructions") and func.instructions:
+            structs = identify_game_data_structures(func)
+            if not hasattr(func, "struct_defs"):
+                func.struct_defs = {}
+            func.struct_defs.update(structs)
+    
     code = []
     
     # Add includes
@@ -127,7 +146,13 @@ def generate_c_code(functions, strings=None):
         code.append("}")
         code.append("")
     
-    return "\n".join(code)
+    # Generate the basic C code
+    c_code = "\n".join(code)
+    
+    # Enhance with game-specific knowledge
+    enhanced_code = enhance_c_code_with_game_knowledge(c_code, functions)
+    
+    return enhanced_code
 
 def get_function_implementation(func):
     """
@@ -178,8 +203,10 @@ def generate_structured_code_from_cfg(func):
             if hasattr(instr, "is_control_structure") and instr.is_control_structure:
                 continue
                 
-            # Convert instruction to C code
+            # Convert instruction to C code with game-specific enhancements
+            enhanced_instr = enhance_instruction_with_game_knowledge(instr)
             c_line = instruction_to_c(instr, func)
+            
             if c_line:
                 if hasattr(instr, "comment") and instr.comment:
                     lines.append(f"{indent}{c_line} // {instr.comment}")
@@ -229,10 +256,10 @@ def generate_structured_code_from_cfg(func):
             next_block = get_block_from_cfg(func.cfg, block.successors[0])
             if next_block:
                 process_block(next_block, indent)
+    
     # Start with the entry block
     if func.cfg and func.cfg.entry_block:
         process_block(func.cfg.entry_block)
-    
     
     return "\n".join(lines)
 
@@ -249,6 +276,9 @@ def generate_code_from_instructions(func):
     lines = []
     
     for instr in func.instructions:
+        # Enhance instruction with game-specific knowledge
+        enhance_instruction_with_game_knowledge(instr)
+        
         c_line = instruction_to_c(instr, func)
         if c_line:
             if hasattr(instr, "comment") and instr.comment:
@@ -293,6 +323,13 @@ def instruction_to_c(instr, func):
             elif src_var:
                 return f"{dest} = {src_var};"
             else:
+                # Special case for game-specific memory addresses
+                if "[game_state]" in dest or "[game_state]" in src:
+                    if "0x" in src:
+                        # Try to make value more readable for game states
+                        for state_val, state_name in {0: "GAME_STATE_MENU", 1: "GAME_STATE_SETUP"}.items():
+                            if f"0x{state_val}" in src or str(state_val) in src:
+                                return f"{dest} = {state_name};"
                 return f"{dest} = {src};"
     
     elif instr.mnemonic == "call":
@@ -301,6 +338,8 @@ def instruction_to_c(instr, func):
             target = int(instr.operands, 16)
             for target_func in func.all_functions if hasattr(func, "all_functions") else []:
                 if hasattr(target_func, "start_address") and target_func.start_address == target:
+                    if hasattr(target_func, "purpose") and target_func.purpose:
+                        return f"{target_func.name}();  // {target_func.purpose}"
                     return f"{target_func.name}();"
             return f"call_function_0x{target:X}();"
         except ValueError:
@@ -308,11 +347,16 @@ def instruction_to_c(instr, func):
             return f"call_via_{instr.operands}();"
     
     elif instr.mnemonic == "int":
-        # Handle DOS/BIOS interrupts
+        # Handle DOS/BIOS interrupts with more specific game-related knowledge
         if instr.operands == "0x21":
+            # DOS function
             return "dos_interrupt();"
         elif instr.operands == "0x10":
+            # Video services
             return "bios_video_interrupt();"
+        elif instr.operands == "0x33":
+            # Mouse services
+            return "mouse_interrupt();"
         return f"interrupt({instr.operands});"
     
     # For now, return a comment for other instructions
@@ -338,5 +382,17 @@ def get_variable_for_operand(operand, func):
             return var.name
         if hasattr(var, "memory_reference") and var.memory_reference in operand:
             return var.name
+    
+    # Check for game-specific memory references
+    if "0x5c00" in operand:
+        return "game_state"
+    elif "0x5c02" in operand:
+        return "current_month"
+    elif "0x5c04" in operand:
+        return "current_day"
+    elif "0x5c06" in operand:
+        return "current_year"
+    elif "0x5c08" in operand:
+        return "total_miles_traveled"
     
     return None
