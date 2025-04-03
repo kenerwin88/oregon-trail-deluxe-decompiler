@@ -507,6 +507,10 @@ class EnhancedDOSDecompiler(DOSDecompiler):
 
             # Add comments to function if not already done
             add_comments_to_function(function)
+            
+            # Calculate function complexity if not already done
+            if not hasattr(function, "complexity") or function.complexity == 0:
+                function.calculate_complexity()
 
             # Identify game-specific function purpose if not already done
             if not hasattr(function, "purpose") or not function.purpose:
@@ -517,9 +521,19 @@ class EnhancedDOSDecompiler(DOSDecompiler):
                 game_purpose = identify_game_function(function.name, instructions_text)
                 if game_purpose:
                     function.purpose = game_purpose
+            
+            # Give each function access to all functions for cross-referencing
+            function.all_functions = self.functions
+            
+            # Improve control flow structure if we have a CFG
+            if hasattr(function, "cfg") and function.cfg and function.cfg.entry_block:
+                structures = improve_control_flow(function.cfg)
+                function.cfg.loops = structures.get("loops", [])
+                function.cfg.if_statements = structures.get("if_statements", [])
+                function.cfg.switch_statements = structures.get("switch_statements", [])
 
-        # Generate C code
-        c_code = generate_c_code(self.functions)
+        # Generate C code using our improved generator
+        c_code = generate_c_code(self.functions, self.strings)
 
         print("C code generation completed")
         return c_code

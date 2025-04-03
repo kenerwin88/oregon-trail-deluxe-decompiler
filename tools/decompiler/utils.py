@@ -80,17 +80,19 @@ def replace_memory_references(code, address_map):
     return result
 
 
-def translate_condition(condition):
+def translate_condition(condition, operands=None):
     """
-    Translate a condition mnemonic to a more readable form.
+    Translate a condition mnemonic to a more readable form or C-like condition.
     
     Args:
         condition: The condition mnemonic (e.g., "jz", "jne")
+        operands: Optional operands for the condition
         
     Returns:
-        Human-readable condition
+        Human-readable condition or C-like condition depending on context
     """
-    conditions = {
+    # Human readable descriptions
+    condition_descriptions = {
         "jz": "if zero",
         "je": "if equal",
         "jnz": "if not zero",
@@ -117,4 +119,41 @@ def translate_condition(condition):
         "loopnz": "loop if not zero"
     }
     
-    return conditions.get(condition.lower(), condition)
+    # C-like condition expressions
+    c_conditions = {
+        "jz": "== 0",
+        "je": "== 0",
+        "jnz": "!= 0",
+        "jne": "!= 0",
+        "jg": "> 0",
+        "jge": ">= 0",
+        "jl": "< 0",
+        "jle": "<= 0",
+        "ja": "> 0",
+        "jae": ">= 0",
+        "jb": "< 0",
+        "jbe": "<= 0",
+        "jc": "& 1",  # Carry flag check
+        "jnc": "& 1 == 0",
+        "jo": "overflow",
+        "jno": "!overflow",
+        "js": "< 0",  # Sign flag (negative)
+        "jns": ">= 0"
+    }
+    
+    # If operands are provided, try to generate a C-like condition
+    if operands is not None:
+        # Get the base condition
+        cond = c_conditions.get(condition.lower(), condition)
+        
+        # Try to extract the comparison operands
+        if operands and ',' not in operands:
+            # This is likely a target address without comparison operands
+            # Default to using the condition with a presumed comparison against zero
+            return cond
+        
+        # Return the C-like condition
+        return cond
+    
+    # Otherwise, return the human-readable description
+    return condition_descriptions.get(condition.lower(), condition)

@@ -43,13 +43,18 @@ class DOSSegment:
     def __str__(self) -> str:
         return f"Segment {self.name}: {self.start_offset:08X} - {self.start_offset + self.size:08X}, Type: {self.type}"
 
-
 class BasicBlock:
     """Represents a basic block in the control flow graph"""
 
     def __init__(self, start_address: int):
         self.start_address = start_address
         self.instructions: List[X86Instruction] = []
+        self.successors: List[int] = []  # Addresses of successor blocks
+        
+    @property
+    def address(self):
+        """Backward compatibility property for accessing start_address as address"""
+        return self.start_address
         self.successors: List[int] = []  # Addresses of successor blocks
 
     def add_instruction(self, instruction: X86Instruction):
