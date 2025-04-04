@@ -1,0 +1,38 @@
+# Rust specific files
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# Asset conversion intermediates
+/temp/
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# Debug symbols
+*.pdb
+
+# Web build outputs
+*.wasm
+*.js
+*.html
+/dist/
+
+# Keep placeholder files in asset directories
+!assets/**/README.md
+!assets/**/.gitkeep
