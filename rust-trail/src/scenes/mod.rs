@@ -1,7 +1,8 @@
 // Scenes module - handles different game screens and their transitions
 
-// Export title screen module
-pub mod title;
+// Export title screen module (renamed)
+pub mod title_screen;
+
 // Submodules will be declared here as they're created
 // pub mod main_menu;
 // pub mod setup;
