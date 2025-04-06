@@ -29,14 +29,14 @@ pub struct Button {
     state: ButtonState,
     /// Associated action
     action: ButtonAction,
-    /// Click timer (for showing clicked state briefly)
-    click_timer: f32,
     /// Button label
     label: String,
     /// Sprite sheet texture
     texture: Option<Texture2D>,
     /// Button row in sprite sheet (0-3)
     sprite_row: usize,
+    /// Tracks if this button was pressed down (mouse button pressed while hovering)
+    was_pressed: bool,
 }
 
 impl Button {
@@ -78,17 +78,16 @@ impl Button {
             height: button_height,
             state: ButtonState::Normal,
             action: button_type,
-            click_timer: 0.0,
             label,
             texture: sprite_sheet,
             sprite_row,
+            was_pressed: false,
         }
     }
     
     /// Update button state based on mouse position and clicks
-    pub fn update(&mut self, dt: f32) -> Option<ButtonAction> {
+    pub fn update(&mut self, _dt: f32) -> Option<ButtonAction> {
         let mouse_pos = mouse_position();
-        let was_clicked = self.state == ButtonState::Clicked;
         
         // Check if mouse is over the button
         let is_hovering = 
@@ -97,31 +96,40 @@ impl Button {
             mouse_pos.1 >= self.position.y && 
             mouse_pos.1 <= self.position.y + self.height;
         
-        // Update click timer if button is in clicked state
-        if self.state == ButtonState::Clicked {
-            self.click_timer += dt;
-            if self.click_timer >= 0.1 {
-                self.state = ButtonState::Normal;
-                self.click_timer = 0.0;
-            }
-        } else if is_hovering {
-            // Check for mouse click when hovering
-            if is_mouse_button_pressed(MouseButton::Left) {
+        // Track mouse button state
+        let mouse_down = is_mouse_button_down(MouseButton::Left);
+        let mouse_released = is_mouse_button_released(MouseButton::Left);
+        
+        // Handle different cases
+        if is_hovering {
+            if mouse_down {
+                // Mouse is being held down while over the button
                 self.state = ButtonState::Clicked;
-                self.click_timer = 0.0;
+                if is_mouse_button_pressed(MouseButton::Left) {
+                    // Mouse was just pressed down
+                    self.was_pressed = true;
+                }
             } else {
+                // Mouse is over button but not pressed
                 self.state = ButtonState::Hover;
             }
         } else {
+            // Mouse is not over the button
             self.state = ButtonState::Normal;
         }
         
-        // Return action if button was clicked and now released
-        if was_clicked && self.state != ButtonState::Clicked {
-            Some(self.action)
-        } else {
-            None
+        // Check for click action (mouse was pressed on this button and now released while hovering)
+        if mouse_released && is_hovering && self.was_pressed {
+            self.was_pressed = false;
+            return Some(self.action);
         }
+        
+        // Reset was_pressed if mouse is released outside the button
+        if mouse_released {
+            self.was_pressed = false;
+        }
+        
+        None
     }
     
     /// Draw the button
@@ -148,29 +156,7 @@ impl Button {
                     ..Default::default()
                 },
             );
-            
-            // Highlight on hover (subtle glow effect)
-            if self.state == ButtonState::Hover {
-                draw_rectangle_lines(
-                    self.position.x - 2.0,
-                    self.position.y - 2.0,
-                    self.width + 4.0,
-                    self.height + 4.0,
-                    2.0,
-                    Color::new(1.0, 1.0, 1.0, 0.5) // Semi-transparent white
-                );
-            }
         } else {
-            // Fallback if texture is not available
-            let color = match self.state {
-                ButtonState::Normal => GRAY,
-                ButtonState::Hover => LIGHTGRAY,
-                ButtonState::Clicked => DARKGRAY,
-            };
-            
-            draw_rectangle(self.position.x, self.position.y, self.width, self.height, color);
-            draw_rectangle_lines(self.position.x, self.position.y, self.width, self.height, 2.0, BLACK);
-            
             // Draw button text
             let font_size = 20.0;
             let text_size = measure_text(&self.label, None, font_size as u16, 1.0);
