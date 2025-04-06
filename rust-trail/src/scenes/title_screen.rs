@@ -1,7 +1,7 @@
 use macroquad::prelude::*;
 use crate::engine::asset_loader::AssetManager;
+use crate::scenes::button::{Button, ButtonAction};
 
-/// Actions that can be triggered from the title screen
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TitleAction {
     StartGame,
@@ -10,92 +10,101 @@ pub enum TitleAction {
     Quit,
 }
 
-/// Represents the title screen state
 pub struct TitleScreen {
-    /// Title background texture
     background: Option<Texture2D>,
-    /// Time counter for animations
+    button_texture: Option<Texture2D>,
     time: f32,
-    /// Whether assets are loaded
     assets_loaded: bool,
+    buttons: Vec<Button>,
 }
 
 impl TitleScreen {
-    /// Create a new title screen
     pub fn new() -> Self {
         Self {
             background: None,
+            button_texture: None,
             time: 0.0,
             assets_loaded: false,
+            buttons: Vec::new(),
         }
     }
     
-    /// Load assets for the title screen
     pub async fn load_assets(&mut self, asset_manager: &mut AssetManager) {
-        // Load the title screen background
-        match asset_manager.load_texture("TITLE.png").await {
-            Ok(texture) => {
-                self.background = Some(texture);
-                self.assets_loaded = true;
-            },
-            Err(error) => {
-                println!("Failed to load title screen background: {}", error);
-                // We'll still mark assets as loaded so the game can proceed
-                self.assets_loaded = true;
-            }
+        // Load background
+        if let Ok(texture) = asset_manager.load_texture("TITLE.png").await {
+            self.background = Some(texture);
         }
+        
+        // Load button texture
+        if let Ok(texture) = asset_manager.load_texture("TITLEBTN.png").await {
+            self.button_texture = Some(texture);
+            self.init_buttons();
+        }
+        
+        self.assets_loaded = true;
     }
     
-    /// Update the title screen
+    fn init_buttons(&mut self) {
+        self.buttons.clear();
+        
+        let screen_w = screen_width();
+        let screen_h = screen_height();
+        let left_margin = 30.0;
+        
+        // Introduction button
+        self.buttons.push(Button::new(
+            ButtonAction::Introduction,
+            Vec2::new(left_margin, 250.0),
+            self.button_texture
+        ));
+        
+        // Options button
+        self.buttons.push(Button::new(
+            ButtonAction::Options,
+            Vec2::new(left_margin, 280.0),
+            self.button_texture
+        ));
+        
+        // Quit button
+        self.buttons.push(Button::new(
+            ButtonAction::Quit,
+            Vec2::new(left_margin, 310.0),
+            self.button_texture
+        ));
+        
+        // Travel Trail button
+        self.buttons.push(Button::new(
+            ButtonAction::TravelTrail,
+            Vec2::new(screen_w / 2.0 - 56.5, screen_h - 50.0),
+            self.button_texture
+        ));
+    }
+    
     pub fn update(&mut self, dt: f32) -> Option<TitleAction> {
-        // Update time counter for animations
         self.time += dt;
         
-        // Process keyboard input
+        // Keyboard shortcuts
         if is_key_pressed(KeyCode::Space) || is_key_pressed(KeyCode::Enter) {
             return Some(TitleAction::StartGame);
         }
-        
         if is_key_pressed(KeyCode::I) {
             return Some(TitleAction::Introduction);
         }
-        
         if is_key_pressed(KeyCode::O) {
             return Some(TitleAction::Options);
         }
-        
         if is_key_pressed(KeyCode::Escape) || is_key_pressed(KeyCode::Q) {
             return Some(TitleAction::Quit);
         }
         
-        // Process mouse input
-        if is_mouse_button_pressed(MouseButton::Left) {
-            let mouse_pos = mouse_position();
-            let screen_width = screen_width();
-            let screen_height = screen_height();
-            
-            // Bottom center - Travel Trail
-            if mouse_pos.1 > screen_height - 100.0 && 
-               mouse_pos.0 > screen_width / 2.0 - 75.0 && 
-               mouse_pos.0 < screen_width / 2.0 + 75.0 {
-                return Some(TitleAction::StartGame);
-            }
-            
-            // Left buttons area
-            if mouse_pos.0 < 200.0 {
-                // Introduction button
-                if mouse_pos.1 > 200.0 && mouse_pos.1 < 240.0 {
-                    return Some(TitleAction::Introduction);
-                }
-                
-                // Options button
-                if mouse_pos.1 > 260.0 && mouse_pos.1 < 300.0 {
-                    return Some(TitleAction::Options);
-                }
-                
-                // Quit button
-                if mouse_pos.1 > 320.0 && mouse_pos.1 < 360.0 {
-                    return Some(TitleAction::Quit);
+        // Button interactions
+        for button in &mut self.buttons {
+            if let Some(action) = button.update(dt) {
+                match action {
+                    ButtonAction::Introduction => return Some(TitleAction::Introduction),
+                    ButtonAction::Options => return Some(TitleAction::Options),
+                    ButtonAction::Quit => return Some(TitleAction::Quit),
+                    ButtonAction::TravelTrail => return Some(TitleAction::StartGame),
                 }
             }
         }
@@ -103,100 +112,56 @@ impl TitleScreen {
         None
     }
     
-    /// Draw the title screen
     pub fn draw(&self) {
         clear_background(BLACK);
         
+        let screen_w = screen_width();
+        let screen_h = screen_height();
+        
+        // Draw background
         if let Some(texture) = self.background {
-            // Draw the background centered on screen
-            let screen_width = screen_width();
-            let screen_height = screen_height();
-            
             draw_texture_ex(
                 texture,
                 0.0,
                 0.0,
                 WHITE,
                 DrawTextureParams {
-                    dest_size: Some(Vec2::new(screen_width, screen_height)),
+                    dest_size: Some(Vec2::new(screen_w, screen_h)),
                     ..Default::default()
-                },
+                }
             );
         } else {
-            // Fallback to text-based title
+            // Fallback title
             let title_text = "THE OREGON TRAIL";
-            let title_font_size = 40.0;
-            let title_size = measure_text(title_text, None, title_font_size as u16, 1.0);
-            
+            let font_size = 40.0;
+            let text_size = measure_text(title_text, None, font_size as u16, 1.0);
             draw_text(
                 title_text,
-                screen_width() / 2.0 - title_size.width / 2.0,
-                screen_height() / 3.0,
-                title_font_size,
-                WHITE,
-            );
-            
-            // Draw subtitle
-            let subtitle_text = "DELUXE EDITION";
-            let subtitle_font_size = 20.0;
-            let subtitle_size = measure_text(subtitle_text, None, subtitle_font_size as u16, 1.0);
-            
-            draw_text(
-                subtitle_text,
-                screen_width() / 2.0 - subtitle_size.width / 2.0,
-                screen_height() / 3.0 + 50.0,
-                subtitle_font_size,
-                WHITE,
+                screen_w / 2.0 - text_size.width / 2.0,
+                screen_h / 3.0,
+                font_size,
+                WHITE
             );
         }
         
-        // Draw buttons as colored rectangles
-        let screen_width = screen_width();
-        let screen_height = screen_height();
-        
-        // Travel the Trail button
-        draw_rectangle(screen_width / 2.0 - 75.0, screen_height - 100.0, 150.0, 40.0, GREEN);
-        draw_rectangle_lines(screen_width / 2.0 - 75.0, screen_height - 100.0, 150.0, 40.0, 2.0, DARKGREEN);
-        let travel_text = "Travel the Trail";
-        let text_dim = measure_text(travel_text, None, 20.0 as u16, 1.0);
-        draw_text(
-            travel_text,
-            screen_width / 2.0 - text_dim.width / 2.0,
-            screen_height - 80.0,
-            20.0,
-            WHITE
-        );
-        
-        // Introduction button
-        draw_rectangle(50.0, 200.0, 150.0, 40.0, BLUE);
-        draw_rectangle_lines(50.0, 200.0, 150.0, 40.0, 2.0, DARKBLUE);
-        draw_text("Introduction", 75.0, 225.0, 20.0, WHITE);
-        
-        // Options button
-        draw_rectangle(50.0, 260.0, 150.0, 40.0, PURPLE);
-        draw_rectangle_lines(50.0, 260.0, 150.0, 40.0, 2.0, DARKPURPLE);
-        draw_text("Options", 95.0, 285.0, 20.0, WHITE);
-        
-        // Quit button
-        draw_rectangle(50.0, 320.0, 150.0, 40.0, RED);
-        draw_rectangle_lines(50.0, 320.0, 150.0, 40.0, 2.0, MAROON);
-        draw_text("Quit", 110.0, 345.0, 20.0, WHITE);
+        // Draw buttons
+        for button in &self.buttons {
+            button.draw();
+        }
         
         // Draw copyright
-        let copyright_text = "© 2025 Oregon Trail Rewrite Project";
-        let copyright_font_size = 16.0;
-        let copyright_size = measure_text(copyright_text, None, copyright_font_size as u16, 1.0);
-        
+        let copyright = "© 2025 Oregon Trail Rewrite Project";
+        let font_size = 16.0;
+        let text_size = measure_text(copyright, None, font_size as u16, 1.0);
         draw_text(
-            copyright_text,
-            screen_width / 2.0 - copyright_size.width / 2.0,
-            screen_height - 30.0,
-            copyright_font_size,
-            GRAY,
+            copyright,
+            screen_w / 2.0 - text_size.width / 2.0,
+            screen_h - 30.0,
+            font_size,
+            GRAY
         );
     }
     
-    /// Check if the title screen assets are loaded
     pub fn is_loaded(&self) -> bool {
         self.assets_loaded
     }

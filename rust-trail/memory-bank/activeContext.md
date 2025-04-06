@@ -33,6 +33,10 @@ The project is currently in the early foundation phase, focusing on establishing
    - Corrected import paths in game.rs (`title` → `title_screen`)
    - Fixed color constants in title_screen.rs (replaced undefined `DARKRED` with `MAROON`)
    - Resolved variable shadowing issues with screen dimensions
+7. Enhanced title screen UI:
+   - Implemented sprite-based buttons using TITLEBTN.png
+   - Added proper button states (normal/clicked)
+   - Created reusable Button component for UI elements
 
 ### Technical Decisions Made
 1. Adopted state machine pattern for game screen management

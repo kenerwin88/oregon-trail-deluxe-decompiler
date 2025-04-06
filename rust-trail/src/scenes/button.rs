@@ -33,6 +33,10 @@ pub struct Button {
     click_timer: f32,
     /// Button label
     label: String,
+    /// Sprite sheet texture
+    texture: Option<Texture2D>,
+    /// Button row in sprite sheet (0-3)
+    sprite_row: usize,
 }
 
 impl Button {
@@ -40,11 +44,15 @@ impl Button {
     pub fn new(
         button_type: ButtonAction,
         position: Vec2,
-        _sprite_sheet: Texture2D, // Not used for now
+        sprite_sheet: Option<Texture2D>,
     ) -> Self {
-        // Button dimensions
-        let button_width = 150.0;
-        let button_height = 40.0;
+        // Determine button dimensions and sprite row based on button type
+        let (button_width, button_height, sprite_row) = match button_type {
+            ButtonAction::Introduction => (113.0, 20.0, 0),
+            ButtonAction::Options => (113.0, 20.0, 1),
+            ButtonAction::Quit => (113.0, 20.0, 2),
+            ButtonAction::TravelTrail => (113.0, 20.0, 3),
+        };
         
         // Create label based on button type
         let label = match button_type {
@@ -62,6 +70,8 @@ impl Button {
             action: button_type,
             click_timer: 0.0,
             label,
+            texture: sprite_sheet,
+            sprite_row,
         }
     }
     
@@ -106,82 +116,61 @@ impl Button {
     
     /// Draw the button
     pub fn draw(&self) {
-        // Choose colors based on button type and state
-        let (bg_color, border_color, text_color) = match self.action {
-            ButtonAction::Introduction => {
-                match self.state {
-                    ButtonState::Normal => (BLUE, DARKBLUE, WHITE),
-                    ButtonState::Hover => (Color::new(0.3, 0.3, 0.9, 1.0), BLUE, WHITE),
-                    ButtonState::Clicked => (DARKBLUE, WHITE, YELLOW),
-                }
-            },
-            ButtonAction::Options => {
-                match self.state {
-                    ButtonState::Normal => (PURPLE, Color::new(0.3, 0.0, 0.3, 1.0), WHITE),
-                    ButtonState::Hover => (Color::new(0.7, 0.3, 0.7, 1.0), PURPLE, WHITE),
-                    ButtonState::Clicked => (DARKPURPLE, WHITE, YELLOW),
-                }
-            },
-            ButtonAction::Quit => {
-                match self.state {
-                    ButtonState::Normal => (RED, DARKRED, WHITE),
-                    ButtonState::Hover => (Color::new(1.0, 0.3, 0.3, 1.0), RED, WHITE),
-                    ButtonState::Clicked => (DARKRED, WHITE, YELLOW),
-                }
-            },
-            ButtonAction::TravelTrail => {
-                match self.state {
-                    ButtonState::Normal => (GREEN, DARKGREEN, WHITE),
-                    ButtonState::Hover => (Color::new(0.3, 0.9, 0.3, 1.0), GREEN, WHITE),
-                    ButtonState::Clicked => (DARKGREEN, WHITE, YELLOW),
-                }
-            },
-        };
-        
-        // Draw button background
-        draw_rectangle(
-            self.position.x,
-            self.position.y,
-            self.width,
-            self.height,
-            bg_color
-        );
-        
-        // Draw border
-        draw_rectangle_lines(
-            self.position.x,
-            self.position.y,
-            self.width,
-            self.height,
-            3.0,
-            border_color
-        );
-        
-        // Draw button text
-        let font_size = 20.0;
-        let text_size = measure_text(&self.label, None, font_size as u16, 1.0);
-        
-        draw_text(
-            &self.label,
-            self.position.x + (self.width - text_size.width) / 2.0,
-            self.position.y + (self.height + text_size.height) / 2.0,
-            font_size,
-            text_color
-        );
-        
-        // Print debug info
-        let debug_info = format!(
-            "{:?} Button at ({:.1}, {:.1}), size: {:.1}x{:.1}, state: {:?}",
-            self.action, self.position.x, self.position.y, self.width, self.height, self.state
-        );
-        
-        // Draw debug text below the button
-        draw_text(
-            &debug_info,
-            self.position.x,
-            self.position.y + self.height + 15.0,
-            10.0,
-            GRAY
-        );
+        if let Some(texture) = self.texture {
+            // Determine source rectangle based on button state and sprite row
+            let src_x = match self.state {
+                ButtonState::Normal | ButtonState::Hover => 0.0,     // Left column for normal/hover
+                ButtonState::Clicked => 113.0,                       // Right column for clicked
+            };
+            
+            let src_y = (self.sprite_row as f32) * 20.0;  // Row based on button type
+            
+            // Draw the button using the sprite sheet
+            draw_texture_ex(
+                texture,
+                self.position.x,
+                self.position.y,
+                WHITE,
+                DrawTextureParams {
+                    source: Some(Rect::new(src_x, src_y, 113.0, 20.0)),
+                    dest_size: Some(Vec2::new(self.width, self.height)),
+                    ..Default::default()
+                },
+            );
+            
+            // Highlight on hover (subtle glow effect)
+            if self.state == ButtonState::Hover {
+                draw_rectangle_lines(
+                    self.position.x - 2.0,
+                    self.position.y - 2.0,
+                    self.width + 4.0,
+                    self.height + 4.0,
+                    2.0,
+                    Color::new(1.0, 1.0, 1.0, 0.5) // Semi-transparent white
+                );
+            }
+        } else {
+            // Fallback if texture is not available
+            let color = match self.state {
+                ButtonState::Normal => GRAY,
+                ButtonState::Hover => LIGHTGRAY,
+                ButtonState::Clicked => DARKGRAY,
+            };
+            
+            draw_rectangle(self.position.x, self.position.y, self.width, self.height, color);
+            draw_rectangle_lines(self.position.x, self.position.y, self.width, self.height, 2.0, BLACK);
+            
+            // Draw button text
+            let font_size = 20.0;
+            let text_size = measure_text(&self.label, None, font_size as u16, 1.0);
+            
+            draw_text(
+                &self.label,
+                self.position.x + (self.width - text_size.width) / 2.0,
+                self.position.y + (self.height + text_size.height) / 2.0,
+                font_size,
+                BLACK
+            );
+        }
     }
 }

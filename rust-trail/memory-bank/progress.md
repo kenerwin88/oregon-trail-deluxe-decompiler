@@ -10,9 +10,9 @@
 | Asset Loading | 🟡 Partial | Basic texture loading works, other asset types pending |
 | State Management | ✅ Completed | Game state transitions and management implemented |
 | Scene System | 🟡 Partial | Basic structure in place, most screens not implemented |
-| Title Screen | 🟡 Partial | Basic version works, needs polish and animations |
+| Title Screen | 🟡 Partial | Working with sprite-based buttons, needs more polish |
 | Main Menu | 🔴 Placeholder | Basic structure only, not fully functional |
-| UI Components | 🟡 Started | Button component implemented, others needed |
+| UI Components | 🟡 Partial | Reusable Button component with sprite support implemented |
 | Player System | 🟡 Started | Basic structure defined, functionality incomplete |
 | Inventory System | 🟡 Started | Basic structure defined, functionality incomplete |
 | Travel Mechanics | 🔴 Not Started | Planned for future implementation |
@@ -56,7 +56,7 @@
 
 ### High Priority
 1. **Complete UI Components**
-   - Finish button implementation with proper visuals and interactions
+   - ✅ Implement button sprite sheet integration
    - Implement additional UI elements (menus, dialogs, text input)
    - Create consistent UI styling that matches original
 
@@ -107,7 +107,7 @@
 5. **Rendering**: No dedicated renderer component yet
 
 ### Implementation Gaps
-1. **Incomplete Title Screen**: Needs animations and proper button interactions
+1. **Incomplete Title Screen**: ✅ Added proper button images, still needs animations
 2. **Missing Audio**: No sound effects or music implementation
 3. **Placeholder UI**: Many screens are just placeholders without actual functionality
 4. **Limited Input Handling**: No comprehensive input system for different platforms
@@ -118,11 +118,11 @@
 - State machine approach for game flow
 - Module-based code organization
 - Macroquad for cross-platform graphics
-
 ### Refinements
 - Added asset caching to improve performance
 - Implemented separate scene components for better organization
-- Created reusable Button component for consistent UI
+- Created reusable Button component with sprite sheet support for consistent UI
+- Replaced colored rectangle buttons with authentic sprite-based buttons
 
 ### Future Considerations
 - Evaluate more comprehensive UI framework vs. custom implementation
