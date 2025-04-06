@@ -45,13 +45,23 @@ impl Button {
         button_type: ButtonAction,
         position: Vec2,
         sprite_sheet: Option<Texture2D>,
+        scale_x: f32,
+        scale_y: f32,
     ) -> Self {
-        // Determine button dimensions and sprite row based on button type
-        let (button_width, button_height, sprite_row) = match button_type {
-            ButtonAction::Introduction => (113.0, 20.0, 0),
-            ButtonAction::Options => (113.0, 20.0, 1),
-            ButtonAction::Quit => (113.0, 20.0, 2),
-            ButtonAction::TravelTrail => (113.0, 20.0, 3),
+        // Base dimensions from the sprite sheet
+        let base_width = 113.0;
+        let base_height = 20.0;
+        
+        // Scale dimensions based on screen scale factors
+        let button_width = base_width * scale_x;
+        let button_height = base_height * scale_y;
+        
+        // Determine sprite row based on button type
+        let sprite_row = match button_type {
+            ButtonAction::Introduction => 0,
+            ButtonAction::Options => 1,
+            ButtonAction::Quit => 2,
+            ButtonAction::TravelTrail => 3,
         };
         
         // Create label based on button type
@@ -123,6 +133,7 @@ impl Button {
                 ButtonState::Clicked => 113.0,                       // Right column for clicked
             };
             
+            // The sprite sheet has each button row at 20px height
             let src_y = (self.sprite_row as f32) * 20.0;  // Row based on button type
             
             // Draw the button using the sprite sheet

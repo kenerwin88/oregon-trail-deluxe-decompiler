@@ -47,37 +47,58 @@ impl TitleScreen {
     fn init_buttons(&mut self) {
         self.buttons.clear();
         
+        // Get screen dimensions
         let screen_w = screen_width();
         let screen_h = screen_height();
-        let left_margin = 30.0;
         
-        // Introduction button
-        self.buttons.push(Button::new(
+        // Calculate scaling based on original TITLE.png dimensions (577 x 418)
+        let screen_scale_x = screen_w / 577.0;
+        let screen_scale_y = screen_h / 418.0;
+        
+
+        
+        // Button Y position
+        let button_y = 370.0 * screen_scale_y; // Options
+        
+        // Create Introduction button
+        let intro_button = Button::new(
             ButtonAction::Introduction,
-            Vec2::new(left_margin, 250.0),
-            self.button_texture
-        ));
+            Vec2::new(34.0 * screen_scale_x,  button_y),
+            self.button_texture,
+            screen_scale_x,
+            screen_scale_y
+        );
+        self.buttons.push(intro_button);
         
-        // Options button
-        self.buttons.push(Button::new(
+        // Create Options button
+        let options_button = Button::new(
             ButtonAction::Options,
-            Vec2::new(left_margin, 280.0),
-            self.button_texture
-        ));
+            Vec2::new(165.0 * screen_scale_x, button_y),
+            self.button_texture,
+            screen_scale_x,
+            screen_scale_y
+        );
+        self.buttons.push(options_button);
         
-        // Quit button
-        self.buttons.push(Button::new(
+        // Create Quit button
+        let quit_button = Button::new(
             ButtonAction::Quit,
-            Vec2::new(left_margin, 310.0),
-            self.button_texture
-        ));
+            Vec2::new(298.0 * screen_scale_x, button_y),
+            self.button_texture,
+            screen_scale_x,
+            screen_scale_y
+        );
+        self.buttons.push(quit_button);
         
-        // Travel Trail button
-        self.buttons.push(Button::new(
+        // Create Travel Trail button
+        let travel_button = Button::new(
             ButtonAction::TravelTrail,
-            Vec2::new(screen_w / 2.0 - 56.5, screen_h - 50.0),
-            self.button_texture
-        ));
+            Vec2::new(428.0 * screen_scale_x, button_y),
+            self.button_texture,
+            screen_scale_x,
+            screen_scale_y
+        );
+        self.buttons.push(travel_button);
     }
     
     pub fn update(&mut self, dt: f32) -> Option<TitleAction> {
