@@ -1,22 +1,23 @@
 #!/usr/bin/env python3
 """
 Main entry point for Oregon Trail decompiler tools.
-Provides command-line interface for extracting and converting game files.
+Provides command-line interface for extracting, converting, and decompiling
+the Oregon Trail game files.
 """
 
 import argparse
 import logging
 import os
 import sys
+import importlib
 
 from tools.gxl_extractor import GXLExtractor, set_debug as set_gxl_debug
 from tools.convert import convert_all, set_debug as set_convert_debug
+from tools.decompiler.utils import setup_logging
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(levelname).1s %(module)s: %(message)s", force=True
-)
 logger = logging.getLogger(__name__)
+setup_logging(level=logging.INFO)
 
 
 def extract_gxl(args):
@@ -196,10 +197,81 @@ def process_all():
     )
 
 
+def decompile_executable(args):
+    """Run the decompiler with powerful options enabled by default"""
+    try:
+        # Import the module dynamically to avoid circular imports
+        logger.info("Importing decompiler module...")
+        decompiler_main = importlib.import_module("tools.decompiler.main")
+        
+        # Build argument list for decompiler with defaults enabled
+        sys_args = [args.file]
+        
+        # Add output directory
+        sys_args.extend(["--output", args.output])
+        
+        # Add default powerful options unless explicitly disabled
+        if not args.no_enhanced:
+            sys_args.append("--enhanced")
+        
+        if not args.no_data_flow:
+            sys_args.append("--data-flow")
+            
+        if not args.no_improved:
+            sys_args.append("--improved")
+            
+        if not args.no_c_code:
+            sys_args.append("--c-code")
+            
+        if not args.no_all_analyzers:
+            sys_args.append("--all-analyzers")
+            
+        # Add visualization if requested
+        if args.visualize:
+            sys_args.append("--visualize")
+            
+        # Add resource directory if specified
+        if args.resource_dir:
+            sys_args.extend(["--resource-dir", args.resource_dir])
+            
+        # Add debug flag if specified
+        if args.debug:
+            sys_args.append("--debug")
+        
+        # Check if file exists
+        if not os.path.exists(args.file):
+            logger.error(f"File not found: {args.file}")
+            return
+            
+        # Create output directory
+        os.makedirs(args.output, exist_ok=True)
+        
+        logger.info(f"Running decompiler with command: python -m tools.decompiler.main {' '.join(sys_args)}")
+        
+        # Use subprocess instead of directly calling the module
+        import subprocess
+        full_command = [sys.executable, "-m", "tools.decompiler.main"] + sys_args
+        
+        logger.info(f"Executing: {' '.join(full_command)}")
+        result = subprocess.run(full_command, capture_output=True, text=True)
+        
+        if result.returncode != 0:
+            logger.error(f"Decompiler failed with return code {result.returncode}")
+            logger.error(f"Error output: {result.stderr}")
+        else:
+            logger.info(f"Decompiler completed successfully")
+            logger.info(f"Output directory: {os.path.abspath(args.output)}")
+            
+    except Exception as e:
+        logger.error(f"Error running decompiler: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+
+
 def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(
-        description="Oregon Trail Decompiler Tools - Extracts and converts game assets to modern formats"
+        description="Oregon Trail Decompiler Tools - Extracts, converts, and decompiles game assets"
     )
     subparsers = parser.add_subparsers(dest="command", help="Command to execute")
 
@@ -253,6 +325,55 @@ def main():
     convert_parser.add_argument(
         "--debug", "-d", action="store_true", help="Enable debug logging"
     )
+    
+    # Decompile command - new addition for easier decompilation
+    decompile_parser = subparsers.add_parser(
+        "decompile", help="Decompile DOS executable with powerful options enabled by default"
+    )
+    decompile_parser.add_argument(
+        "file",
+        nargs="?",
+        default="original_game/OREGON.EXE",
+        help="DOS executable file to decompile (default: original_game/OREGON.EXE)"
+    )
+    decompile_parser.add_argument(
+        "--output", "-o", default="decompiled_output",
+        help="Output directory for decompiled files (default: decompiled_output)"
+    )
+    decompile_parser.add_argument(
+        "--visualize", "-v", action="store_true",
+        help="Generate visualizations (call graph, state machine, etc.)"
+    )
+    decompile_parser.add_argument(
+        "--resource-dir",
+        help="Directory containing game resource files for resource analysis"
+    )
+    decompile_parser.add_argument(
+        "--debug", "-d", action="store_true",
+        help="Enable debug logging"
+    )
+    
+    # Add disable options (all powerful features are enabled by default)
+    decompile_parser.add_argument(
+        "--no-enhanced", action="store_true",
+        help="Disable enhanced Capstone-based disassembler"
+    )
+    decompile_parser.add_argument(
+        "--no-data-flow", action="store_true",
+        help="Disable data flow analysis"
+    )
+    decompile_parser.add_argument(
+        "--no-improved", action="store_true",
+        help="Disable improved decompiler with better variable naming"
+    )
+    decompile_parser.add_argument(
+        "--no-c-code", action="store_true",
+        help="Disable C code generation (use pseudocode instead)"
+    )
+    decompile_parser.add_argument(
+        "--no-all-analyzers", action="store_true",
+        help="Disable all advanced analyzers"
+    )
 
     args = parser.parse_args()
 
@@ -263,6 +384,8 @@ def main():
         extract_gxl(args)
     elif args.command == "convert":
         convert_files(args)
+    elif args.command == "decompile":
+        decompile_executable(args)
     else:
         parser.print_help()
         sys.exit(1)

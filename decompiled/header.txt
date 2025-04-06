@@ -1,0 +1,7 @@
+Filename: original_game/OREGON.EXE
+File size: 273648 bytes
+Entry point: 0x3E
+
+Segments:
+  Segment CODE: 00001C00 - 00042CF0, Type: CODE
+  Segment DATA: 00000000 - 00001C00, Type: DATA

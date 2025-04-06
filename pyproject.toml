@@ -5,6 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "capstone>=5.0.6",
+    "matplotlib>=3.10.1",
+    "networkx>=3.4.2",
     "pillow>=11.1.0",
     "pytest>=8.3.5",
+    "scipy>=1.15.2",
 ]

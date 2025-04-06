@@ -1,0 +1,12 @@
+[package]
+name = "rust-trail"
+version = "0.1.0"
+edition = "2021"
+authors = ["Oregon Trail Decompilation Project"]
+description = "A Rust rewrite of Oregon Trail Deluxe using Macroquad"
+
+[dependencies]
+macroquad = "0.3"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+rand = "0.8"
