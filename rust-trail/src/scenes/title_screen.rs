@@ -52,13 +52,17 @@ impl TitleScreen {
         let screen_h = screen_height();
         
         // Calculate scaling based on original TITLE.png dimensions (577 x 418)
-        let screen_scale_x = screen_w / 577.0;
-        let screen_scale_y = screen_h / 418.0;
+        // These are the original dimensions of the title image
+        let original_width = 577.0;
+        let original_height = 418.0;
         
-
+        // Calculate scaling factors to maintain aspect ratio
+        let screen_scale_x = screen_w / original_width;
+        let screen_scale_y = screen_h / original_height;
         
-        // Button Y position
-        let button_y = 370.0 * screen_scale_y; // Options
+        // In the original game, buttons are positioned at the bottom of the screen
+        // Original Y position was around 370 pixels in a 418 pixel height image
+        let button_y = 370.0 * screen_scale_y;
         
         // Create Introduction button
         let intro_button = Button::new(
@@ -100,9 +104,24 @@ impl TitleScreen {
         );
         self.buttons.push(travel_button);
     }
-    
     pub fn update(&mut self, dt: f32) -> Option<TitleAction> {
         self.time += dt;
+        
+        // Check if the screen size has changed, and update buttons if it has
+        static mut LAST_SCREEN_W: f32 = 0.0;
+        static mut LAST_SCREEN_H: f32 = 0.0;
+        
+        let current_w = screen_width();
+        let current_h = screen_height();
+        
+        unsafe {
+            if current_w != LAST_SCREEN_W || current_h != LAST_SCREEN_H {
+                self.init_buttons();
+                LAST_SCREEN_W = current_w;
+                LAST_SCREEN_H = current_h;
+            }
+        }
+        
         
         // Keyboard shortcuts
         if is_key_pressed(KeyCode::Space) || is_key_pressed(KeyCode::Enter) {
