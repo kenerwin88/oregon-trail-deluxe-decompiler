@@ -151,7 +151,7 @@
         <p id="gallery-title">Asset Gallery</p>
     </header>
 
-    <a href="index.html" class="back-link" id="back-link">← Back to Main Page</a>
+    <a href="./index.html" class="back-link" id="back-link">← Back to Main Page</a>
 
     <h2 id="gallery-heading">Gallery</h2>
     <p id="gallery-description">Click on any image to view it in full size.</p>
@@ -167,7 +167,7 @@
         <div id="modal-caption" class="modal-caption"></div>
     </div>
 
-    <a href="index.html" class="back-link" id="back-link2">← Back to Main Page</a>
+    <a href="./index.html" class="back-link" id="back-link2">← Back to Main Page</a>
 
     <footer>
         <p>Oregon Trail Deluxe Decompilation Project Documentation</p>
@@ -177,7 +177,7 @@
 
     <script>
         // Base URL for GitHub Pages (empty for local development)
-        const baseUrl = window.location.hostname.includes('github.io') ? '/oregon-trail-decompiler' : '';
+        const baseUrl = window.location.hostname.includes('github.io') ? '/oregon-trail-decompiler' : '.';
         
         // Get the modal
         const modal = document.getElementById("image-modal");
@@ -257,10 +257,10 @@
             item.className = "gallery-item";
             
             const img = document.createElement("img");
-            img.src = baseUrl + '/' + imgSrc;
+            img.src = baseUrl === '.' ? './' + imgSrc : baseUrl + '/' + imgSrc;
             img.alt = title;
             img.onclick = function() {
-                openModal(baseUrl + '/' + imgSrc, title);
+                openModal(baseUrl === '.' ? './' + imgSrc : baseUrl + '/' + imgSrc, title);
             };
             
             const heading = document.createElement("h3");
@@ -363,8 +363,8 @@
         
         // Update links with baseUrl
         function updateLinks() {
-            document.getElementById('back-link').href = baseUrl + '/index.html';
-            document.getElementById('back-link2').href = baseUrl + '/index.html';
+            document.getElementById('back-link').href = baseUrl === '.' ? './index.html' : baseUrl + '/index.html';
+            document.getElementById('back-link2').href = baseUrl === '.' ? './index.html' : baseUrl + '/index.html';
         }
         
         // Load the appropriate gallery
